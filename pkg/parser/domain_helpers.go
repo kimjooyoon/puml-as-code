@@ -2,8 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"slices"
-	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/tokenizer"
