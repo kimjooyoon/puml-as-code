@@ -11,8 +11,8 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (p *Parser) parseVisibilityCommand(tok tokenizer.Token) (ast.VisibilityCommand, error) {
-	cmd := ast.VisibilityCommand{
+func (p *Parser) parseVisibilityCommand(tok tokenizer.Token) (*ast.VisibilityCommand, error) {
+	cmd := &ast.VisibilityCommand{
 		Kind: ast.VisibilityCMDUnknown,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
@@ -32,7 +32,7 @@ func (p *Parser) parseVisibilityCommand(tok tokenizer.Token) (ast.VisibilityComm
 	return cmd, nil
 }
 
-func (p *Parser) parseDiagDirection(tok tokenizer.Token) (ast.DirectionCommand, error) {
+func (p *Parser) parseDiagDirection(tok tokenizer.Token) (*ast.DirectionCommand, error) {
 	var to string
 	switch tok.Literal {
 	case "left":
@@ -56,7 +56,7 @@ func (p *Parser) parseDiagDirection(tok tokenizer.Token) (ast.DirectionCommand, 
 		},
 	}
 
-	cmd := ast.DirectionCommand{
+	cmd := &ast.DirectionCommand{
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
 		},
@@ -64,7 +64,7 @@ func (p *Parser) parseDiagDirection(tok tokenizer.Token) (ast.DirectionCommand, 
 
 	for _, token := range expectedSeq {
 		if _, ok := p.stream.TryConsume(token); !ok {
-			return cmd, NewParserError(token, "Unexpected diagram direction modifier")
+			return nil, NewParserError(token, "Unexpected diagram direction modifier")
 		}
 	}
 	switch tok.Literal {
@@ -74,7 +74,7 @@ func (p *Parser) parseDiagDirection(tok tokenizer.Token) (ast.DirectionCommand, 
 		cmd.Direction = ast.TopToBottomDirection
 	}
 	if !p.stream.AssertType(tokenizer.NEWLINE) {
-		return cmd, NewParserError(p.stream.PeekTokenAt(0), "Unexpected tokens after direction command")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Unexpected tokens after direction command")
 	}
 	return cmd, nil
 }
@@ -91,8 +91,8 @@ func isDecimalFloat(s string) bool {
 	return strings.ContainsAny(s, "exob")
 }
 
-func (p *Parser) parseScaleTrial(startTok tokenizer.Token) (ast.ScaleCommand, error) {
-	cmd := ast.ScaleCommand{
+func (p *Parser) parseScaleTrial(startTok tokenizer.Token) (*ast.ScaleCommand, error) {
+	cmd := &ast.ScaleCommand{
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
 		},
@@ -103,7 +103,7 @@ func (p *Parser) parseScaleTrial(startTok tokenizer.Token) (ast.ScaleCommand, er
 
 	op1, sep, op2, unit, err := p.extractScaleTokens()
 	if err != nil {
-		return cmd, err
+		return nil, err
 	}
 
 	// Step 2: Validate against State Machine rules
@@ -111,34 +111,34 @@ func (p *Parser) parseScaleTrial(startTok tokenizer.Token) (ast.ScaleCommand, er
 	isOp1Dec := isDecimalFloat(op1)
 
 	if !isOp1Int && !isOp1Dec {
-		return cmd, NewParserError(startTok, "Expected number after scale")
+		return nil, NewParserError(startTok, "Expected number after scale")
 	}
 
 	// Max constraints
 	if cmd.IsMax {
 		if isOp1Dec {
-			return cmd, NewParserError(startTok, "Cannot use decimals with 'max'")
+			return nil, NewParserError(startTok, "Cannot use decimals with 'max'")
 		}
 		if sep == "/" {
-			return cmd, NewParserError(startTok, "Cannot use fractions with 'max'")
+			return nil, NewParserError(startTok, "Cannot use fractions with 'max'")
 		}
 		if sep == "" && unit == "" {
-			return cmd, NewParserError(startTok, "Cannot use numbers with 'max' without a unit or box")
+			return nil, NewParserError(startTok, "Cannot use numbers with 'max' without a unit or box")
 		}
 	}
 
 	// Decimal constraints
 	if isOp1Dec && sep != "" {
-		return cmd, NewParserError(startTok, "Cannot use decimals with separators ('*', 'x', '/')")
+		return nil, NewParserError(startTok, "Cannot use decimals with separators ('*', 'x', '/')")
 	}
 
 	// Binary separator constraints (*, x, /)
 	if sep != "" {
 		if unit != "" {
-			return cmd, NewParserError(startTok, "Cannot specify unit with a box or fraction")
+			return nil, NewParserError(startTok, "Cannot specify unit with a box or fraction")
 		}
 		if !isDecimalInt(op2) {
-			return cmd, NewParserError(startTok, "Expected integer after separator")
+			return nil, NewParserError(startTok, "Expected integer after separator")
 		}
 	}
 
@@ -153,8 +153,8 @@ func (p *Parser) parseScaleTrial(startTok tokenizer.Token) (ast.ScaleCommand, er
 	return cmd, nil
 }
 
-func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) {
-	cmd := ast.ScaleCommand{
+func (p *Parser) parseScale(startTok tokenizer.Token) (*ast.ScaleCommand, error) {
+	cmd := &ast.ScaleCommand{
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
 		},
@@ -187,30 +187,30 @@ func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) 
 	switch tok.Type {
 	case tokenizer.NUMBER:
 		if strings.ContainsAny(tok.Literal, "exob") {
-			return cmd, NewParserError(tok, "Cannot use non-decimal or scientific integer for scale")
+			return nil, NewParserError(tok, "Cannot use non-decimal or scientific integer for scale")
 		}
 	case tokenizer.DOT:
 		// .5 case
 		numTok, ok := p.stream.TryConsumeType(tokenizer.NUMBER)
 		if !ok {
-			return cmd, NewParserError(numTok, "Expected number after scale leading dot")
+			return nil, NewParserError(numTok, "Expected number after scale leading dot")
 		}
 		if strings.ContainsAny(numTok.Literal, ".exob") {
-			return cmd, NewParserError(numTok, "Cannot use non-decimal integer for shorthand float")
+			return nil, NewParserError(numTok, "Cannot use non-decimal integer for shorthand float")
 		}
 		cmd.Lhs = "." + numTok.Literal
 		if !p.stream.AssertAnyType(tokenizer.NEWLINE, tokenizer.EOF) {
-			return cmd, NewParserError(p.stream.PeekTokenAt(0), "Expected scale to end after fractional scale")
+			return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected scale to end after fractional scale")
 		}
 		if cmd.IsMax {
-			return cmd, NewParserError(tok, "Cannot use fractions with 'max'")
+			return nil, NewParserError(tok, "Cannot use fractions with 'max'")
 		}
 		return cmd, nil
 	case tokenizer.IDENTIFIER:
 		// Try to handle 200x300 which is tokenized as an IDENTIFIER
 		if strings.Contains(tok.Literal, "x") && !strings.HasSuffix(tok.Literal, "x") && !strings.HasPrefix(tok.Literal, "x") {
 			if err := divideSingleTok(tok.Literal, "x"); err != nil {
-				return cmd, WrapParserError(tok, err)
+				return nil, WrapParserError(tok, err)
 			}
 			return cmd, nil
 		}
@@ -218,21 +218,21 @@ func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) 
 		if before, ok := strings.CutSuffix(tok.Literal, "x"); ok {
 			widthStr := before
 			if widthStr == "" || strings.ContainsAny(widthStr, ".exob") {
-				return cmd, NewParserError(tok, "Cannot use non-decimal integer for width of a box")
+				return nil, NewParserError(tok, "Cannot use non-decimal integer for width of a box")
 			}
 			if _, err := strconv.Atoi(widthStr); err != nil {
-				return cmd, NewParserError(tok, "Expected width in a box to be an integer")
+				return nil, NewParserError(tok, "Expected width in a box to be an integer")
 			}
 
 			heightTok, ok := p.stream.TryConsumeType(tokenizer.NUMBER)
 			if !ok {
-				return cmd, NewParserError(p.stream.PeekTokenAt(0), "Expected height after 'x' in a box")
+				return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected height after 'x' in a box")
 			}
 			if strings.ContainsAny(heightTok.Literal, ".exob") {
-				return cmd, NewParserError(heightTok, "Cannot use non-decimal integer for height of a box")
+				return nil, NewParserError(heightTok, "Cannot use non-decimal integer for height of a box")
 			}
 			if _, err := strconv.Atoi(heightTok.Literal); err != nil {
-				return cmd, NewParserError(heightTok, "Invalid height for the box")
+				return nil, NewParserError(heightTok, "Invalid height for the box")
 			}
 
 			cmd.Lhs = widthStr
@@ -241,9 +241,9 @@ func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) 
 			return cmd, nil
 		}
 
-		return cmd, NewParserError(tok, "Expected number after scale")
+		return nil, NewParserError(tok, "Expected number after scale")
 	default:
-		return cmd, NewParserError(p.stream.PeekTokenAt(0), "Expected number after scale")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected number after scale")
 	}
 
 	valueLit := tok.Literal
@@ -285,34 +285,34 @@ func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) 
 		switch tok.Literal {
 		case "width":
 			if strings.ContainsAny(valueLit, "exob") {
-				return cmd, NewParserError(valueTok, "Cannot use non-decimal or scientific integer for width of a box")
+				return nil, NewParserError(valueTok, "Cannot use non-decimal or scientific integer for width of a box")
 			}
 			cmd.Lhs = valueLit
 			cmd.Unit = tok.Literal
 		case "height":
 			if strings.ContainsAny(valueLit, "exob") {
-				return cmd, NewParserError(valueTok, "Cannot use non-decimal or scientific integer for height of a box")
+				return nil, NewParserError(valueTok, "Cannot use non-decimal or scientific integer for height of a box")
 			}
 			cmd.Lhs = valueLit
 			cmd.Unit = tok.Literal
 		case "x":
 			if err := setBox("x"); err != nil {
-				return cmd, err
+				return nil, err
 			}
 		default:
 			after, ok := strings.CutPrefix(tok.Literal, "x")
 			if !ok {
-				return cmd, NewParserErrorf(tok, "Unexpected identifier: %s", tok.Literal)
+				return nil, NewParserErrorf(tok, "Unexpected identifier: %s", tok.Literal)
 			}
 			heightStr := after
 			if heightStr == "" || strings.ContainsAny(heightStr, ".exob") {
-				return cmd, NewParserError(tok, "Cannot use non-decimal integer for height of a box")
+				return nil, NewParserError(tok, "Cannot use non-decimal integer for height of a box")
 			}
 			if _, err := strconv.Atoi(heightStr); err != nil {
-				return cmd, NewParserError(tok, "Invalid height for the box")
+				return nil, NewParserError(tok, "Invalid height for the box")
 			}
 			if !isInt || strings.ContainsAny(valueLit, ".exob") {
-				return cmd, NewParserError(valueTok, "Expected width in a box to be an integer")
+				return nil, NewParserError(valueTok, "Expected width in a box to be an integer")
 			}
 
 			cmd.Lhs = valueLit
@@ -321,37 +321,37 @@ func (p *Parser) parseScale(startTok tokenizer.Token) (ast.ScaleCommand, error) 
 		}
 	case tokenizer.ASTERISK:
 		if err := setBox("*"); err != nil {
-			return cmd, err
+			return nil, err
 		}
 	case tokenizer.SLASH:
 		if err := setBox("/"); err != nil {
-			return cmd, err
+			return nil, err
 		}
 	case tokenizer.NEWLINE, tokenizer.EOF:
 		// EOF handling is a special case for a test case
 		// valueLit is either a bare integer or a float
 		if !isFloat {
-			return cmd, NewParserError(tok, "Expected number after scale")
+			return nil, NewParserError(tok, "Expected number after scale")
 		}
 
 		if cmd.IsMax {
-			return cmd, NewParserError(tok, "Cannot use numbers with 'max' without a unit (width/height) or a box")
+			return nil, NewParserError(tok, "Cannot use numbers with 'max' without a unit (width/height) or a box")
 		}
 
 		if isFloat && !isInt {
 			if err := divideSingleTok(valueLit, "."); err != nil {
-				return cmd, WrapParserError(tok, err)
+				return nil, WrapParserError(tok, err)
 			}
 		} else {
 			cmd.Lhs = valueLit
 		}
 		return cmd, nil
 	default:
-		return cmd, NewParserErrorf(tok, "Unexpected token: %s(%s)", tok.Type.String(), tok.Literal)
+		return nil, NewParserErrorf(tok, "Unexpected token: %s(%s)", tok.Type.String(), tok.Literal)
 	}
 
 	if !p.stream.AssertAnyType(tokenizer.NEWLINE, tokenizer.EOF) {
-		return cmd, NewParserError(p.stream.PeekTokenAt(0), "Unexpected tokens after scale command")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Unexpected tokens after scale command")
 	}
 	return cmd, nil
 }
@@ -374,7 +374,7 @@ func (p *Parser) parseSetDirective(startTok tokenizer.Token) (ast.Statement, err
 		}
 	}
 
-	return ast.SetCommand{
+	return &ast.SetCommand{
 		Key:   keyTok.Literal,
 		Value: directiveVal,
 		BaseNode: ast.BaseNode{
@@ -400,7 +400,7 @@ func (p *Parser) parseLayoutStatement(kwTok tokenizer.Token, prefixAlignment *to
 	blockKind := mapKwTokToTextBlockKind(keyword.Classify(kwTok.Literal))
 	leadingTrivia := p.stream.DumpCollectedTrivia()
 
-	block := ast.TextBlock{
+	block := &ast.TextBlock{
 		Kind: blockKind,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: leadingTrivia,

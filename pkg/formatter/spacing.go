@@ -27,22 +27,22 @@ func isBlockNode(node ast.Node) bool {
 		return false
 	}
 	switch n := node.(type) {
-	case ast.Container:
+	case *ast.Container:
 		if n.Kind == ast.ContainerUnknown {
 			_, inner := unwrapImplicitContainer(n)
-			if innerEnt, ok := inner.(ast.Entity); ok {
+			if innerEnt, ok := inner.(*ast.Entity); ok {
 				return innerEnt.Kind != ast.EntityUnknown
 			}
 			return false
 		}
 		return true
-	case ast.Entity:
+	case *ast.Entity:
 		return n.Kind != ast.EntityUnknown
-	case ast.StyleBlock, ast.StyleRule, ast.SkinparamBlock:
+	case *ast.StyleBlock, *ast.StyleRule, *ast.SkinparamBlock:
 		return true
-	case ast.Note:
+	case *ast.Note:
 		return strings.Contains(n.Text, "\n") || len(n.Text) > 60
-	case ast.TextBlock:
+	case *ast.TextBlock:
 		return strings.Contains(n.Text, "\n") || len(n.Text) > 60
 	default:
 		return false
@@ -51,32 +51,32 @@ func isBlockNode(node ast.Node) bool {
 
 func categorizeNode(node ast.Node) statementCategory {
 	switch n := node.(type) {
-	case ast.DiagramBound:
+	case *ast.DiagramBound:
 		if n.IsStart {
 			return catDiagramBoundStart
 		}
 		return catDiagramBoundEnd
-	case ast.TextBlock:
+	case *ast.TextBlock:
 		return catTextBlock
-	case ast.StyleBlock, ast.StyleRule, ast.SkinparamBlock, ast.SkinparamSetting:
+	case *ast.StyleBlock, *ast.StyleRule, *ast.SkinparamBlock, *ast.SkinparamSetting:
 		return catStyling
-	case ast.Container:
+	case *ast.Container:
 		if n.Kind == ast.ContainerUnknown {
 			return catInlineMemberDecl
 		}
 		return catDeclaration
-	case ast.Entity:
+	case *ast.Entity:
 		if n.Kind == ast.EntityUnknown {
 			return catInlineMemberDecl
 		}
 		return catDeclaration
-	case ast.Relationship:
+	case *ast.Relationship:
 		return catRelationship
-	case ast.IncludeDirective:
+	case *ast.IncludeDirective:
 		return catDirective
-	case ast.Note:
+	case *ast.Note:
 		return catNote
-	case ast.ScaleCommand, ast.VisibilityCommand, ast.SetCommand, ast.DirectionCommand, ast.GenericCommand:
+	case *ast.ScaleCommand, *ast.VisibilityCommand, *ast.SetCommand, *ast.DirectionCommand, *ast.GenericCommand:
 		return catCommand
 	default:
 		return catUnknown
@@ -117,17 +117,17 @@ func nodeEndLine(node ast.Node) int {
 }
 
 func isFieldMember(m ast.Member) bool {
-	_, ok := m.(ast.FieldDeclaration)
+	_, ok := m.(*ast.FieldDeclaration)
 	return ok
 }
 
 func isMethodMember(m ast.Member) bool {
-	_, ok := m.(ast.MethodDeclaration)
+	_, ok := m.(*ast.MethodDeclaration)
 	return ok
 }
 
 func isSeparatorMember(m ast.Member) bool {
-	_, ok := m.(ast.ClassSeparator)
+	_, ok := m.(*ast.ClassSeparator)
 	return ok
 }
 

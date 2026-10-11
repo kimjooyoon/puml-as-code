@@ -294,39 +294,39 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 	var prevRelationship *RelationshipSymbol
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
-		case ast.Entity:
+		case *ast.Entity:
 			if ent, ok := tbl.lookup[FQN(s.Identifier, pkgPath)]; ok {
 				if ent.AST == nil {
-					ent.AST = &s
+					ent.AST = s
 					continue
 				}
-				if err := mergeEntity(ent.AST, &s); err != nil {
+				if err := mergeEntity(ent.AST, s); err != nil {
 					return err
 				}
 				continue
 			}
-			ent := newEntitySymbol(&s, pkgPath)
+			ent := newEntitySymbol(s, pkgPath)
 			tbl.Entities = append(tbl.Entities, ent)
 			tbl.lookup[ent.FQN] = ent
-		case ast.Container:
+		case *ast.Container:
 			childPkgPath := append(pkgPath, s.Identifier)
 			if err := resolveStatements(tbl, s.Statements, childPkgPath, noteLookup, namedNotes); err != nil {
 				return err
 			}
-		case ast.Note:
+		case *ast.Note:
 			// get rid of the link notes
 			if s.Target != nil && s.Target.Entity == "link" {
 				if prevRelationship == nil {
 					return fmt.Errorf("no relationship found for link note %s", s.Text)
 				}
-				prevRelationship.Notes = append(prevRelationship.Notes, &s)
+				prevRelationship.Notes = append(prevRelationship.Notes, s)
 				continue
 			}
 
 			// get rid of the referenced notes
 			if s.Identifier != "" {
-				noteLookup[s.Identifier] = &s
-				*namedNotes = append(*namedNotes, &s)
+				noteLookup[s.Identifier] = s
+				*namedNotes = append(*namedNotes, s)
 				continue
 			}
 
@@ -340,16 +340,16 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 					if target.MemberNotes == nil {
 						target.MemberNotes = make(map[string][]*ast.Note)
 					}
-					target.MemberNotes[s.Target.Member] = append(target.MemberNotes[s.Target.Member], &s)
+					target.MemberNotes[s.Target.Member] = append(target.MemberNotes[s.Target.Member], s)
 					continue
 				}
-				target.Notes = append(target.Notes, &s)
+				target.Notes = append(target.Notes, s)
 				continue
 			}
 
-			tbl.Notes = append(tbl.Notes, &s)
-		case ast.Relationship:
-			rel, err := newRelationshipSymbol(tbl, &s, pkgPath)
+			tbl.Notes = append(tbl.Notes, s)
+		case *ast.Relationship:
+			rel, err := newRelationshipSymbol(tbl, s, pkgPath)
 			if err != nil {
 				return err
 			}

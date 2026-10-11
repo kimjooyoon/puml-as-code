@@ -6,7 +6,7 @@ type GenericCommand struct {
 	BaseNode
 }
 
-var _ Statement = GenericCommand{}
+var _ Statement = (*GenericCommand)(nil)
 
 type ScaleCommand struct {
 	IsMax bool
@@ -17,7 +17,7 @@ type ScaleCommand struct {
 	BaseNode
 }
 
-var _ Statement = ScaleCommand{}
+var _ Statement = (*ScaleCommand)(nil)
 
 type SetCommand struct {
 	Key   string `json:",omitempty"` // e.g. separator
@@ -25,7 +25,7 @@ type SetCommand struct {
 	BaseNode
 }
 
-var _ Statement = SetCommand{}
+var _ Statement = (*SetCommand)(nil)
 
 type DirectionCommandKind int
 
@@ -40,9 +40,9 @@ type DirectionCommand struct {
 	BaseNode
 }
 
-var _ Statement = DirectionCommand{}
+var _ Statement = (*DirectionCommand)(nil)
 
-func (d GenericCommand) StatementNode() Statement   { return d }
-func (d ScaleCommand) StatementNode() Statement     { return d }
-func (d SetCommand) StatementNode() Statement       { return d }
-func (d DirectionCommand) StatementNode() Statement { return d }
+func (d *GenericCommand) StatementNode() Statement   { return d }
+func (d *ScaleCommand) StatementNode() Statement     { return d }
+func (d *SetCommand) StatementNode() Statement       { return d }
+func (d *DirectionCommand) StatementNode() Statement { return d }

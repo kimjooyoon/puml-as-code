@@ -46,7 +46,7 @@ func toStructView(tbl *resolver.SymbolTable, ent *resolver.EntitySymbol, fileVie
 	var pendingSeparators []string
 	for _, member := range ent.AST.Members {
 		switch member := member.(type) {
-		case ast.FieldDeclaration:
+		case *ast.FieldDeclaration:
 			goField, ok := member.Field.(*dialect.GoField)
 			if !ok {
 				continue
@@ -61,7 +61,7 @@ func toStructView(tbl *resolver.SymbolTable, ent *resolver.EntitySymbol, fileVie
 			} else {
 				view.Fields = append(view.Fields, fv)
 			}
-		case ast.MethodDeclaration:
+		case *ast.MethodDeclaration:
 			goMethod, ok := member.Method.(*dialect.GoMethod)
 			if !ok {
 				continue
@@ -78,7 +78,7 @@ func toStructView(tbl *resolver.SymbolTable, ent *resolver.EntitySymbol, fileVie
 			} else {
 				view.Methods = append(view.Methods, mv)
 			}
-		case ast.ClassSeparator:
+		case *ast.ClassSeparator:
 			pendingSeparators = append(pendingSeparators, formatSeparator(member)...)
 		}
 	}
@@ -158,7 +158,7 @@ func toInterfaceView(tbl *resolver.SymbolTable, ent *resolver.EntitySymbol, file
 	var pendingSeparators []string
 	for _, member := range ent.AST.Members {
 		switch m := member.(type) {
-		case ast.MethodDeclaration:
+		case *ast.MethodDeclaration:
 			goMethod, ok := m.Method.(*dialect.GoMethod)
 			if !ok {
 				continue
@@ -176,7 +176,7 @@ func toInterfaceView(tbl *resolver.SymbolTable, ent *resolver.EntitySymbol, file
 					mv,
 				)
 			}
-		case ast.ClassSeparator:
+		case *ast.ClassSeparator:
 			pendingSeparators = append(pendingSeparators, formatSeparator(m)...)
 		}
 	}
@@ -214,7 +214,7 @@ func toEnumView(ent *resolver.EntitySymbol) EnumView {
 	var pendingSeparators []string
 	for _, member := range ent.AST.Members {
 		switch m := member.(type) {
-		case ast.FieldDeclaration:
+		case *ast.FieldDeclaration:
 			goField, ok := m.Field.(*dialect.GoField)
 			if !ok {
 				continue
@@ -243,7 +243,7 @@ func toEnumView(ent *resolver.EntitySymbol) EnumView {
 			}
 			view.Cases = append(view.Cases, caseView)
 
-		case ast.ClassSeparator:
+		case *ast.ClassSeparator:
 			pendingSeparators = append(pendingSeparators, formatSeparator(m)...)
 		}
 	}
@@ -260,7 +260,7 @@ func toEnumView(ent *resolver.EntitySymbol) EnumView {
 	return view
 }
 
-func formatSeparator(sep ast.ClassSeparator) []string {
+func formatSeparator(sep *ast.ClassSeparator) []string {
 	sepChar := sep.Type
 	if sepChar == 0 {
 		sepChar = '-'
@@ -322,7 +322,7 @@ func attachVisibilityComment(trivia *TriviaView, vis ast.VisibilityKind) {
 	}
 }
 
-func toFieldView(owner *resolver.EntitySymbol, decl ast.FieldDeclaration, field *dialect.GoField, fileView *FileView) FieldView {
+func toFieldView(owner *resolver.EntitySymbol, decl *ast.FieldDeclaration, field *dialect.GoField, fileView *FileView) FieldView {
 	collectImports(field.Type, fileView)
 	trivia := toTriviaView(decl.BaseNode)
 	attachVisibilityComment(&trivia, decl.Visibility)
@@ -334,7 +334,7 @@ func toFieldView(owner *resolver.EntitySymbol, decl ast.FieldDeclaration, field 
 	}
 }
 
-func toMethodView(owner *resolver.EntitySymbol, decl ast.MethodDeclaration, method *dialect.GoMethod, fileView *FileView) MethodView {
+func toMethodView(owner *resolver.EntitySymbol, decl *ast.MethodDeclaration, method *dialect.GoMethod, fileView *FileView) MethodView {
 	for _, param := range method.Parameters {
 		collectImports(param.Type, fileView)
 	}

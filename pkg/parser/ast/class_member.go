@@ -16,9 +16,9 @@ type ClassSeparator struct {
 	BaseNode
 }
 
-var _ Member = ClassSeparator{}
+var _ Member = (*ClassSeparator)(nil)
 
-func (cs ClassSeparator) MemberNode() Member {
+func (cs *ClassSeparator) MemberNode() Member {
 	return cs
 }
 
@@ -39,10 +39,10 @@ type FieldDeclaration struct {
 	Field      Field
 }
 
-var _ Member = FieldDeclaration{}
+var _ Member = (*FieldDeclaration)(nil)
 
-func (fd FieldDeclaration) MemberNode() Member { return fd }
-func (fd FieldDeclaration) FieldName() string  { return fd.Field.FieldName() }
+func (fd *FieldDeclaration) MemberNode() Member { return fd }
+func (fd *FieldDeclaration) FieldName() string  { return fd.Field.FieldName() }
 
 type MethodDeclaration struct {
 	BaseNode
@@ -51,7 +51,7 @@ type MethodDeclaration struct {
 	Method     Method
 }
 
-var _ Member = MethodDeclaration{}
+var _ Member = (*MethodDeclaration)(nil)
 
-func (md MethodDeclaration) MemberNode() Member { return md }
-func (md MethodDeclaration) MethodName() string { return md.Method.MethodName() }
+func (md *MethodDeclaration) MemberNode() Member { return md }
+func (md *MethodDeclaration) MethodName() string { return md.Method.MethodName() }

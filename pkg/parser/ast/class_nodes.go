@@ -53,9 +53,9 @@ type Entity struct {
 	Members    []Member   `json:",omitempty"`
 }
 
-var _ Statement = Entity{}
+var _ Statement = (*Entity)(nil)
 
-func (e Entity) StatementNode() Statement {
+func (e *Entity) StatementNode() Statement {
 	return e
 }
 
@@ -86,9 +86,9 @@ type Container struct {
 	BaseNode
 }
 
-var _ Statement = Container{}
+var _ Statement = (*Container)(nil)
 
-func (c Container) StatementNode() Statement {
+func (c *Container) StatementNode() Statement {
 	return c
 }
 
@@ -109,6 +109,6 @@ type VisibilityCommand struct {
 	BaseNode
 }
 
-var _ Statement = VisibilityCommand{}
+var _ Statement = (*VisibilityCommand)(nil)
 
-func (d VisibilityCommand) StatementNode() Statement { return d }
+func (d *VisibilityCommand) StatementNode() Statement { return d }

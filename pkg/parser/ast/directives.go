@@ -15,6 +15,7 @@ type IncludeDirective struct {
 	BaseNode
 }
 
-var _ Statement = IncludeDirective{}
+var _ Statement = (*IncludeDirective)(nil)
 
-func (d IncludeDirective) StatementNode() Statement { return d }
+func (d *IncludeDirective) StatementNode() Statement { return d }
+

@@ -18,9 +18,9 @@ type StyleDeclaration struct {
 }
 
 // StatementNode implements [Statement].
-func (d StyleDeclaration) StatementNode() Statement { return d }
+func (d *StyleDeclaration) StatementNode() Statement { return d }
 
-var _ Statement = StyleDeclaration{}
+var _ Statement = (*StyleDeclaration)(nil)
 
 // StyleRule represents a scoped CSS rule within a <style> block:
 //
@@ -34,9 +34,9 @@ type StyleRule struct {
 }
 
 // StatementNode implements [Statement].
-func (s StyleRule) StatementNode() Statement { return s }
+func (s *StyleRule) StatementNode() Statement { return s }
 
-var _ Statement = StyleRule{}
+var _ Statement = (*StyleRule)(nil)
 
 // StyleBlock represents the top-level <style> ... </style> block container.
 type StyleBlock struct {
@@ -45,9 +45,9 @@ type StyleBlock struct {
 }
 
 // StatementNode implements [Statement].
-func (b StyleBlock) StatementNode() Statement { return b }
+func (b *StyleBlock) StatementNode() Statement { return b }
 
-var _ Statement = StyleBlock{}
+var _ Statement = (*StyleBlock)(nil)
 
 // SkinparamSetting represents a single-line skinparam setting:
 //
@@ -62,12 +62,12 @@ type SkinparamSetting struct {
 }
 
 // StatementNode implements [Statement].
-func (s SkinparamSetting) StatementNode() Statement { return s }
+func (s *SkinparamSetting) StatementNode() Statement { return s }
 
 // EffectiveKey returns the full name of a single-line setting.
 func (s SkinparamSetting) EffectiveKey() string { return s.Name }
 
-var _ Statement = SkinparamSetting{}
+var _ Statement = (*SkinparamSetting)(nil)
 
 // SkinparamBlock represents a skinparam block (top-level or nested):
 //
@@ -86,9 +86,9 @@ type SkinparamBlock struct {
 }
 
 // StatementNode implements [Statement].
-func (b SkinparamBlock) StatementNode() Statement { return b }
+func (b *SkinparamBlock) StatementNode() Statement { return b }
 
-var _ Statement = SkinparamBlock{}
+var _ Statement = (*SkinparamBlock)(nil)
 
 // ResolvedSkinparam is one effective setting with its concatenated key,
 // used by code generators and semantic passes.
@@ -107,7 +107,7 @@ func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
 	var out []ResolvedSkinparam
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
-		case SkinparamSetting:
+		case *SkinparamSetting:
 			key := s.Name
 			if prefix != "" {
 				key = prefix + "." + s.Name
@@ -117,7 +117,7 @@ func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
 				Value: s.Value,
 				Path:  strings.Split(key, "."),
 			})
-		case SkinparamBlock:
+		case *SkinparamBlock:
 			nextPrefix := s.Name
 			if prefix != "" && s.Name != "" {
 				nextPrefix = prefix + "." + s.Name

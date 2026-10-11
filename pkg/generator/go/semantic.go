@@ -48,7 +48,7 @@ func tryInterfacePromotion(symb *resolver.EntitySymbol) error {
 	}
 	for _, member := range symb.AST.Members {
 		switch member.(type) {
-		case ast.FieldDeclaration:
+		case *ast.FieldDeclaration:
 			return fmt.Errorf("cannot realize class %s as an interface in Go: it contains fields", symb.FQN)
 		}
 	}
@@ -60,7 +60,7 @@ func (GoCodeGenerator) SemanticPass(tbl *resolver.SymbolTable) error {
 	for _, ent := range tbl.Entities {
 		if ent.AST != nil && isStruct(ent.AST) {
 			hasAbstractMethod := slices.ContainsFunc(ent.AST.Members, func(member ast.Member) bool {
-				if m, ok := member.(ast.MethodDeclaration); ok {
+				if m, ok := member.(*ast.MethodDeclaration); ok {
 					return slices.Contains(m.Modifiers, "abstract")
 				}
 				return false
@@ -104,7 +104,7 @@ func (GoCodeGenerator) SemanticPass(tbl *resolver.SymbolTable) error {
 		case isInterface(ent.AST):
 			for _, member := range ent.AST.Members {
 				switch member.(type) {
-				case ast.FieldDeclaration:
+				case *ast.FieldDeclaration:
 					return fmt.Errorf("interface or abstract class %s cannot declare fields", ent.FQN)
 				}
 			}

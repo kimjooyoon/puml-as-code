@@ -34,14 +34,8 @@ Foo --> Bar
 			if s.Identifier == "Foo" {
 				fooEntity = s
 			}
-		case ast.Entity:
-			if s.Identifier == "Foo" {
-				fooEntity = &s
-			}
 		case *ast.Relationship:
 			relStmt = s
-		case ast.Relationship:
-			relStmt = &s
 		}
 	}
 
@@ -72,9 +66,9 @@ class Example {
 	require.NoError(t, err)
 	require.NotNil(t, diag)
 
-	var exampleEntity ast.Entity
+	var exampleEntity *ast.Entity
 	for _, stmt := range diag.Statements {
-		if ent, ok := stmt.(ast.Entity); ok && ent.Identifier == "Example" {
+		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier == "Example" {
 			exampleEntity = ent
 			break
 		}
@@ -86,7 +80,7 @@ class Example {
 	require.Len(t, exampleEntity.Members, 3, "Expected 3 members: field, separator, method")
 
 	// 1. Field
-	field, ok := exampleEntity.Members[0].(ast.FieldDeclaration)
+	field, ok := exampleEntity.Members[0].(*ast.FieldDeclaration)
 	require.True(t, ok, "Expected FieldDeclaration")
 	require.NotEmpty(t, field.LeadingTrivia, "Expected leading trivia on field")
 	require.Contains(t, field.LeadingTrivia[0].Literal, "Field leading comment")
@@ -94,12 +88,12 @@ class Example {
 	require.Contains(t, field.TrailingTrivia[0].Literal, "Field trailing comment")
 
 	// 2. Separator
-	sep, ok := exampleEntity.Members[1].(ast.ClassSeparator)
+	sep, ok := exampleEntity.Members[1].(*ast.ClassSeparator)
 	require.True(t, ok, "Expected ClassSeparator")
 	require.Equal(t, "Methods", sep.Label)
 
 	// 3. Method
-	method, ok := exampleEntity.Members[2].(ast.MethodDeclaration)
+	method, ok := exampleEntity.Members[2].(*ast.MethodDeclaration)
 	require.True(t, ok, "Expected MethodDeclaration")
 	require.NotEmpty(t, method.LeadingTrivia, "Expected leading trivia on method")
 	require.Contains(t, method.LeadingTrivia[0].Literal, "Method leading comment")
@@ -121,9 +115,9 @@ class User { /' open comment 1 '/ /' open comment 2 '/
 	require.NoError(t, err)
 	require.NotNil(t, diag)
 
-	var userEntity ast.Entity
+	var userEntity *ast.Entity
 	for _, stmt := range diag.Statements {
-		if ent, ok := stmt.(ast.Entity); ok && ent.Identifier == "User" {
+		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier == "User" {
 			userEntity = ent
 			break
 		}
@@ -139,7 +133,7 @@ class User { /' open comment 1 '/ /' open comment 2 '/
 
 	// Field should have 2 trailing comments on the same line
 	require.Len(t, userEntity.Members, 1)
-	field, ok := userEntity.Members[0].(ast.FieldDeclaration)
+	field, ok := userEntity.Members[0].(*ast.FieldDeclaration)
 	require.True(t, ok)
 	require.Len(t, field.TrailingTrivia, 2)
 	require.Contains(t, field.TrailingTrivia[0].Literal, "field comment 1")

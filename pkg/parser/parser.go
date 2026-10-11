@@ -64,7 +64,7 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 	p.ast = &ast.Diagram{}
 	p.stream = tokenizer.NewTokenStream(input)
 
-	var startBound ast.DiagramBound
+	var startBound *ast.DiagramBound
 	if !p.IsBoundless {
 		// Initial blockNum is -1 so that the first block is 0-indexed
 		blockNum := -1

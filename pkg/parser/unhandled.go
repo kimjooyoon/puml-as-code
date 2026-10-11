@@ -41,7 +41,7 @@ func (p *Parser) consumeUnhandledLine(startTok tokenizer.Token, leadingTrivia []
 
 	text := p.stream.SliceInput(startTok.Span.Start.Offset, endTok.EndOffset())
 
-	return ast.UnhandledStatement{
+	return &ast.UnhandledStatement{
 		Raw: text,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: leadingTrivia,
@@ -100,7 +100,7 @@ func (p *Parser) consumeUnhandledBlock(startTok tokenizer.Token, kw UnhandledKey
 
 	text := p.stream.SliceInput(startTok.Span.Start.Offset, endTok.EndOffset())
 
-	return ast.UnhandledStatement{
+	return &ast.UnhandledStatement{
 		Raw: text,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: leadingTrivia,

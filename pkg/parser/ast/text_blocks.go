@@ -24,11 +24,11 @@ type TextBlock struct {
 }
 
 // StatementNode implements [Statement].
-func (t TextBlock) StatementNode() Statement {
+func (t *TextBlock) StatementNode() Statement {
 	return t
 }
 
-var _ Statement = TextBlock{}
+var _ Statement = (*TextBlock)(nil)
 
 //go:generate enumer -type=NoteKind -transform=lower -trimprefix=Note -json
 type NoteKind int
@@ -95,6 +95,6 @@ type Note struct {
 	BaseNode
 }
 
-var _ Statement = Note{}
+var _ Statement = (*Note)(nil)
 
-func (n Note) StatementNode() Statement { return n }
+func (n *Note) StatementNode() Statement { return n }

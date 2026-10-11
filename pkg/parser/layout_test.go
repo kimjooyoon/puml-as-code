@@ -49,7 +49,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 				require.NoError(t, err)
 				require.Len(t, diag.Statements, 3) // bounds(start), header, bounds(end)
 
-				tb, ok := diag.Statements[1].(ast.TextBlock)
+				tb, ok := diag.Statements[1].(*ast.TextBlock)
 				require.True(t, ok)
 				require.Equal(t, tc.expected.Kind, tb.Kind)
 				require.Equal(t, tc.expected.Text, tb.Text)
@@ -94,7 +94,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 				require.NoError(t, err)
 				require.Len(t, diag.Statements, 3)
 
-				tb, ok := diag.Statements[1].(ast.TextBlock)
+				tb, ok := diag.Statements[1].(*ast.TextBlock)
 				require.True(t, ok)
 				require.Equal(t, tc.expected.Kind, tb.Kind)
 				require.Equal(t, tc.expected.Text, tb.Text)
@@ -144,7 +144,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 				require.NoError(t, err)
 				require.Len(t, diag.Statements, 3)
 
-				tb, ok := diag.Statements[1].(ast.TextBlock)
+				tb, ok := diag.Statements[1].(*ast.TextBlock)
 				require.True(t, ok)
 				require.Equal(t, tc.expected.Kind, tb.Kind)
 				require.Equal(t, tc.expected.Text, tb.Text)
@@ -199,7 +199,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 				require.NoError(t, err)
 				require.Len(t, diag.Statements, 3)
 
-				tb, ok := diag.Statements[1].(ast.TextBlock)
+				tb, ok := diag.Statements[1].(*ast.TextBlock)
 				require.True(t, ok)
 				require.Equal(t, tc.expected.Kind, tb.Kind)
 				require.Equal(t, tc.expected.Text, tb.Text)
@@ -216,7 +216,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, diag.Statements, 3)
 
-		uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+		uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 		require.True(t, ok)
 		require.Equal(t, "caption Figure 1: Architecture Overview", uh.Raw)
 	})
@@ -229,7 +229,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, "My Great Diagram", p.ast.Title)
 
-			tb, ok := diag.Statements[1].(ast.TextBlock)
+			tb, ok := diag.Statements[1].(*ast.TextBlock)
 			require.True(t, ok)
 			require.Equal(t, ast.BlockTitle, tb.Kind)
 			require.Equal(t, "My Great Diagram", tb.Text)
@@ -250,7 +250,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, "  Line 1\n  Line 2", p.ast.Title)
 
-			tb, ok := diag.Statements[1].(ast.TextBlock)
+			tb, ok := diag.Statements[1].(*ast.TextBlock)
 			require.True(t, ok)
 			require.Equal(t, ast.BlockTitle, tb.Kind)
 			require.Equal(t, "  Line 1\n  Line 2", tb.Text)
@@ -263,7 +263,7 @@ func TestParseLayoutDirectives(t *testing.T) {
 		diag, err := p.Parse(input)
 		require.NoError(t, err)
 
-		dir, ok := diag.Statements[1].(ast.DirectionCommand)
+		dir, ok := diag.Statements[1].(*ast.DirectionCommand)
 		require.True(t, ok)
 		require.Equal(t, ast.LeftToRightDirection, dir.Direction)
 	})
@@ -281,16 +281,16 @@ package mypkg {
 		diag, err := p.Parse(input)
 		require.NoError(t, err)
 
-		cont, ok := diag.Statements[1].(ast.Container)
+		cont, ok := diag.Statements[1].(*ast.Container)
 		require.True(t, ok)
 		require.Len(t, cont.Statements, 2)
 
-		tb, ok := cont.Statements[0].(ast.TextBlock)
+		tb, ok := cont.Statements[0].(*ast.TextBlock)
 		require.True(t, ok)
 		require.Equal(t, ast.BlockLegend, tb.Kind)
 		require.Equal(t, "    Package legend", tb.Text)
 
-		ent, ok := cont.Statements[1].(ast.Entity)
+		ent, ok := cont.Statements[1].(*ast.Entity)
 		require.True(t, ok)
 		require.Equal(t, "Foo", ent.Identifier)
 	})

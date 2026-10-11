@@ -369,7 +369,7 @@ func TestVisibilityMapping(t *testing.T) {
 	}
 
 	t.Run("field visibility", func(t *testing.T) {
-		fPublic := toFieldView(owner, ast.FieldDeclaration{
+		fPublic := toFieldView(owner, &ast.FieldDeclaration{
 			Visibility: ast.VisibilityPublic,
 		}, &dialect.GoField{
 			Name: "id",
@@ -378,7 +378,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "Id", fPublic.Name)
 		require.Empty(t, fPublic.TrailingTrivia)
 
-		fPrivate := toFieldView(owner, ast.FieldDeclaration{
+		fPrivate := toFieldView(owner, &ast.FieldDeclaration{
 			Visibility: ast.VisibilityPrivate,
 		}, &dialect.GoField{
 			Name: "password",
@@ -387,7 +387,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "password", fPrivate.Name)
 		require.Equal(t, []string{"private"}, fPrivate.TrailingTrivia)
 
-		fProtected := toFieldView(owner, ast.FieldDeclaration{
+		fProtected := toFieldView(owner, &ast.FieldDeclaration{
 			Visibility: ast.VisibilityProtected,
 		}, &dialect.GoField{
 			Name: "token",
@@ -396,7 +396,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "token", fProtected.Name)
 		require.Equal(t, []string{"protected"}, fProtected.TrailingTrivia)
 
-		fPackage := toFieldView(owner, ast.FieldDeclaration{
+		fPackage := toFieldView(owner, &ast.FieldDeclaration{
 			Visibility: ast.VisibilityPackage,
 		}, &dialect.GoField{
 			Name: "internalState",
@@ -405,7 +405,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "internalState", fPackage.Name)
 		require.Empty(t, fPackage.TrailingTrivia)
 
-		fPrivateWithComment := toFieldView(owner, ast.FieldDeclaration{
+		fPrivateWithComment := toFieldView(owner, &ast.FieldDeclaration{
 			BaseNode: ast.BaseNode{
 				TrailingTrivia: []tokenizer.Token{
 					{Literal: "must be encrypted", Span: tokenizer.SourceSpan{Start: tokenizer.Pos{Line: 1}}},
@@ -421,7 +421,7 @@ func TestVisibilityMapping(t *testing.T) {
 	})
 
 	t.Run("method visibility", func(t *testing.T) {
-		mPublic := toMethodView(owner, ast.MethodDeclaration{
+		mPublic := toMethodView(owner, &ast.MethodDeclaration{
 			Visibility: ast.VisibilityPublic,
 		}, &dialect.GoMethod{
 			Name: "login",
@@ -429,7 +429,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "Login", mPublic.Name)
 		require.Empty(t, mPublic.TrailingTrivia)
 
-		mProtected := toMethodView(owner, ast.MethodDeclaration{
+		mProtected := toMethodView(owner, &ast.MethodDeclaration{
 			Visibility: ast.VisibilityProtected,
 		}, &dialect.GoMethod{
 			Name: "validate",
@@ -437,7 +437,7 @@ func TestVisibilityMapping(t *testing.T) {
 		require.Equal(t, "validate", mProtected.Name)
 		require.Equal(t, []string{"protected"}, mProtected.TrailingTrivia)
 
-		mPrivate := toMethodView(owner, ast.MethodDeclaration{
+		mPrivate := toMethodView(owner, &ast.MethodDeclaration{
 			Visibility: ast.VisibilityPrivate,
 		}, &dialect.GoMethod{
 			Name: "hashPassword",

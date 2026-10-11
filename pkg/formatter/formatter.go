@@ -92,14 +92,14 @@ func formatNode(s *formatterState, node ast.Node) {
 
 func getImplicitLeadingTrivia(node ast.Node) []tokenizer.Token {
 	switch n := node.(type) {
-	case ast.Entity:
+	case *ast.Entity:
 		if n.Kind == ast.EntityUnknown && len(n.Members) > 0 {
 			return n.Members[0].GetLeadingTrivia()
 		}
-	case ast.Container:
+	case *ast.Container:
 		if n.Kind == ast.ContainerUnknown {
 			_, innerStmt := unwrapImplicitContainer(n)
-			if innerEnt, ok := innerStmt.(ast.Entity); ok && innerEnt.Kind == ast.EntityUnknown && len(innerEnt.Members) > 0 {
+			if innerEnt, ok := innerStmt.(*ast.Entity); ok && innerEnt.Kind == ast.EntityUnknown && len(innerEnt.Members) > 0 {
 				return innerEnt.Members[0].GetLeadingTrivia()
 			}
 		}
@@ -109,11 +109,11 @@ func getImplicitLeadingTrivia(node ast.Node) []tokenizer.Token {
 
 func (s *formatterState) formatMember(member ast.Member) {
 	switch mem := member.(type) {
-	case ast.ClassSeparator:
+	case *ast.ClassSeparator:
 		printClassSeparator(s, mem)
-	case ast.FieldDeclaration:
+	case *ast.FieldDeclaration:
 		printField(s, mem)
-	case ast.MethodDeclaration:
+	case *ast.MethodDeclaration:
 		printMethod(s, mem)
 	default:
 		panic("unreachable")
@@ -123,43 +123,43 @@ func (s *formatterState) formatMember(member ast.Member) {
 
 func (s *formatterState) formatStatement(stmt ast.Statement) {
 	switch st := stmt.(type) {
-	case ast.DiagramBound:
+	case *ast.DiagramBound:
 		printDiagramBound(s, st)
-	case ast.TextBlock:
+	case *ast.TextBlock:
 		printTextBlock(s, st)
-	case ast.UnhandledStatement:
+	case *ast.UnhandledStatement:
 		s.emitRawSpan(st.NodeSpan)
-	case ast.Entity:
+	case *ast.Entity:
 		printEntity(s, st)
-	case ast.Container:
+	case *ast.Container:
 		printContainer(s, st)
-	case ast.Relationship:
+	case *ast.Relationship:
 		printRelationship(s, st)
-	case ast.Note:
+	case *ast.Note:
 		printNote(s, st)
-	case ast.StyleDeclaration:
+	case *ast.StyleDeclaration:
 		s.emitWithIndent(st.Property)
 		s.buf.WriteString(": ")
 		s.buf.WriteString(st.Value)
-	case ast.StyleRule:
+	case *ast.StyleRule:
 		printStyleRule(s, st)
-	case ast.StyleBlock:
+	case *ast.StyleBlock:
 		printStyleBlock(s, st)
-	case ast.SkinparamSetting:
+	case *ast.SkinparamSetting:
 		printSkinparamSetting(s, st)
-	case ast.SkinparamBlock:
+	case *ast.SkinparamBlock:
 		printSkinparamBlock(s, st)
-	case ast.GenericCommand:
+	case *ast.GenericCommand:
 		printGenericCommand(s, st)
-	case ast.IncludeDirective:
+	case *ast.IncludeDirective:
 		printIncludeDirective(s, st)
-	case ast.ScaleCommand:
+	case *ast.ScaleCommand:
 		printScaleCommand(s, st)
-	case ast.VisibilityCommand:
+	case *ast.VisibilityCommand:
 		printVisibilityCommand(s, st)
-	case ast.SetCommand:
+	case *ast.SetCommand:
 		printSetCommand(s, st)
-	case ast.DirectionCommand:
+	case *ast.DirectionCommand:
 		printDirectionCommand(s, st)
 	default:
 		panic("unimplemented")

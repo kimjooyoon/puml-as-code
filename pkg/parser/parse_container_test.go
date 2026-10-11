@@ -50,7 +50,7 @@ func TestParseContainer(t *testing.T) {
 			want: ast.Container{
 				Kind: ast.ContainerTogether,
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -125,20 +125,20 @@ func TestParseContainer(t *testing.T) {
 				Identifier: "mypkg",
 				Kind:       ast.ContainerPackage,
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
-					ast.Container{
+					&ast.Container{
 						Kind: ast.ContainerTogether,
 						Statements: []ast.Statement{
-							ast.Entity{
+							&ast.Entity{
 								Identifier: "B",
 								Kind:       ast.EntityClass,
 							},
 						},
 					},
-					ast.Relationship{
+					&ast.Relationship{
 						LHS:       ast.TargetRef{Entity: "A"},
 						RHS:       ast.TargetRef{Entity: "B"},
 						Body:      '-',
@@ -157,11 +157,11 @@ func TestParseContainer(t *testing.T) {
 				Identifier: "p",
 				Kind:       ast.ContainerPackage,
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "folder",
 						Kind:       ast.EntityClass,
 					},
-					ast.Relationship{
+					&ast.Relationship{
 						LHS:       ast.TargetRef{Entity: "folder"},
 						RHS:       ast.TargetRef{Entity: "p"},
 						Body:      '-',
@@ -180,7 +180,7 @@ func TestParseContainer(t *testing.T) {
 				Identifier: "p",
 				Kind:       ast.ContainerPackage,
 				Statements: []ast.Statement{
-					ast.Container{
+					&ast.Container{
 						Identifier: "p",
 						Kind:       ast.ContainerPackage,
 					},
@@ -224,7 +224,7 @@ func TestParseContainer(t *testing.T) {
 				Identifier: "mypkg",
 				Color:      "#red",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -247,7 +247,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerFolder,
 				Identifier: "myfolder",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -262,7 +262,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerFrame,
 				Identifier: "myframe",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -277,7 +277,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerRectangle,
 				Identifier: "myrect",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -292,7 +292,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerCloud,
 				Identifier: "mycloud",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -307,7 +307,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerDatabase,
 				Identifier: "mydb",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -322,7 +322,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerNode,
 				Identifier: "mynode",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},
@@ -337,7 +337,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerNamespace,
 				Identifier: "myns",
 				Statements: []ast.Statement{
-					ast.Entity{
+					&ast.Entity{
 						Identifier: "A",
 						Kind:       ast.EntityClass,
 					},

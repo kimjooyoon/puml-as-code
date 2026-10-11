@@ -24,7 +24,7 @@ func (p *Parser) parseDirective(tok1 tokenizer.Token) (ast.Statement, error) {
 	}
 }
 
-func (p *Parser) parseIncludeDirective(tok tokenizer.Token) (ast.IncludeDirective, error) {
+func (p *Parser) parseIncludeDirective(tok tokenizer.Token) (*ast.IncludeDirective, error) {
 	var kind ast.IncludeKind
 	switch tok.Literal {
 	case "include_many":
@@ -32,10 +32,10 @@ func (p *Parser) parseIncludeDirective(tok tokenizer.Token) (ast.IncludeDirectiv
 	case "include_once", "include":
 		kind = ast.IncludeOnce
 	default:
-		return ast.IncludeDirective{}, NewParserError(tok, "Unknown include directive")
+		return nil, NewParserError(tok, "Unknown include directive")
 	}
 
-	dir := ast.IncludeDirective{
+	dir := &ast.IncludeDirective{
 		Kind: kind,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),

@@ -7,7 +7,7 @@ import (
 	"yur4uwe/pac/pkg/parser/ast"
 )
 
-func printClassSeparator(s *formatterState, sep ast.ClassSeparator) {
+func printClassSeparator(s *formatterState, sep *ast.ClassSeparator) {
 	s.writeIndent()
 	if sep.Label == "" {
 		s.buf.WriteString(strings.Repeat(string(sep.Type), sep.TypeCount))
@@ -21,7 +21,7 @@ func printClassSeparator(s *formatterState, sep ast.ClassSeparator) {
 	s.buf.WriteString(strings.Repeat(string(sep.Type), rightCount))
 }
 
-func printField(s *formatterState, field ast.FieldDeclaration) {
+func printField(s *formatterState, field *ast.FieldDeclaration) {
 	s.writeIndent()
 	for _, modifier := range field.Modifiers {
 		fmt.Fprintf(&s.buf, "{%s} ", modifier)
@@ -30,7 +30,7 @@ func printField(s *formatterState, field ast.FieldDeclaration) {
 	s.buf.WriteString(field.Field.String())
 }
 
-func printMethod(s *formatterState, method ast.MethodDeclaration) {
+func printMethod(s *formatterState, method *ast.MethodDeclaration) {
 	s.writeIndent()
 	for _, modifier := range method.Modifiers {
 		fmt.Fprintf(&s.buf, "{%s} ", modifier)

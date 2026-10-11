@@ -98,7 +98,7 @@ func TestParseSkinparamSingleLine(t *testing.T) {
 			stmt, err := p.parseSkinparamRoot(tok)
 			require.NoError(t, err)
 
-			setting, ok := stmt.(ast.SkinparamSetting)
+			setting, ok := stmt.(*ast.SkinparamSetting)
 			require.True(t, ok)
 			require.Equal(t, "skinparam", setting.Keyword)
 			require.Equal(t, tc.wantName, setting.Name)
@@ -142,13 +142,13 @@ func TestParseSkinparamAnonymousBlock(t *testing.T) {
 	stmt, err := p.parseSkinparamRoot(tok)
 	require.NoError(t, err)
 
-	block, ok := stmt.(ast.SkinparamBlock)
+	block, ok := stmt.(*ast.SkinparamBlock)
 	require.True(t, ok)
 	require.Equal(t, "skinparam", block.Keyword)
 	require.Equal(t, "", block.Name)
 	require.Len(t, block.Statements, 1)
 
-	entry, ok := block.Statements[0].(ast.SkinparamSetting)
+	entry, ok := block.Statements[0].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "BackgroundColor", entry.Name)
 	require.Equal(t, "PaleGreen", entry.Value)
@@ -160,13 +160,13 @@ func TestParseSkinparamBlockWithStereotype(t *testing.T) {
 	stmt, err := p.parseSkinparamRoot(tok)
 	require.NoError(t, err)
 
-	block, ok := stmt.(ast.SkinparamBlock)
+	block, ok := stmt.(*ast.SkinparamBlock)
 	require.True(t, ok)
 	require.Equal(t, "class", block.Name)
 	require.Equal(t, "Special", block.Stereotype)
 	require.Len(t, block.Statements, 1)
 
-	entry, ok := block.Statements[0].(ast.SkinparamSetting)
+	entry, ok := block.Statements[0].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "BackgroundColor", entry.Name)
 	require.Equal(t, "Gold", entry.Value)
@@ -184,7 +184,7 @@ skinparam class { ' opener comment
 	stmt, err := p.parseSkinparamRoot(tok)
 	require.NoError(t, err)
 
-	block, ok := stmt.(ast.SkinparamBlock)
+	block, ok := stmt.(*ast.SkinparamBlock)
 	require.True(t, ok)
 	require.Equal(t, "class", block.Name)
 	require.NotEmpty(t, block.GetLeadingTrivia())
@@ -192,7 +192,7 @@ skinparam class { ' opener comment
 	require.Len(t, block.Statements, 2)
 
 	// Entry 1
-	e1, ok := block.Statements[0].(ast.SkinparamSetting)
+	e1, ok := block.Statements[0].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "BackgroundColor", e1.Name)
 	require.Equal(t, "PaleGreen", e1.Value)
@@ -202,7 +202,7 @@ skinparam class { ' opener comment
 	require.Contains(t, e1.GetTrailingTrivia()[0].Literal, "same line comment")
 
 	// Entry 2
-	e2, ok := block.Statements[1].(ast.SkinparamSetting)
+	e2, ok := block.Statements[1].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "ArrowColor", e2.Name)
 	require.Equal(t, "SeaGreen", e2.Value)
@@ -226,28 +226,28 @@ func TestParseSkinparamNestedAndFlattening(t *testing.T) {
 	stmt, err := p.parseSkinparamRoot(tok)
 	require.NoError(t, err)
 
-	block, ok := stmt.(ast.SkinparamBlock)
+	block, ok := stmt.(*ast.SkinparamBlock)
 	require.True(t, ok)
 	require.Equal(t, "class", block.Name)
 	require.Len(t, block.Statements, 4)
 
 	// BackgroundColor
-	s1, ok := block.Statements[0].(ast.SkinparamSetting)
+	s1, ok := block.Statements[0].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "BackgroundColor", s1.Name)
 
 	// Directive
-	_, ok = block.Statements[1].(ast.IncludeDirective)
+	_, ok = block.Statements[1].(*ast.IncludeDirective)
 	require.True(t, ok)
 
 	// Nested header block
-	nested, ok := block.Statements[2].(ast.SkinparamBlock)
+	nested, ok := block.Statements[2].(*ast.SkinparamBlock)
 	require.True(t, ok)
 	require.Equal(t, "header", nested.Name)
 	require.Len(t, nested.Statements, 2)
 
 	// ArrowColor
-	s4, ok := block.Statements[3].(ast.SkinparamSetting)
+	s4, ok := block.Statements[3].(*ast.SkinparamSetting)
 	require.True(t, ok)
 	require.Equal(t, "ArrowColor", s4.Name)
 
@@ -315,12 +315,12 @@ class, interface {
 			stmt, err := p.parseStyleBlock(tok)
 			require.NoError(t, err)
 
-			sb, ok := stmt.(ast.StyleBlock)
+			sb, ok := stmt.(*ast.StyleBlock)
 			require.True(t, ok)
 			require.Len(t, sb.Statements, len(tc.wantSelectors))
 
 			for i, wantSel := range tc.wantSelectors {
-				rule, ok := sb.Statements[i].(ast.StyleRule)
+				rule, ok := sb.Statements[i].(*ast.StyleRule)
 				require.True(t, ok)
 				require.Equal(t, wantSel, rule.Selectors)
 			}
@@ -372,24 +372,24 @@ root {
 	stmt, err := p.parseStyleBlock(tok)
 	require.NoError(t, err)
 
-	sb, ok := stmt.(ast.StyleBlock)
+	sb, ok := stmt.(*ast.StyleBlock)
 	require.True(t, ok)
 	require.Len(t, sb.Statements, 1)
 
-	rule, ok := sb.Statements[0].(ast.StyleRule)
+	rule, ok := sb.Statements[0].(*ast.StyleRule)
 	require.True(t, ok)
 	require.Equal(t, []string{"root"}, rule.Selectors)
 	require.Len(t, rule.Statements, 3)
 
-	d1 := rule.Statements[0].(ast.StyleDeclaration)
+	d1 := rule.Statements[0].(*ast.StyleDeclaration)
 	require.Equal(t, "FontColor", d1.Property)
 	require.Equal(t, "#333333", d1.Value)
 
-	d2 := rule.Statements[1].(ast.StyleDeclaration)
+	d2 := rule.Statements[1].(*ast.StyleDeclaration)
 	require.Equal(t, "FontName", d2.Property)
 	require.Equal(t, "Arial", d2.Value)
 
-	d3 := rule.Statements[2].(ast.StyleDeclaration)
+	d3 := rule.Statements[2].(*ast.StyleDeclaration)
 	require.Equal(t, "Margin", d3.Property)
 	require.Equal(t, "10", d3.Value)
 }
@@ -407,31 +407,31 @@ class {
 	stmt, err := p.parseStyleBlock(tok)
 	require.NoError(t, err)
 
-	sb, ok := stmt.(ast.StyleBlock)
+	sb, ok := stmt.(*ast.StyleBlock)
 	require.True(t, ok)
 	require.Len(t, sb.Statements, 1)
 
-	rule, ok := sb.Statements[0].(ast.StyleRule)
+	rule, ok := sb.Statements[0].(*ast.StyleRule)
 	require.True(t, ok)
 	require.Len(t, rule.Statements, 4)
 
 	// Case 1: colon, no semicolon
-	d1 := rule.Statements[0].(ast.StyleDeclaration)
+	d1 := rule.Statements[0].(*ast.StyleDeclaration)
 	require.Equal(t, "FontColor", d1.Property)
 	require.Equal(t, "#333333", d1.Value)
 
 	// Case 2: no colon, with semicolon
-	d2 := rule.Statements[1].(ast.StyleDeclaration)
+	d2 := rule.Statements[1].(*ast.StyleDeclaration)
 	require.Equal(t, "FontSize", d2.Property)
 	require.Equal(t, "12", d2.Value)
 
 	// Case 3: no colon, no semicolon
-	d3 := rule.Statements[2].(ast.StyleDeclaration)
+	d3 := rule.Statements[2].(*ast.StyleDeclaration)
 	require.Equal(t, "BackgroundColor", d3.Property)
 	require.Equal(t, "#FF0000", d3.Value)
 
 	// Case 4: colon and semicolon
-	d4 := rule.Statements[3].(ast.StyleDeclaration)
+	d4 := rule.Statements[3].(*ast.StyleDeclaration)
 	require.Equal(t, "LineThickness", d4.Property)
 	require.Equal(t, "2", d4.Value)
 }
@@ -451,26 +451,26 @@ classDiagram {
 	stmt, err := p.parseStyleBlock(tok)
 	require.NoError(t, err)
 
-	sb, ok := stmt.(ast.StyleBlock)
+	sb, ok := stmt.(*ast.StyleBlock)
 	require.True(t, ok)
 	require.Len(t, sb.Statements, 1)
 
-	outer := sb.Statements[0].(ast.StyleRule)
+	outer := sb.Statements[0].(*ast.StyleRule)
 	require.Equal(t, []string{"classDiagram"}, outer.Selectors)
 	require.Len(t, outer.Statements, 1)
 
-	classRule := outer.Statements[0].(ast.StyleRule)
+	classRule := outer.Statements[0].(*ast.StyleRule)
 	require.Equal(t, []string{"class"}, classRule.Selectors)
 	require.Len(t, classRule.Statements, 2)
 
-	decl := classRule.Statements[0].(ast.StyleDeclaration)
+	decl := classRule.Statements[0].(*ast.StyleDeclaration)
 	require.Equal(t, "BackGroundColor", decl.Property)
 	require.Equal(t, "PaleGreen", decl.Value)
 
-	highlightRule := classRule.Statements[1].(ast.StyleRule)
+	highlightRule := classRule.Statements[1].(*ast.StyleRule)
 	require.Equal(t, []string{".highlight"}, highlightRule.Selectors)
 	require.Len(t, highlightRule.Statements, 1)
-	hDecl := highlightRule.Statements[0].(ast.StyleDeclaration)
+	hDecl := highlightRule.Statements[0].(*ast.StyleDeclaration)
 	require.Equal(t, "BackGroundColor", hDecl.Property)
 	require.Equal(t, "Yellow", hDecl.Value)
 }
@@ -488,19 +488,19 @@ root {
 	stmt, err := p.parseStyleBlock(tok)
 	require.NoError(t, err)
 
-	sb, ok := stmt.(ast.StyleBlock)
+	sb, ok := stmt.(*ast.StyleBlock)
 	require.True(t, ok)
 	require.NotEmpty(t, sb.GetLeadingTrivia())
 	require.Contains(t, sb.GetLeadingTrivia()[0].Literal, "before style")
 	require.Len(t, sb.Statements, 2)
 
 	// Directive
-	_, ok = sb.Statements[0].(ast.IncludeDirective)
+	_, ok = sb.Statements[0].(*ast.IncludeDirective)
 	require.True(t, ok)
 
 	// Rule & Declaration with trivia
-	rule := sb.Statements[1].(ast.StyleRule)
-	decl := rule.Statements[0].(ast.StyleDeclaration)
+	rule := sb.Statements[1].(*ast.StyleRule)
+	decl := rule.Statements[0].(*ast.StyleDeclaration)
 	require.Equal(t, "FontName", decl.Property)
 	require.Equal(t, "Helvetica", decl.Value)
 	require.NotEmpty(t, decl.GetLeadingTrivia())

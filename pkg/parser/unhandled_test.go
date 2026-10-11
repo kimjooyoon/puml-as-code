@@ -22,7 +22,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "caption Figure 1: Architecture Overview", uh.Raw)
 		})
@@ -34,7 +34,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "caption", uh.Raw)
 		})
@@ -46,7 +46,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "sprite $my_icon my_icon.png", uh.Raw)
 		})
@@ -60,7 +60,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!define FOO(x) class x", uh.Raw)
 		})
@@ -72,7 +72,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!global $VAR = 42", uh.Raw)
 		})
@@ -86,7 +86,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!function $my_func($a)\n  !return $a + 1\n!endfunction", uh.Raw)
 		})
@@ -98,7 +98,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!procedure $my_proc()\n  class GeneratedClass\n!endprocedure", uh.Raw)
 		})
@@ -110,7 +110,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!definelong MACRO_NAME\n  class InsideMacro\n!enddefinelong", uh.Raw)
 		})
@@ -122,7 +122,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!while ($val > 0)\n  class C\n!endwhile", uh.Raw)
 		})
@@ -134,7 +134,7 @@ func TestParseUnhandled(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diag.Statements, 3)
 
-			uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+			uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 			require.True(t, ok)
 			require.Equal(t, "!foreach $item in $list\n  class Item\n!endfor", uh.Raw)
 		})
@@ -157,7 +157,7 @@ func TestParseUnhandled(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, diag.Statements, 3)
 
-		uh, ok := diag.Statements[1].(ast.UnhandledStatement)
+		uh, ok := diag.Statements[1].(*ast.UnhandledStatement)
 		require.True(t, ok)
 		expected := `!if (A)
   class ClassA
@@ -211,15 +211,15 @@ func TestParseUnhandled(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, diag.Statements, 3)
 
-		cont, ok := diag.Statements[1].(ast.Container)
+		cont, ok := diag.Statements[1].(*ast.Container)
 		require.True(t, ok)
 		require.Len(t, cont.Statements, 2)
 
-		uh1, ok := cont.Statements[0].(ast.UnhandledStatement)
+		uh1, ok := cont.Statements[0].(*ast.UnhandledStatement)
 		require.True(t, ok)
 		require.Equal(t, "caption Figure in Package", uh1.Raw)
 
-		uh2, ok := cont.Statements[1].(ast.UnhandledStatement)
+		uh2, ok := cont.Statements[1].(*ast.UnhandledStatement)
 		require.True(t, ok)
 		require.Equal(t, "sprite $icon icon.png", uh2.Raw)
 	})

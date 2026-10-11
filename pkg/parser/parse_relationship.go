@@ -91,38 +91,41 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 	return ref, nil
 }
 
-func (p *Parser) parseRelationship(firstTargetTok tokenizer.Token) (ast.Relationship, error) {
+func (p *Parser) parseRelationship(firstTargetTok tokenizer.Token) (*ast.Relationship, error) {
 	// Entry token is supposedly the first identifier
 	var err error
-	var rel ast.Relationship
-	rel.LeadingTrivia = p.stream.DumpCollectedTrivia()
+	rel := &ast.Relationship{
+		BaseNode: ast.BaseNode{
+			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+		},
+	}
 	rel.LHS, err = p.parseTargetRef(firstTargetTok)
 	if err != nil {
-		return rel, err
+		return nil, err
 	}
 
 	if multTok, ok := p.stream.TryConsumeType(tokenizer.STRING); ok {
 		rel.MultLHS, err = ast.ParseCardinality(multTok.Literal)
 		if err != nil {
-			return rel, WrapParserError(multTok, err)
+			return nil, WrapParserError(multTok, err)
 		}
 	}
 
-	p.parseArrowTokens(&rel)
+	p.parseArrowTokens(rel)
 
 	if multTok, ok := p.stream.TryConsumeType(tokenizer.STRING); ok {
 		rel.MultRHS, err = ast.ParseCardinality(multTok.Literal)
 		if err != nil {
-			return rel, WrapParserError(multTok, err)
+			return nil, WrapParserError(multTok, err)
 		}
 	}
 
 	if !p.stream.AssertAnyType(tokenizer.IDENTIFIER, tokenizer.STRING) {
-		return rel, NewParserError(p.stream.PeekTokenAt(0), "Expected identifier or string after relationship")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected identifier or string after relationship")
 	}
 	rel.RHS, err = p.parseTargetRef(p.stream.Emit())
 	if err != nil {
-		return rel, err
+		return nil, err
 	}
 
 	endingToken := p.stream.PeekTokenAt(0)
@@ -134,7 +137,7 @@ func (p *Parser) parseRelationship(firstTargetTok tokenizer.Token) (ast.Relation
 		p.stream.Emit()
 		rel.Label = p.stream.ReadUntilNewline()
 	default:
-		return rel, NewParserError(endingToken, "Expected newline or colon after relationship")
+		return nil, NewParserError(endingToken, "Expected newline or colon after relationship")
 	}
 
 	return rel, nil

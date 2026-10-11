@@ -72,8 +72,8 @@ func TestParseIncludeDirectives(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, diagram.Statements, 1)
 
-			got, ok := diagram.Statements[0].(ast.IncludeDirective)
-			require.True(t, ok, "statement should be ast.IncludeDirective")
+			got, ok := diagram.Statements[0].(*ast.IncludeDirective)
+			require.True(t, ok, "statement should be *ast.IncludeDirective")
 			require.Equal(t, tt.want.Kind, got.Kind)
 			require.Equal(t, tt.want.Path, got.Path)
 			require.Equal(t, tt.want.Tag, got.Tag)

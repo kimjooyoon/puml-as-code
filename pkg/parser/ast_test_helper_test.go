@@ -11,7 +11,16 @@ import (
 // assertASTEqual asserts that got and want are equal, ignoring any NodeSpan values.
 func assertASTEqual(t *testing.T, want, got any) {
 	t.Helper()
-	require.Equal(t, stripSpans(want), stripSpans(got))
+	w := stripSpans(want)
+	g := stripSpans(got)
+	if w != nil && g != nil && reflect.TypeOf(w) != reflect.TypeOf(g) {
+		if reflect.TypeOf(w).Kind() == reflect.Pointer && reflect.TypeOf(w).Elem() == reflect.TypeOf(g) {
+			w = reflect.ValueOf(w).Elem().Interface()
+		} else if reflect.TypeOf(g).Kind() == reflect.Pointer && reflect.TypeOf(g).Elem() == reflect.TypeOf(w) {
+			g = reflect.ValueOf(g).Elem().Interface()
+		}
+	}
+	require.Equal(t, w, g)
 }
 
 // stripSpans returns a copy of v with all tokenizer.SourceSpan values zeroed out.

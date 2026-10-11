@@ -45,13 +45,13 @@ func (p *Parser) setAliasAndName(ent *ast.Entity, nameOrAlias tokenizer.Token) (
 	}
 }
 
-func wrapInContainers(ent ast.Entity, pkgPath []string) ast.Statement {
+func wrapInContainers(ent *ast.Entity, pkgPath []string) ast.Statement {
 	var current ast.Statement = ent
 	for _, pkg := range slices.Backward(pkgPath) {
 		// Leave with Kind = ast.ContainerUnknown
 		// This will be a good hint to distinguish between
 		// inline and block container declarations
-		current = ast.Container{
+		current = &ast.Container{
 			Identifier: pkg,
 			Statements: []ast.Statement{current},
 		}
@@ -119,7 +119,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); !ok {
 		// No body return entity as is
-		return wrapInContainers(*ent, pkgPath), nil
+		return wrapInContainers(ent, pkgPath), nil
 	}
 
 	p.stream.EmitCommentToks()
@@ -146,7 +146,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 		ent.Members = append(ent.Members, member)
 	}
 
-	return wrapInContainers(*ent, pkgPath), nil
+	return wrapInContainers(ent, pkgPath), nil
 }
 
 func (p *Parser) parseEntityMember() (ast.Member, error) {
@@ -279,7 +279,7 @@ outer:
 		if err != nil {
 			return nil, err
 		}
-		return ast.MethodDeclaration{
+		return &ast.MethodDeclaration{
 			BaseNode: ast.BaseNode{
 				LeadingTrivia: leadingTrivia,
 			},
@@ -292,7 +292,7 @@ outer:
 		if err != nil {
 			return nil, err
 		}
-		return ast.FieldDeclaration{
+		return &ast.FieldDeclaration{
 			BaseNode: ast.BaseNode{
 				LeadingTrivia: leadingTrivia,
 			},
@@ -339,7 +339,7 @@ func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, err
 	p.stream.EmitCommentToks()
 	member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
 
-	ent := ast.Entity{
+	ent := &ast.Entity{
 		Identifier: targetRef.Entity,
 		Kind:       ast.EntityUnknown,
 		Members:    []ast.Member{member},

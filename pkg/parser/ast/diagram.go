@@ -36,11 +36,12 @@ type DiagramBound struct {
 	BaseNode
 }
 
-var _ Statement = DiagramBound{}
+var _ Statement = (*DiagramBound)(nil)
 
-func (d DiagramBound) StatementNode() Statement {
+func (d *DiagramBound) StatementNode() Statement {
 	return d
 }
+
 
 func (d DiagramBound) DiagramName() string {
 	if d.Tools != nil && d.Tools.File != "" {

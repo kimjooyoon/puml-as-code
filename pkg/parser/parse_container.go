@@ -11,9 +11,9 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
+func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 	containerClass := keyword.Classify(tok.Literal)
-	container := ast.Container{
+	container := &ast.Container{
 		Kind: p.mapKeywordToContainerKind(containerClass),
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
@@ -31,12 +31,12 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
 		var err error
 		container.Alias, container.Identifier, err = p.parseContainerIdentAndAlias()
 		if err != nil {
-			return container, err
+			return nil, err
 		}
 		preTags := p.tryReadTags()
 		container.Stereotype, err = p.tryReadStereotype()
 		if err != nil && !errors.Is(err, tokenizer.ErrStartMarkerNotFound) {
-			return container, err
+			return nil, err
 		}
 		postTags := p.tryReadTags()
 		if len(preTags) > 0 {
@@ -53,7 +53,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); !ok {
 		if !p.stream.AssertType(tokenizer.NEWLINE) {
-			return container, NewParserError(p.stream.PeekTokenAt(0), "Expected container body to end")
+			return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected container body to end")
 		}
 		return p.wrapImplicitPackageContainers(container), nil
 	}
@@ -63,7 +63,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
 
 	for tok := p.stream.Emit(); tok.Type != tokenizer.RBRACE; tok = p.stream.Emit() {
 		if tok.Type == tokenizer.EOF {
-			return container, tokenizer.ErrUnexpectedEOF
+			return nil, tokenizer.ErrUnexpectedEOF
 		} else if tok.Type == tokenizer.NEWLINE {
 			// Skip NEWLINE tokens inside parseContainer() so empty lines within
 			// container blocks { ... } do not trigger an erroneous "Expected a statement in a
@@ -75,10 +75,10 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
 		// Only parse statements allowed in containers
 		stmt, err := p.parseContainerStatement(tok)
 		if err != nil {
-			return container, err
+			return nil, err
 		}
 		if stmt == nil {
-			return container, NewParserError(tok, "Expected a statement in a container body")
+			return nil, NewParserError(tok, "Expected a statement in a container body")
 		}
 		p.stream.EmitCommentToks()
 		stmt = ast.WithMetadata(stmt, p.Span(childMark), p.stream.DumpCollectedTrivia())
@@ -88,7 +88,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (ast.Container, error) {
 	return p.wrapImplicitPackageContainers(container), nil
 }
 
-func (p *Parser) wrapImplicitPackageContainers(c ast.Container) ast.Container {
+func (p *Parser) wrapImplicitPackageContainers(c *ast.Container) *ast.Container {
 	if p.stream.PackageSeparator == "" || !strings.Contains(c.Identifier, p.stream.PackageSeparator) {
 		return c
 	}
@@ -97,7 +97,7 @@ func (p *Parser) wrapImplicitPackageContainers(c ast.Container) ast.Container {
 		return c
 	}
 
-	current := ast.Container{
+	current := &ast.Container{
 		Kind:       c.Kind,
 		Identifier: segments[len(segments)-1],
 		Alias:      c.Alias,
@@ -106,7 +106,7 @@ func (p *Parser) wrapImplicitPackageContainers(c ast.Container) ast.Container {
 		Statements: c.Statements,
 	}
 	for _, pkg := range slices.Backward(segments[:len(segments)-1]) {
-		current = ast.Container{
+		current = &ast.Container{
 			Kind:       c.Kind,
 			Identifier: pkg,
 			Statements: []ast.Statement{current},

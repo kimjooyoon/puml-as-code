@@ -23,7 +23,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "simple class",
 			input:  "class MyClass",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 			},
@@ -32,7 +32,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "abstract class",
 			input:  "abstract class MyAbstractClass",
 			kwType: keyword.Abstract,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyAbstractClass",
 				Kind:       ast.EntityAbstractClass,
 			},
@@ -41,7 +41,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with alias",
 			input:  "class MyClass as \"MC\"",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Alias:      "\"MC\"",
 				Kind:       ast.EntityClass,
@@ -58,7 +58,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with stereotype",
 			input:  "class MyClass <<Service>>",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 				Stereotype: "Service",
@@ -68,7 +68,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with color",
 			input:  "class MyClass #FF0000",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 				Color:      "#FF0000",
@@ -78,7 +78,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with empty body",
 			input:  "class MyClass {\n}",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 			},
@@ -87,7 +87,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class def with all modifiers",
 			input:  "class MyClass as \"MC\" <T> <<Database>> #FF0000",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Alias:      "\"MC\"",
 				Kind:       ast.EntityClass,
@@ -100,11 +100,11 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with field member",
 			input:  "class MyClass {\n  +field int\n}",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 				Members: []ast.Member{
-					ast.FieldDeclaration{
+					&ast.FieldDeclaration{
 						Visibility: ast.VisibilityPublic,
 						Field: &dialect.GoField{
 							Name: "field",
@@ -118,13 +118,13 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with package separator",
 			input:  "class net.http.Client\n",
 			kwType: keyword.Class,
-			want: ast.Container{
+			want: &ast.Container{
 				Identifier: "net",
 				Statements: []ast.Statement{
-					ast.Container{
+					&ast.Container{
 						Identifier: "http",
 						Statements: []ast.Statement{
-							ast.Entity{
+							&ast.Entity{
 								Identifier: "Client",
 								Kind:       ast.EntityClass,
 							},
@@ -165,11 +165,11 @@ func TestParseEntity(t *testing.T) {
 			name:   "sketch field inside body",
 			input:  "class MyClass {\n  untypedField\n}",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "MyClass",
 				Kind:       ast.EntityClass,
 				Members: []ast.Member{
-					ast.FieldDeclaration{
+					&ast.FieldDeclaration{
 						Field: &dialect.GoField{
 							Name: "untypedField",
 							Type: nil,
@@ -182,7 +182,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with generic",
 			input:  "class List<T>",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "List",
 				Kind:       ast.EntityClass,
 				Generic:    "T",
@@ -192,7 +192,7 @@ func TestParseEntity(t *testing.T) {
 			name:   "class with multiple generics",
 			input:  "class Map<K, V>",
 			kwType: keyword.Class,
-			want: ast.Entity{
+			want: &ast.Entity{
 				Identifier: "Map",
 				Kind:       ast.EntityClass,
 				Generic:    "K, V",
@@ -236,7 +236,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "name int\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "name",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Field: &dialect.GoField{
 					Name: "name",
 					Type: dialect.NamedRef("int"),
@@ -248,7 +248,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "name *MyType\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "name",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Field: &dialect.GoField{
 					Name: "name",
 					Type: dialect.PointerTo(dialect.NamedRef("MyType")),
@@ -260,7 +260,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "name []int\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "name",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Field: &dialect.GoField{
 					Name: "name",
 					Type: dialect.SliceOf(dialect.NamedRef("int")),
@@ -272,7 +272,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "Method()\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "Method",
-			want: ast.MethodDeclaration{
+			want: &ast.MethodDeclaration{
 				Method: &dialect.GoMethod{
 					Name: "Method",
 				},
@@ -283,7 +283,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "Method(a int) error\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "Method",
-			want: ast.MethodDeclaration{
+			want: &ast.MethodDeclaration{
 				Method: &dialect.GoMethod{
 					Name: "Method",
 					Parameters: []dialect.GoParameter{
@@ -300,7 +300,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "{method} Method()\n",
 			entryType:   tokenizer.LBRACE,
 			initialName: "",
-			want: ast.MethodDeclaration{
+			want: &ast.MethodDeclaration{
 				Modifiers: []string{"method"},
 				Method: &dialect.GoMethod{
 					Name: "Method",
@@ -320,7 +320,7 @@ func TestParseFieldOrMethod(t *testing.T) {
 			input:       "name\n",
 			entryType:   tokenizer.IDENTIFIER,
 			initialName: "name",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Field: &dialect.GoField{
 					Name: "name",
 					Type: nil,
@@ -391,7 +391,7 @@ func TestParseEntityMember(t *testing.T) {
 		{
 			name:  "class separator dots",
 			input: ".. separator ..",
-			want: ast.ClassSeparator{
+			want: &ast.ClassSeparator{
 				Label:     "separator",
 				Type:      '.',
 				TypeCount: 4,
@@ -400,7 +400,7 @@ func TestParseEntityMember(t *testing.T) {
 		{
 			name:  "class separator hyphens",
 			input: "-- section --",
-			want: ast.ClassSeparator{
+			want: &ast.ClassSeparator{
 				Label:     "section",
 				Type:      '-',
 				TypeCount: 4,
@@ -409,7 +409,7 @@ func TestParseEntityMember(t *testing.T) {
 		{
 			name:  "public field member",
 			input: "+field int\n",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Visibility: ast.VisibilityPublic,
 				Field: &dialect.GoField{
 					Name: "field",
@@ -420,7 +420,7 @@ func TestParseEntityMember(t *testing.T) {
 		{
 			name:  "private method member",
 			input: "-Method()\n",
-			want: ast.MethodDeclaration{
+			want: &ast.MethodDeclaration{
 				Visibility: ast.VisibilityPrivate,
 				Method: &dialect.GoMethod{
 					Name: "Method",
@@ -430,7 +430,7 @@ func TestParseEntityMember(t *testing.T) {
 		{
 			name:  "field with modifier",
 			input: "{field} myField int\n",
-			want: ast.FieldDeclaration{
+			want: &ast.FieldDeclaration{
 				Modifiers: []string{"field"},
 				Field: &dialect.GoField{
 					Name: "myField",
@@ -516,17 +516,17 @@ func TestParseInlineMember(t *testing.T) {
 			}
 			got, err := p.parseInlineMember(tok)
 			require.NoError(t, err)
-			ent, ok := got.(ast.Entity)
+			ent, ok := got.(*ast.Entity)
 			require.True(t, ok)
 			require.Equal(t, tc.wantEntity, ent.Identifier)
 			require.Len(t, ent.Members, 1)
 			if tc.wantMethod {
-				method, ok := ent.Members[0].(ast.MethodDeclaration)
+				method, ok := ent.Members[0].(*ast.MethodDeclaration)
 				require.True(t, ok)
 				require.Equal(t, tc.wantModifiers, method.Modifiers)
 				require.Equal(t, tc.wantVisibility, method.Visibility)
 			} else {
-				field, ok := ent.Members[0].(ast.FieldDeclaration)
+				field, ok := ent.Members[0].(*ast.FieldDeclaration)
 				require.True(t, ok)
 				require.Equal(t, tc.wantModifiers, field.Modifiers)
 				require.Equal(t, tc.wantVisibility, field.Visibility)
@@ -578,7 +578,7 @@ func TestParseEntityAndContainerTags(t *testing.T) {
 			tok := p.stream.Emit()
 			got, err := p.parseEntity(tok)
 			require.NoError(t, err)
-			ent, ok := got.(ast.Entity)
+			ent, ok := got.(*ast.Entity)
 			require.True(t, ok)
 			require.Equal(t, tc.wantStereo, ent.Stereotype)
 			require.Equal(t, tc.wantTags, ent.Tags)

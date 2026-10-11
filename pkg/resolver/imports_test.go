@@ -53,17 +53,15 @@ func summarizeStatement(t *testing.T, stmt ast.Statement) []string {
 	t.Helper()
 
 	switch s := stmt.(type) {
-	case ast.Entity:
+	case *ast.Entity:
 		return []string{s.Kind.String() + ":" + s.Identifier}
-	case ast.Relationship:
+	case *ast.Relationship:
 		return []string{"rel:" + s.LHS.Entity + "->" + s.RHS.Entity}
-	case ast.Container:
-		return summarizeContainer(t, &s)
-	// case *ast.Container:
-	// 	return summarizeContainer(t, s)
-	case ast.IncludeDirective:
+	case *ast.Container:
+		return summarizeContainer(t, s)
+	case *ast.IncludeDirective:
 		t.Fatalf("unexpected un-spliced IncludeDirective remaining in AST: %+v", stmt)
-	case ast.DiagramBound:
+	case *ast.DiagramBound:
 		t.Fatalf("unexpected inner DiagramBound in spliced statement list: %+v", stmt)
 	default:
 		return []string{"stmt"}
@@ -80,10 +78,10 @@ func extractStatementSummary(t *testing.T, diagram *ast.Diagram) []string {
 	require.NotEmpty(t, diagram.Statements, "diagram statements should not be empty")
 
 	// First and last statement must be diagram bounds
-	startBound, ok := diagram.Statements[0].(ast.DiagramBound)
+	startBound, ok := diagram.Statements[0].(*ast.DiagramBound)
 	require.True(t, ok && startBound.IsStart, "first statement must be @startuml DiagramBound")
 
-	endBound, ok := diagram.Statements[len(diagram.Statements)-1].(ast.DiagramBound)
+	endBound, ok := diagram.Statements[len(diagram.Statements)-1].(*ast.DiagramBound)
 	require.True(t, ok && !endBound.IsStart, "last statement must be @enduml DiagramBound")
 
 	var summary []string

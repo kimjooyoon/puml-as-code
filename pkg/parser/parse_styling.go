@@ -42,7 +42,7 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); ok {
 		p.stream.EmitCommentToks()
-		block := ast.SkinparamBlock{
+		block := &ast.SkinparamBlock{
 			Keyword:    keyword,
 			Name:       name,
 			Stereotype: stereo,
@@ -51,7 +51,7 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 				TrailingTrivia: p.stream.DumpCollectedTrivia(),
 			},
 		}
-		err := p.parseSkinparamBlockMembers(&block)
+		err := p.parseSkinparamBlockMembers(block)
 		if err != nil {
 			return nil, err
 		}
@@ -84,7 +84,7 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 	toks := p.stream.ConsumeUntilType(tokenizer.NEWLINE, tokenizer.SEMICOLON)
 	value := p.stream.SliceInputEnclosingTokens(toks...)
 	p.stream.TryConsumeType(tokenizer.SEMICOLON)
-	return ast.SkinparamSetting{
+	return &ast.SkinparamSetting{
 		Keyword:    keyword,
 		Name:       name,
 		Value:      value,
@@ -136,7 +136,7 @@ func (p *Parser) parseStyleBlock(startTok tokenizer.Token) (ast.Statement, error
 	p.stream.Emit() // consume 'style'
 	p.stream.Emit() // consume '>'
 
-	styleBlock := ast.StyleBlock{
+	styleBlock := &ast.StyleBlock{
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
 		},
@@ -191,8 +191,8 @@ func (p *Parser) getSelectors(startTok tokenizer.Token) ([]string, error) {
 	return selectors, nil
 }
 
-func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error) {
-	currentRule := ast.StyleRule{
+func (p *Parser) parseStyleRule(startTok tokenizer.Token) (*ast.StyleRule, error) {
+	currentRule := &ast.StyleRule{
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
 		},
@@ -201,11 +201,11 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 	var err error
 	currentRule.Selectors, err = p.getSelectors(startTok)
 	if err != nil {
-		return currentRule, err
+		return nil, err
 	}
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); !ok {
-		return currentRule, NewParserError(p.stream.PeekTokenAt(0), "Expected opening brace after style rule")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected opening brace after style rule")
 	}
 
 	for !p.isStyleTagEnd() && !p.stream.AssertType(tokenizer.RBRACE) && !p.stream.AssertType(tokenizer.EOF) {
@@ -217,7 +217,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 		case tokenizer.EXCLAMATION:
 			dir, err := p.parseDirective(tok)
 			if err != nil {
-				return currentRule, err
+				return nil, err
 			}
 			currentRule.Statements = append(currentRule.Statements, dir)
 			continue
@@ -226,7 +226,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 		if p.hasLBraceOnLine() {
 			nestedRule, err := p.parseStyleRule(tok)
 			if err != nil {
-				return currentRule, err
+				return nil, err
 			}
 			currentRule.Statements = append(currentRule.Statements, nestedRule)
 			continue
@@ -234,7 +234,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 
 		// By elimination: it is a style declaration
 		if tok.Type != tokenizer.IDENTIFIER {
-			return currentRule, NewParserError(tok, "Expected style property name or rule selector")
+			return nil, NewParserError(tok, "Expected style property name or rule selector")
 		}
 
 		declMark := p.Mark(tok)
@@ -242,13 +242,13 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 		leadingTrivia := p.stream.DumpCollectedTrivia()
 		toks := p.stream.ConsumeUntilType(tokenizer.SEMICOLON, tokenizer.NEWLINE)
 		if len(toks) == 0 {
-			return currentRule, NewParserError(p.stream.PeekRawTokenAt(0), "Expected value after style declaration")
+			return nil, NewParserError(p.stream.PeekRawTokenAt(0), "Expected value after style declaration")
 		}
 
 		val := p.stream.SliceInputEnclosingTokens(toks...)
 		p.stream.TryConsumeType(tokenizer.SEMICOLON)
 		p.stream.EmitCommentToks()
-		declaration := ast.StyleDeclaration{
+		declaration := &ast.StyleDeclaration{
 			BaseNode: ast.BaseNode{
 				LeadingTrivia: leadingTrivia,
 			},
@@ -259,7 +259,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (ast.StyleRule, error)
 	}
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.RBRACE); !ok {
-		return currentRule, NewParserError(p.stream.PeekTokenAt(0), "Expected closing brace '}' after style rule")
+		return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected closing brace '}' after style rule")
 	}
 
 	return currentRule, nil

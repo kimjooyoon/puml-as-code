@@ -34,9 +34,9 @@ func resolveIncludes(diagram *ast.Diagram, basePath string, fs FileReader, lang 
 	newStmts := make([]ast.Statement, 0, len(diagram.Statements))
 	targetDir := filepath.Dir(basePath)
 	for _, stmt := range diagram.Statements {
-		var v ast.IncludeDirective
+		var v *ast.IncludeDirective
 		switch d := stmt.(type) {
-		case ast.Container:
+		case *ast.Container:
 			// make a contrived diagram to satisfy 'resolveIncludes'
 			auxDiagram := &ast.Diagram{
 				Statements: d.Statements,
@@ -48,7 +48,7 @@ func resolveIncludes(diagram *ast.Diagram, basePath string, fs FileReader, lang 
 			d.Statements = auxDiagram.Statements
 			newStmts = append(newStmts, d)
 			continue
-		case ast.IncludeDirective:
+		case *ast.IncludeDirective:
 			v = d
 		default:
 			newStmts = append(newStmts, stmt)
@@ -114,10 +114,10 @@ func resolveIncludes(diagram *ast.Diagram, basePath string, fs FileReader, lang 
 		}
 
 		// Strip diagram bound markers
-		if _, ok := diag.Statements[0].StatementNode().(ast.DiagramBound); ok {
+		if _, ok := diag.Statements[0].StatementNode().(*ast.DiagramBound); ok {
 			diag.Statements = diag.Statements[1:]
 		}
-		if _, ok := diag.Statements[len(diag.Statements)-1].StatementNode().(ast.DiagramBound); ok {
+		if _, ok := diag.Statements[len(diag.Statements)-1].StatementNode().(*ast.DiagramBound); ok {
 			diag.Statements = diag.Statements[:len(diag.Statements)-1]
 		}
 

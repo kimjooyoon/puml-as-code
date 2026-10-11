@@ -27,7 +27,7 @@ func (p *Parser) tryReadGeneric() (string, error) {
 	return p.stream.ReadBetween(start, end)
 }
 
-func (p *Parser) tryReadClassSeparator() (ast.ClassSeparator, error) {
+func (p *Parser) tryReadClassSeparator() (*ast.ClassSeparator, error) {
 	var sepChar rune
 	sepTok := p.stream.PeekTokenAt(0)
 	sepTokType := sepTok.Type
@@ -41,10 +41,10 @@ func (p *Parser) tryReadClassSeparator() (ast.ClassSeparator, error) {
 	case tokenizer.UNDERSCORE:
 		sepChar = '_'
 	default:
-		return ast.ClassSeparator{}, fmt.Errorf("unexpected class separator")
+		return nil, fmt.Errorf("unexpected class separator")
 	}
 
-	sep := ast.ClassSeparator{
+	sep := &ast.ClassSeparator{
 		Type: sepChar,
 		BaseNode: ast.BaseNode{
 			LeadingTrivia: p.stream.DumpCollectedTrivia(),
@@ -62,7 +62,7 @@ func (p *Parser) tryReadClassSeparator() (ast.ClassSeparator, error) {
 	}
 
 	if sep.TypeCount < 2 {
-		return sep, tokenizer.ErrStartMarkerNotFound
+		return nil, tokenizer.ErrStartMarkerNotFound
 	}
 
 	for i := 0; i < sep.TypeCount; i++ {
@@ -87,9 +87,9 @@ func (p *Parser) tryReadClassSeparator() (ast.ClassSeparator, error) {
 
 	switch p.stream.PeekTokenAt(0).Type {
 	case tokenizer.NEWLINE:
-		return sep, fmt.Errorf("unclosed class separator")
+		return nil, fmt.Errorf("unclosed class separator")
 	case tokenizer.EOF:
-		return sep, tokenizer.ErrUnexpectedEOF
+		return nil, tokenizer.ErrUnexpectedEOF
 	}
 
 	for {
@@ -100,7 +100,7 @@ func (p *Parser) tryReadClassSeparator() (ast.ClassSeparator, error) {
 	}
 
 	if !p.stream.AssertAnyType(tokenizer.NEWLINE, tokenizer.EOF) {
-		return sep, fmt.Errorf("unexpected tokens after class separator")
+		return nil, fmt.Errorf("unexpected tokens after class separator")
 	}
 	sep.Label = p.stream.SliceInputEnclosingTokens(labelToks...)
 	sep.Type = sepChar
@@ -118,197 +118,6 @@ func (p *Parser) tryReadTags() []string {
 		tags = append(tags, tagTok.Literal)
 	}
 	return tags
-}
-
-func (p *Parser) isStartMarker() bool {
-	if !p.stream.AssertType(tokenizer.AT) {
-		return false
-	}
-	tok := p.stream.PeekTokenAt(1)
-	if tok.Type != tokenizer.IDENTIFIER {
-		return false
-	}
-	return strings.HasPrefix(tok.Literal, "start")
-}
-
-func (p *Parser) isEndMarker() bool {
-	if !p.stream.AssertType(tokenizer.AT) {
-		return false
-	}
-	tok := p.stream.PeekTokenAt(1)
-	if tok.Type != tokenizer.IDENTIFIER {
-		return false
-	}
-	return strings.HasPrefix(tok.Literal, "end")
-}
-
-func (p *Parser) isDiagramBound() bool {
-	return p.isStartMarker() || p.isEndMarker()
-}
-
-func (p *Parser) readDiagramBounds() (ast.DiagramBound, error) {
-	atTok, consumed := p.stream.TryConsumeType(tokenizer.AT)
-	if !consumed {
-		return ast.DiagramBound{}, fmt.Errorf("expected @ at diagram bounds start, got %s", atTok.Type)
-	}
-
-	m := p.Mark(atTok)
-
-	tok, ok := p.stream.TryConsumeType(tokenizer.IDENTIFIER)
-	if !ok {
-		return ast.DiagramBound{}, fmt.Errorf("expected identifier at diagram bounds, got %s", tok.Type)
-	}
-
-	if !strings.HasPrefix(tok.Literal, "start") &&
-		!strings.HasPrefix(tok.Literal, "end") {
-		return ast.DiagramBound{}, fmt.Errorf("invalid bounding marker for diagram, expected something that starts with 'start' or 'end'")
-	}
-
-	diag := ast.DiagramBound{}
-
-	possibleBounds := []string{
-		"uml",
-		"gantt",
-		"mindmap",
-		"def",
-	}
-
-	if typ, found := strings.CutPrefix(tok.Literal, "start"); found {
-		if !slices.Contains(possibleBounds, typ) {
-			return diag, fmt.Errorf("invalid starting marker for diagram, expected one of %s, got %s", possibleBounds, typ)
-		}
-		diag.IsStart = true
-		diag.Type = typ
-	} else if typ, found := strings.CutPrefix(tok.Literal, "end"); found {
-		if !slices.Contains(possibleBounds, typ) {
-			return diag, fmt.Errorf("invalid starting marker for diagram, expected one of %s, got %s", possibleBounds, typ)
-		}
-		diag.IsStart = false
-		diag.Type = typ
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
-	}
-
-	if !p.stream.AssertType(tokenizer.LPAREN) && !p.stream.AssertType(tokenizer.LBRACE) {
-		diag.TrailingName = p.stream.ReadUntilNewline()
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
-	}
-
-	readKvp := func(blockOpener, blockTerminator tokenizer.TokenType) (ast.BoundOption, error) {
-		keyTok, ok := p.stream.TryConsumeType(tokenizer.IDENTIFIER)
-		if !ok {
-			return ast.BoundOption{}, fmt.Errorf("expected a key")
-		}
-		if _, ok := p.stream.TryConsumeType(tokenizer.EQUALS); !ok {
-			return ast.BoundOption{}, fmt.Errorf("expected = after key")
-		}
-		opt := ast.BoundOption{
-			Key: keyTok.Literal,
-		}
-
-		toks := []tokenizer.Token{}
-		depth := 0
-	collectorLoop:
-		for {
-			tok := p.stream.PeekRawTokenAt(0)
-			switch tok.Type {
-			case blockOpener:
-				depth++
-			case blockTerminator:
-				if depth == 0 {
-					break collectorLoop
-				}
-				depth--
-			case tokenizer.COMMA:
-				if depth == 0 {
-					break collectorLoop
-				}
-			case tokenizer.EOF, tokenizer.NEWLINE:
-				// prevent infinite loops on unclosed input
-				break collectorLoop
-			}
-			toks = append(toks, p.stream.Emit())
-		}
-		opt.Value = p.stream.SliceInputEnclosingTokens(toks...)
-		return opt, nil
-	}
-
-	if _, consumed := p.stream.TryConsumeType(tokenizer.LPAREN); consumed {
-		seenParams := make(map[string]bool)
-		for !p.stream.AssertType(tokenizer.RPAREN) && !p.stream.AssertType(tokenizer.EOF) && !p.stream.AssertType(tokenizer.NEWLINE) {
-			param, err := readKvp(tokenizer.LPAREN, tokenizer.RPAREN)
-			if err != nil {
-				return diag, err
-			}
-			if seenParams[param.Key] {
-				return diag, fmt.Errorf("duplicate key in diagram bounds: %s", param.Key)
-			}
-			seenParams[param.Key] = true
-			if param.Key == "id" {
-				diag.ID = param.Value
-			}
-			diag.Params = append(diag.Params, param)
-
-			if _, ok := p.stream.TryConsumeType(tokenizer.COMMA); !ok {
-				break
-			}
-		}
-		if _, ok := p.stream.TryConsumeType(tokenizer.RPAREN); !ok {
-			return diag, fmt.Errorf("expected closing parenthesis in diagram bounds")
-		}
-	}
-
-	if !p.stream.AssertType(tokenizer.LBRACE) {
-		diag.TrailingName = p.stream.ReadUntilNewline()
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
-	}
-
-	if _, consumed := p.stream.TryConsumeType(tokenizer.LBRACE); consumed {
-		tokens := p.stream.ConsumeUntilType(tokenizer.EOF, tokenizer.NEWLINE, tokenizer.COMMA, tokenizer.RBRACE)
-		if p.stream.AssertType(tokenizer.EOF) || p.stream.AssertType(tokenizer.NEWLINE) {
-			return diag, fmt.Errorf("unexpected EOF or newline")
-		}
-		tools := &ast.BoundToolOptions{
-			File: p.stream.TokensToString(tokens),
-		}
-
-		if p.stream.PeekTokenAt(2).Type != tokenizer.EQUALS {
-			p.stream.TryConsumeType(tokenizer.COMMA)
-			captionTokens := p.stream.ConsumeUntilType(tokenizer.EOF, tokenizer.NEWLINE, tokenizer.COMMA, tokenizer.RBRACE)
-			if p.stream.AssertType(tokenizer.EOF) || p.stream.AssertType(tokenizer.NEWLINE) {
-				return diag, fmt.Errorf("unexpected EOF or newline")
-			}
-			tools.Caption = p.stream.TokensToString(captionTokens)
-		}
-
-		seenOpts := make(map[string]bool)
-		for p.stream.AssertType(tokenizer.COMMA) {
-			p.stream.TryConsumeType(tokenizer.COMMA)
-			opt, err := readKvp(tokenizer.LBRACE, tokenizer.RBRACE)
-			if err != nil {
-				return diag, err
-			}
-			if seenOpts[opt.Key] {
-				return diag, fmt.Errorf("duplicate key in diagram bounds: %s", opt.Key)
-			}
-			seenOpts[opt.Key] = true
-			tools.Options = append(tools.Options, opt)
-		}
-
-		if _, ok := p.stream.TryConsumeType(tokenizer.RBRACE); !ok {
-			return diag, fmt.Errorf("expected } at end of diagram bounds options")
-		}
-		diag.Tools = tools
-	}
-
-	if p.stream.AssertType(tokenizer.LPAREN) {
-		return diag, fmt.Errorf("possibly incorrect order of tools and id")
-	}
-
-	if !p.stream.AssertType(tokenizer.NEWLINE) {
-		return diag, fmt.Errorf("expected newline after diagram bounds")
-	}
-
-	return ast.WithMetadata(diag, p.Span(m), nil), nil
 }
 
 type Mark struct {

@@ -7,7 +7,7 @@ import (
 	"yur4uwe/pac/pkg/parser/ast"
 )
 
-func printNote(s *formatterState, note ast.Note) {
+func printNote(s *formatterState, note *ast.Note) {
 	isMultiline := strings.Contains(note.Text, "\n")
 	// Anstract limit where note is too long to be inline
 	isTooLong := len(note.Text) > 60
@@ -19,7 +19,7 @@ func printNote(s *formatterState, note ast.Note) {
 	}
 }
 
-func printNoteHeader(s *formatterState, note ast.Note, isBlock bool) {
+func printNoteHeader(s *formatterState, note *ast.Note, isBlock bool) {
 	s.emitWithIndent("note ")
 	switch note.Kind {
 	case ast.NoteAlias:
@@ -50,7 +50,7 @@ func printNoteHeader(s *formatterState, note ast.Note, isBlock bool) {
 	}
 }
 
-func printInlineNote(s *formatterState, note ast.Note) {
+func printInlineNote(s *formatterState, note *ast.Note) {
 	printNoteHeader(s, note, false)
 	if note.Kind == ast.NoteAlias {
 		return
@@ -59,7 +59,7 @@ func printInlineNote(s *formatterState, note ast.Note) {
 	s.buf.WriteString(note.Text)
 }
 
-func printBlockNote(s *formatterState, note ast.Note) {
+func printBlockNote(s *formatterState, note *ast.Note) {
 	printNoteHeader(s, note, true)
 	s.emitBlockStartTrivia(note)
 	s.buf.WriteString("\n")
@@ -68,7 +68,7 @@ func printBlockNote(s *formatterState, note ast.Note) {
 	s.emitWithIndent("end note")
 }
 
-func printDiagramBound(s *formatterState, bound ast.DiagramBound) {
+func printDiagramBound(s *formatterState, bound *ast.DiagramBound) {
 	if bound.IsStart {
 		s.buf.WriteString("@start")
 	} else {
@@ -113,7 +113,7 @@ func printDiagramBound(s *formatterState, bound ast.DiagramBound) {
 	}
 }
 
-func printScaleCommand(s *formatterState, scaleCmd ast.ScaleCommand) {
+func printScaleCommand(s *formatterState, scaleCmd *ast.ScaleCommand) {
 	s.emitWithIndent("scale ")
 	if scaleCmd.IsMax {
 		s.buf.WriteString("max ")
@@ -135,7 +135,7 @@ func printScaleCommand(s *formatterState, scaleCmd ast.ScaleCommand) {
 	}
 }
 
-func printSkinparamBlock(s *formatterState, block ast.SkinparamBlock) {
+func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 	if block.Keyword != "" {
 		s.emitWithIndent(block.Keyword)
 		s.buf.WriteByte(' ')
@@ -160,7 +160,7 @@ func printSkinparamBlock(s *formatterState, block ast.SkinparamBlock) {
 	s.emitWithIndent("}")
 }
 
-func printSkinparamSetting(s *formatterState, setting ast.SkinparamSetting) {
+func printSkinparamSetting(s *formatterState, setting *ast.SkinparamSetting) {
 	s.writeIndent()
 	if setting.Keyword != "" {
 		s.buf.WriteString(setting.Keyword)
@@ -176,7 +176,7 @@ func printSkinparamSetting(s *formatterState, setting ast.SkinparamSetting) {
 	s.buf.WriteString(setting.Value)
 }
 
-func printStyleBlock(s *formatterState, block ast.StyleBlock) {
+func printStyleBlock(s *formatterState, block *ast.StyleBlock) {
 	s.emitWithIndent("<style>")
 	s.emitBlockStartTrivia(block)
 	s.buf.WriteByte('\n')
@@ -186,7 +186,7 @@ func printStyleBlock(s *formatterState, block ast.StyleBlock) {
 	s.emitWithIndent("</style>")
 }
 
-func printStyleRule(s *formatterState, block ast.StyleRule) {
+func printStyleRule(s *formatterState, block *ast.StyleRule) {
 	s.writeIndent()
 	for i, selector := range block.Selectors {
 		if i < len(block.Selectors)-1 {
@@ -203,7 +203,7 @@ func printStyleRule(s *formatterState, block ast.StyleRule) {
 	s.emitWithIndent("}")
 }
 
-func printEntity(s *formatterState, ent ast.Entity) {
+func printEntity(s *formatterState, ent *ast.Entity) {
 	if ent.Kind == ast.EntityUnknown {
 		// This is an implicit entity either created by:
 		// Foo : Bar()
@@ -259,11 +259,11 @@ func printEntity(s *formatterState, ent ast.Entity) {
 	}
 }
 
-func unwrapImplicitContainer(cont ast.Container) ([]string, ast.Statement) {
+func unwrapImplicitContainer(cont *ast.Container) ([]string, ast.Statement) {
 	pkgPath := []string{cont.Identifier}
 	curr := cont
 	for len(curr.Statements) == 1 {
-		if innerCont, ok := curr.Statements[0].(ast.Container); ok && innerCont.Kind == ast.ContainerUnknown {
+		if innerCont, ok := curr.Statements[0].(*ast.Container); ok && innerCont.Kind == ast.ContainerUnknown {
 			pkgPath = append(pkgPath, innerCont.Identifier)
 			curr = innerCont
 		} else {
@@ -276,10 +276,10 @@ func unwrapImplicitContainer(cont ast.Container) ([]string, ast.Statement) {
 	return pkgPath, nil
 }
 
-func printContainer(s *formatterState, cont ast.Container) {
+func printContainer(s *formatterState, cont *ast.Container) {
 	if cont.Kind == ast.ContainerUnknown {
 		pkgPath, innerStmt := unwrapImplicitContainer(cont)
-		if innerEnt, ok := innerStmt.(ast.Entity); ok {
+		if innerEnt, ok := innerStmt.(*ast.Entity); ok {
 			innerEnt.Identifier = strings.Join(pkgPath, s.packageSeparator) + s.packageSeparator + innerEnt.Identifier
 			printEntity(s, innerEnt)
 			return
@@ -321,7 +321,7 @@ func printContainer(s *formatterState, cont ast.Container) {
 	}
 }
 
-func printRelationship(s *formatterState, rel ast.Relationship) {
+func printRelationship(s *formatterState, rel *ast.Relationship) {
 	s.emitWithIndent(s.targetFQN(rel.LHS))
 	if rel.MultLHS.Raw != "" {
 		fmt.Fprintf(&s.buf, " %q", rel.MultLHS.Raw)
@@ -369,7 +369,7 @@ func printRelationship(s *formatterState, rel ast.Relationship) {
 	}
 }
 
-func printTextBlock(s *formatterState, block ast.TextBlock) {
+func printTextBlock(s *formatterState, block *ast.TextBlock) {
 	var kind string
 	switch block.Kind {
 	case ast.BlockLegend:
@@ -412,7 +412,7 @@ func printTextBlock(s *formatterState, block ast.TextBlock) {
 	}
 }
 
-func printGenericCommand(s *formatterState, st ast.GenericCommand) {
+func printGenericCommand(s *formatterState, st *ast.GenericCommand) {
 	s.emitWithIndent(st.Name)
 	for _, arg := range st.Args {
 		s.buf.WriteByte(' ')
@@ -420,7 +420,7 @@ func printGenericCommand(s *formatterState, st ast.GenericCommand) {
 	}
 }
 
-func printIncludeDirective(s *formatterState, st ast.IncludeDirective) {
+func printIncludeDirective(s *formatterState, st *ast.IncludeDirective) {
 	switch st.Kind {
 	case ast.IncludeOnce:
 		s.emitWithIndent("!include ")
@@ -434,7 +434,7 @@ func printIncludeDirective(s *formatterState, st ast.IncludeDirective) {
 	}
 }
 
-func printVisibilityCommand(s *formatterState, st ast.VisibilityCommand) {
+func printVisibilityCommand(s *formatterState, st *ast.VisibilityCommand) {
 	switch st.Kind {
 	case ast.VisibilityCMDHide:
 		s.emitWithIndent("hide ")
@@ -448,7 +448,7 @@ func printVisibilityCommand(s *formatterState, st ast.VisibilityCommand) {
 	s.buf.WriteString(st.Target)
 }
 
-func printSetCommand(s *formatterState, st ast.SetCommand) {
+func printSetCommand(s *formatterState, st *ast.SetCommand) {
 	if st.Key == "separator" {
 		s.packageSeparator = st.Value
 	}
@@ -458,7 +458,7 @@ func printSetCommand(s *formatterState, st ast.SetCommand) {
 	s.buf.WriteString(st.Value)
 }
 
-func printDirectionCommand(s *formatterState, st ast.DirectionCommand) {
+func printDirectionCommand(s *formatterState, st *ast.DirectionCommand) {
 	switch st.Direction {
 	case ast.LeftToRightDirection:
 		s.emitWithIndent("left to right direction")

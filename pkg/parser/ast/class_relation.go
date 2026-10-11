@@ -43,11 +43,12 @@ type Relationship struct {
 	BaseNode
 }
 
-var _ Statement = Relationship{}
+var _ Statement = (*Relationship)(nil)
 
-func (r Relationship) StatementNode() Statement {
+func (r *Relationship) StatementNode() Statement {
 	return r
 }
+
 
 type Cardinality struct {
 	Raw string
