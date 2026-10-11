@@ -154,31 +154,8 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 		// Handle comments
 		// Handle Identifiers
 
-		mark := p.Mark(tok)
-
-		stmt, err := p.parseDiagramOnlyStatement(tok)
-		if err != nil {
-			return nil, err
-		}
-		if stmt != nil {
-			p.stream.EmitCommentToks()
-			stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
-			p.ast.Statements = append(p.ast.Statements, stmt)
-			continue
-		}
-
-		stmt, err = p.parseContainerStatement(tok)
-		if err != nil {
-			return nil, err
-		}
-		if stmt != nil {
-			p.stream.EmitCommentToks()
-			stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
-			p.ast.Statements = append(p.ast.Statements, stmt)
-			continue
-		}
-
-		return nil, NewParserError(tok, "Unexpected token")
+		stmt := p.routeDiagramStatement(tok)
+		p.ast.Statements = append(p.ast.Statements, stmt)
 	}
 
 	if p.TargetID == "" {
@@ -190,6 +167,9 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 		}
 	}
 
+	if p.ast.HasErrors() {
+		return p.ast, p.ast.Diagnostics
+	}
 	return p.ast, nil
 }
 

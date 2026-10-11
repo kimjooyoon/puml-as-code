@@ -126,27 +126,68 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	ent.TrailingTrivia = p.stream.DumpCollectedTrivia()
 
 	// We are inside a body
-	for {
+	for !p.stream.AssertAnyType(tokenizer.EOF, tokenizer.RBRACE) {
 		for {
 			if _, ok := p.stream.TryConsumeType(tokenizer.NEWLINE); !ok {
 				break
 			}
 		}
 
-		memberMark := p.Mark(p.stream.PeekTokenAt(0))
-		member, err := p.parseEntityMember()
-		if err != nil {
-			return nil, err
-		}
+		member := p.routeEntityMember(p.stream.PeekTokenAt(0))
 		if member == nil {
-			break
+			p.stream.TryConsumeType(tokenizer.RBRACE)
 		}
-		p.stream.EmitCommentToks()
-		member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
 		ent.Members = append(ent.Members, member)
 	}
 
 	return wrapInContainers(ent, pkgPath), nil
+}
+
+func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
+	memberMark := p.Mark(tok)
+	member, err := p.parseEntityMember()
+	if err == nil {
+		if member == nil {
+			return nil
+		}
+		p.stream.EmitCommentToks()
+		member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
+		return member
+	}
+
+	var leadingTrivia []tokenizer.Token
+	if member == nil {
+		leadingTrivia = p.stream.DumpCollectedTrivia()
+	} else {
+		leadingTrivia = member.GetLeadingTrivia()
+	}
+
+	badToks := []tokenizer.Token{tok}
+	badToks = append(badToks, p.syncToLineOrBlockEnd()...)
+	span := p.Span(memberMark)
+
+	diagst := &ast.Diagnostic{
+		ID:      len(p.ast.Diagnostics),
+		Message: err.Error(),
+		Span:    span,
+		Err:     err,
+	}
+
+	p.stream.EmitCommentToks()
+	badMember := &ast.BadMember{
+		Diagnostic: diagst,
+		// We should get here the full slice
+		Tokens: badToks,
+		BaseNode: ast.BaseNode{
+			NodeSpan:       span,
+			LeadingTrivia:  leadingTrivia,
+			TrailingTrivia: p.stream.DumpCollectedTrivia(),
+		},
+	}
+
+	diagst.Node = badMember
+	p.ast.Diagnostics = append(p.ast.Diagnostics, diagst)
+	return badMember
 }
 
 func (p *Parser) parseEntityMember() (ast.Member, error) {
