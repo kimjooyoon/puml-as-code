@@ -2,6 +2,45 @@ package ast
 
 import "yur4uwe/pac/pkg/tokenizer"
 
+type Node interface {
+	Span() tokenizer.SourceSpan
+	GetLeadingTrivia() []tokenizer.Token
+	GetTrailingTrivia() []tokenizer.Token
+}
+
+type BaseNode struct {
+	NodeSpan       tokenizer.SourceSpan
+	LeadingTrivia  []tokenizer.Token `json:",omitempty"`
+	TrailingTrivia []tokenizer.Token `json:",omitempty"`
+}
+
+func (bn BaseNode) GetLeadingTrivia() []tokenizer.Token  { return bn.LeadingTrivia }
+func (bn BaseNode) GetTrailingTrivia() []tokenizer.Token { return bn.TrailingTrivia }
+func (bn BaseNode) Span() tokenizer.SourceSpan           { return bn.NodeSpan }
+
+type Statement interface {
+	Node
+	StatementNode() Statement
+}
+
+type TargetRef struct {
+	PackagePath []string `json:",omitempty"`
+	Entity      string   `json:",omitempty"`
+	Member      string   `json:",omitempty"`
+}
+
+type UnhandledStatement struct {
+	Raw string
+	BaseNode
+}
+
+// StatementNode implements [Statement].
+func (t UnhandledStatement) StatementNode() Statement {
+	return t
+}
+
+var _ Statement = UnhandledStatement{}
+
 func updateBaseNode(bn *BaseNode, span tokenizer.SourceSpan, trailing []tokenizer.Token) {
 	bn.NodeSpan = span
 	if len(bn.TrailingTrivia) > 0 && len(trailing) > 0 {
