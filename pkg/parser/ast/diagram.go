@@ -1,9 +1,14 @@
 package ast
 
 type Diagram struct {
-	Name       string      `json:",omitempty"`
-	Title      string      `json:",omitempty"`
-	Statements []Statement `json:",omitempty"`
+	Name        string         `json:",omitempty"`
+	Title       string         `json:",omitempty"`
+	Statements  []Statement    `json:",omitempty"`
+	Diagnostics DiagnosticList `json:"diagnostics,omitempty"`
+}
+
+func (d *Diagram) HasErrors() bool {
+	return len(d.Diagnostics) > 0
 }
 
 type BoundOption struct {
@@ -41,7 +46,6 @@ var _ Statement = (*DiagramBound)(nil)
 func (d *DiagramBound) StatementNode() Statement {
 	return d
 }
-
 
 func (d DiagramBound) DiagramName() string {
 	if d.Tools != nil && d.Tools.File != "" {

@@ -51,6 +51,16 @@ func (t *UnhandledStatement) StatementNode() Statement {
 
 var _ Statement = (*UnhandledStatement)(nil)
 
+type BadStatement struct {
+	Diagnostic *Diagnostic       `json:"diagnostic,omitempty"`
+	Tokens     []tokenizer.Token `json:"tokens,omitempty"`
+	BaseNode
+}
+
+func (b *BadStatement) StatementNode() Statement { return b }
+
+var _ Statement = (*BadStatement)(nil)
+
 // WithMetadata attaches SourceSpan and TrailingTrivia to any Node and returns the updated Node.
 func WithMetadata[T Node](node T, span tokenizer.SourceSpan, trailing []tokenizer.Token) T {
 	node.SetMetadata(span, trailing)

@@ -1,11 +1,25 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+
+	"yur4uwe/pac/pkg/tokenizer"
+)
 
 type Member interface {
 	Node
 	MemberNode() Member
 }
+
+type BadMember struct {
+	Diagnostic *Diagnostic       `json:"diagnostic,omitempty"`
+	Tokens     []tokenizer.Token `json:"tokens,omitempty"`
+	BaseNode
+}
+
+func (b *BadMember) MemberNode() Member { return b }
+
+var _ Member = (*BadMember)(nil)
 
 type ClassSeparator struct {
 	// Optional label text

@@ -22,21 +22,6 @@ Goal: Canonical, idempotent pretty-printer for PUML diagrams.
 - [x] **4. CLI Integration (`cmd/pac`)**
   - Flags: `pac fmt <file.puml>` (stdout), `-w` (in-place write), `-check` (CI diff check).
 
-## Track 2: Syntax Highlighting (Tree-sitter)
-
-Goal: Native, fast editor highlighting for Neovim, Helix, Zed, and VS Code.
-
-- [ ] **1. Grammar Specification (`tree-sitter-plantuml/grammar.js`)**
-  - Lexical rules: keywords, modifiers (`{static}`, `{abstract}`), visibility (`+`, `-`, `#`, `~`), arrow patterns, strings, comments.
-  - Diagram syntax: declarations, stereotypes (`<<...>>`), generics, relationships.
-- [ ] **2. Parser Generation**
-  - Run `tree-sitter generate` -> output optimized `src/parser.c`.
-  - Write corpus tests in `test/corpus/`.
-- [ ] **3. Highlight Queries (`queries/highlights.scm`)**
-  - Map CST nodes to scopes: `@keyword`, `@type`, `@operator`, `@property`, `@comment`.
-- [ ] **4. Distribution**
-  - Package for Neovim (`nvim-treesitter`), Helix, and VS Code (WASM).
-
 ## Track 3: The Unified Bridge (Language Server Protocol)
 
 Goal: Connect the Go compiler/formatter directly to editors via `pac lsp`.
