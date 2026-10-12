@@ -8,14 +8,6 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (p *Parser) tryParseColor() string {
-	if !p.stream.AssertType(tokenizer.HASH) {
-		return ""
-	}
-	tokens := p.stream.ConsumeUntilType(tokenizer.NEWLINE, tokenizer.COLON, tokenizer.LBRACE)
-	return p.stream.SliceInputEnclosingTokens(tokens...)
-}
-
 func (p *Parser) mapTokenToDirection(tok tokenizer.Token) ast.DirectionKind {
 	switch tok.Literal {
 	case "left":
@@ -29,66 +21,6 @@ func (p *Parser) mapTokenToDirection(tok tokenizer.Token) ast.DirectionKind {
 	default:
 		return ast.DirectionUnknown
 	}
-}
-
-func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error) {
-	var ref ast.TargetRef
-	segments := []string{firstTok.Literal}
-
-	for {
-		length, ok := p.stream.AssertPackageSeparator()
-		if !ok {
-			break
-		}
-
-		afterPkgSep := p.stream.PeekTokenAt(length)
-		if afterPkgSep.Type != tokenizer.IDENTIFIER && afterPkgSep.Type != tokenizer.STRING {
-			// We have hit the case where the separator token is not a part of the entity reference
-			break
-		}
-
-		for range length {
-			p.stream.Emit()
-		}
-
-		segments = append(segments, p.stream.Emit().Literal)
-	}
-
-	if len(segments) > 0 {
-		ref.Entity = segments[len(segments)-1]
-		if len(segments) > 1 {
-			ref.PackagePath = segments[:len(segments)-1]
-		}
-	}
-
-	if p.stream.AssertTypeSeq([]tokenizer.TokenType{tokenizer.COLON, tokenizer.COLON}) {
-		p.stream.Emit() // consume first :
-		p.stream.Emit() // consume second :
-
-		tok := p.stream.Emit()
-		switch tok.Type {
-		case tokenizer.STRING:
-			ref.Member = tok.Literal
-		case tokenizer.IDENTIFIER:
-			var sb strings.Builder
-			sb.WriteString(tok.Literal)
-			if p.stream.AssertType(tokenizer.LPAREN) {
-				p.stream.Emit() // consume (
-				sb.WriteString("(")
-				paramToks := p.stream.ConsumeUntilType(tokenizer.RPAREN, tokenizer.NEWLINE, tokenizer.EOF)
-				sb.WriteString(p.stream.TokensToString(paramToks))
-				if _, ok := p.stream.TryConsumeType(tokenizer.RPAREN); !ok {
-					return ref, NewParserError(p.stream.PeekTokenAt(0), "Expected ')' closing method signature in target ref")
-				}
-				sb.WriteString(")")
-			}
-			ref.Member = sb.String()
-		default:
-			return ref, NewParserError(tok, "Expected member identifier or string after '::'")
-		}
-	}
-
-	return ref, nil
 }
 
 func (p *Parser) parseRelationship(firstTargetTok tokenizer.Token) (*ast.Relationship, error) {
@@ -525,3 +457,30 @@ func (p *Parser) scanArrowTokensFrom(startIdx int) (int, bool) {
 	return idx - startIdx, true
 }
 
+func (p *Parser) tryParseRelationship(firstTok tokenizer.Token) (*ast.Relationship, error, bool) {
+	hasArrow := false
+	for i := 0; ; i++ {
+		tok := p.stream.PeekTokenAt(i)
+		if tok.Type == tokenizer.NEWLINE || tok.Type == tokenizer.EOF ||
+			tok.Type == tokenizer.SEMICOLON || tok.Type == tokenizer.LBRACE ||
+			tok.Type == tokenizer.RBRACE {
+			break
+		} else if tok.Type == tokenizer.STRING {
+			continue
+		}
+		if _, ok := p.scanArrowTokensFrom(i); ok {
+			hasArrow = true
+			break
+		}
+	}
+
+	if !hasArrow {
+		return nil, nil, false
+	}
+
+	rel, err := p.parseRelationship(firstTok)
+	if err != nil {
+		return nil, err, true
+	}
+	return rel, nil, true
+}

@@ -71,17 +71,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 			continue
 		}
 
-		childMark := p.Mark(tok)
-		// Only parse statements allowed in containers
-		stmt, err := p.parseContainerStatement(tok)
-		if err != nil {
-			return nil, err
-		}
-		if stmt == nil {
-			return nil, NewParserError(tok, "Expected a statement in a container body")
-		}
-		p.stream.EmitCommentToks()
-		stmt = ast.WithMetadata(stmt, p.Span(childMark), p.stream.DumpCollectedTrivia())
+		stmt := p.routeContainerStatement(tok)
 		container.Statements = append(container.Statements, stmt)
 	}
 

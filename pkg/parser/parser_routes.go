@@ -5,19 +5,37 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (p *Parser) fallbackRoute(tok tokenizer.Token, stmt ast.Statement, err error, mark Mark) ast.Statement {
+func (p *Parser) fallbackRoute(
+	tok tokenizer.Token,
+	stmt ast.Statement,
+	err error,
+	mark Mark,
+	collector *tokenizer.TokenCollector,
+	detach func(),
+	syncToBlockEnd bool,
+) ast.Statement {
 	var leadingTrivia []tokenizer.Token
-	if stmt == nil {
-		leadingTrivia = p.stream.DumpCollectedTrivia()
-	} else {
+	if err == nil && stmt != nil {
 		leadingTrivia = stmt.GetLeadingTrivia()
+	} else {
+		leadingTrivia = p.stream.DumpCollectedTrivia()
 	}
 	if err == nil {
 		err = NewParserError(tok, "Unexpected token")
 	}
 
-	badToks := []tokenizer.Token{tok}
-	badToks = append(badToks, p.syncToLineOrBlockEnd()...)
+	if syncToBlockEnd {
+		p.syncToLineOrBlockEnd()
+	} else {
+		p.syncToLineEnd()
+	}
+
+	if collector.Len() == 0 && !p.stream.AssertType(tokenizer.EOF) && !p.isEndMarker() {
+		p.stream.Emit()
+	}
+
+	detach()
+	badToks := collector.Tokens()
 	span := p.Span(mark)
 
 	dgnst := &ast.Diagnostic{
@@ -45,13 +63,19 @@ func (p *Parser) fallbackRoute(tok tokenizer.Token, stmt ast.Statement, err erro
 }
 
 func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
+	collector := &tokenizer.TokenCollector{}
+	collector.Receive(tok)
+	detach := p.stream.Attach(collector)
+	defer detach()
+
 	mark := p.Mark(tok)
 
 	stmt, err := p.parseDiagramOnlyStatement(tok)
 	if err != nil {
-		return p.fallbackRoute(tok, stmt, err, mark)
+		return p.fallbackRoute(tok, stmt, err, mark, collector, detach, false)
 	}
 	if stmt != nil {
+		detach()
 		p.stream.EmitCommentToks()
 		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
 		return stmt
@@ -59,29 +83,36 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 
 	stmt, err = p.parseContainerStatement(tok)
 	if err != nil {
-		return p.fallbackRoute(tok, stmt, err, mark)
+		return p.fallbackRoute(tok, stmt, err, mark, collector, detach, false)
 	}
 	if stmt != nil {
+		detach()
 		p.stream.EmitCommentToks()
 		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
 		return stmt
 	}
 
-	return p.fallbackRoute(tok, nil, nil, mark)
+	return p.fallbackRoute(tok, nil, nil, mark, collector, detach, false)
 }
 
 func (p *Parser) routeContainerStatement(tok tokenizer.Token) ast.Statement {
+	collector := &tokenizer.TokenCollector{}
+	collector.Receive(tok)
+	detach := p.stream.Attach(collector)
+	defer detach()
+
 	mark := p.Mark(tok)
 
 	stmt, err := p.parseContainerStatement(tok)
 	if err != nil {
-		return p.fallbackRoute(tok, stmt, err, mark)
+		return p.fallbackRoute(tok, stmt, err, mark, collector, detach, true)
 	}
 	if stmt != nil {
+		detach()
 		p.stream.EmitCommentToks()
 		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
 		return stmt
 	}
 
-	return p.fallbackRoute(tok, stmt, err, mark)
+	return p.fallbackRoute(tok, stmt, err, mark, collector, detach, true)
 }

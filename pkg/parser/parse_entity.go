@@ -126,30 +126,41 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	ent.TrailingTrivia = p.stream.DumpCollectedTrivia()
 
 	// We are inside a body
-	for !p.stream.AssertAnyType(tokenizer.EOF, tokenizer.RBRACE) {
+	for {
 		for {
 			if _, ok := p.stream.TryConsumeType(tokenizer.NEWLINE); !ok {
 				break
 			}
 		}
 
+		if p.stream.AssertAnyType(tokenizer.EOF, tokenizer.RBRACE) {
+			break
+		}
+
 		member := p.routeEntityMember(p.stream.PeekTokenAt(0))
 		if member == nil {
-			p.stream.TryConsumeType(tokenizer.RBRACE)
+			break
 		}
 		ent.Members = append(ent.Members, member)
 	}
+
+	p.stream.TryConsumeType(tokenizer.RBRACE)
 
 	return wrapInContainers(ent, pkgPath), nil
 }
 
 func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
+	collector := &tokenizer.TokenCollector{}
+	detach := p.stream.Attach(collector)
+	defer detach()
+
 	memberMark := p.Mark(tok)
 	member, err := p.parseEntityMember()
 	if err == nil {
 		if member == nil {
 			return nil
 		}
+		detach()
 		p.stream.EmitCommentToks()
 		member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
 		return member
@@ -162,8 +173,12 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 		leadingTrivia = member.GetLeadingTrivia()
 	}
 
-	badToks := []tokenizer.Token{tok}
-	badToks = append(badToks, p.syncToLineOrBlockEnd()...)
+	p.syncToLineOrBlockEnd()
+	if collector.Len() == 0 && !p.stream.AssertType(tokenizer.EOF) && !p.isEndMarker() && !p.stream.AssertType(tokenizer.RBRACE) {
+		p.stream.Emit()
+	}
+	detach()
+	badToks := collector.Tokens()
 	span := p.Span(memberMark)
 
 	diagst := &ast.Diagnostic{
@@ -176,8 +191,7 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 	p.stream.EmitCommentToks()
 	badMember := &ast.BadMember{
 		Diagnostic: diagst,
-		// We should get here the full slice
-		Tokens: badToks,
+		Tokens:     badToks,
 		BaseNode: ast.BaseNode{
 			NodeSpan:       span,
 			LeadingTrivia:  leadingTrivia,

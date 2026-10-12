@@ -178,8 +178,8 @@ func (p *Parser) parseContainerStatement(tok tokenizer.Token) (ast.Statement, er
 		return p.parseDirective(tok)
 	}
 
-	if p.HasArrowOnLine() {
-		return p.parseRelationship(tok)
+	if rel, err, isRel := p.tryParseRelationship(tok); isRel {
+		return rel, err
 	}
 
 	switch keyword.Classify(tok.Literal) {
@@ -244,8 +244,8 @@ func (p *Parser) parseDiagramOnlyStatement(tok tokenizer.Token) (ast.Statement, 
 		return p.parseDirective(tok)
 	}
 
-	if p.HasArrowOnLine() {
-		return p.parseRelationship(tok)
+	if rel, err, isRel := p.tryParseRelationship(tok); isRel {
+		return rel, err
 	}
 
 	switch keyword.Classify(tok.Literal) {

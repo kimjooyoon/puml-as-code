@@ -47,32 +47,36 @@ func (ts *TokenStream) matchPackageSeparatorAt(startIdx int) (int, bool) {
 	if ts.PackageSeparator == "" {
 		return 0, false
 	}
-	var sb strings.Builder
-	count := 0
-	var prevTok Token
-	hasPrev := false
+	var acc []Token
 	for {
-		tok := ts.PeekRawTokenAt(startIdx + count)
+		accCount := len(acc)
+		tok := ts.PeekRawTokenAt(startIdx + accCount)
 		if tok.Type == EOF || tok.Type == NEWLINE {
 			break
 		}
-		if hasPrev {
-			if tok.Span.Start.Offset != prevTok.Span.End.Offset {
-				break
-			}
+		if ts.IsPackageSeparator(acc) {
+			return accCount, true
 		}
-		sb.WriteString(tok.Literal)
-		count++
-		prevTok = tok
-		hasPrev = true
-		if sb.String() == ts.PackageSeparator {
-			return count, true
-		}
-		if len(sb.String()) >= len(ts.PackageSeparator) {
-			break
-		}
+		acc = append(acc, tok)
 	}
 	return 0, false
+}
+
+func (ts *TokenStream) IsPackageSeparator(toks []Token) bool {
+	var sb strings.Builder
+	for i, tok := range toks {
+		if i > 0 && tok.Span.Start.Offset != toks[i-1].Span.End.Offset {
+			return false
+		}
+		sb.WriteString(tok.Literal)
+		if sb.String() == ts.PackageSeparator {
+			return true
+		}
+		if len(sb.String()) >= len(ts.PackageSeparator) {
+			return false
+		}
+	}
+	return false
 }
 
 // AssertPackageSeparator returns whether the next token or sequence of tokens
