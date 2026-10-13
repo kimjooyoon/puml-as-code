@@ -20,18 +20,24 @@ func (s *formatterState) targetFQN(target ast.TargetRef) string {
 	return sb.String()
 }
 
-func (s *formatterState) formatBlockStatements(stmts []ast.Statement) {
+func (s *formatterState) formatBlockStatements(parent ast.Node, stmts []ast.Statement) {
 	s.onNewLevel(func() {
 		for _, stmt := range stmts {
 			formatNode(s, stmt)
 		}
+		if parent != nil {
+			s.emitInnerBlockTrivia(parent)
+		}
 	})
 }
 
-func (s *formatterState) formatBlockMembers(members []ast.Member) {
+func (s *formatterState) formatBlockMembers(parent ast.Node, members []ast.Member) {
 	s.onNewLevel(func() {
 		for _, member := range members {
 			formatNode(s, member)
+		}
+		if parent != nil {
+			s.emitInnerBlockTrivia(parent)
 		}
 	})
 }

@@ -225,7 +225,7 @@
         "End": {
           "Line": 19,
           "Col": 2,
-          "Offset": 690
+          "Offset": 754
         }
       },
       "LeadingTrivia": [
@@ -265,17 +265,33 @@
         },
         {
           "Type": "COMMENT",
+          "Literal": "This is a single line comment that has no member to attach to",
+          "Span": {
+            "Start": {
+              "Line": 18,
+              "Col": 3,
+              "Offset": 689
+            },
+            "End": {
+              "Line": 19,
+              "Col": 0,
+              "Offset": 752
+            }
+          }
+        },
+        {
+          "Type": "COMMENT",
           "Literal": "This is a single line comment attached to Service after '}'",
           "Span": {
             "Start": {
               "Line": 19,
               "Col": 3,
-              "Offset": 691
+              "Offset": 755
             },
             "End": {
               "Line": 20,
               "Col": 0,
-              "Offset": 752
+              "Offset": 816
             }
           }
         }
@@ -291,11 +307,29 @@
               "Offset": 610
             },
             "End": {
-              "Line": 18,
-              "Col": 0,
+              "Line": 17,
+              "Col": 19,
               "Offset": 626
             }
           },
+          "TrailingTrivia": [
+            {
+              "Type": "COMMENT",
+              "Literal": "This is a single line comment attached to Service.Process",
+              "Span": {
+                "Start": {
+                  "Line": 17,
+                  "Col": 20,
+                  "Offset": 627
+                },
+                "End": {
+                  "Line": 18,
+                  "Col": 0,
+                  "Offset": 686
+                }
+              }
+            }
+          ],
           "Visibility": "public",
           "Modifiers": null,
           "Method": {
@@ -330,12 +364,12 @@
         "Start": {
           "Line": 22,
           "Col": 1,
-          "Offset": 789
+          "Offset": 853
         },
         "End": {
           "Line": 22,
           "Col": 26,
-          "Offset": 814
+          "Offset": 878
         }
       },
       "LeadingTrivia": [
@@ -346,12 +380,12 @@
             "Start": {
               "Line": 21,
               "Col": 1,
-              "Offset": 754
+              "Offset": 818
             },
             "End": {
               "Line": 22,
               "Col": 0,
-              "Offset": 788
+              "Offset": 852
             }
           }
         }
@@ -364,12 +398,12 @@
             "Start": {
               "Line": 22,
               "Col": 27,
-              "Offset": 815
+              "Offset": 879
             },
             "End": {
               "Line": 23,
               "Col": 0,
-              "Offset": 850
+              "Offset": 914
             }
           }
         }
@@ -382,12 +416,12 @@
         "Start": {
           "Line": 25,
           "Col": 1,
-          "Offset": 886
+          "Offset": 950
         },
         "End": {
           "Line": 25,
           "Col": 8,
-          "Offset": 893
+          "Offset": 957
         }
       },
       "LeadingTrivia": [
@@ -398,12 +432,12 @@
             "Start": {
               "Line": 24,
               "Col": 1,
-              "Offset": 852
+              "Offset": 916
             },
             "End": {
               "Line": 25,
               "Col": 0,
-              "Offset": 885
+              "Offset": 949
             }
           }
         }
@@ -416,12 +450,12 @@
             "Start": {
               "Line": 25,
               "Col": 9,
-              "Offset": 894
+              "Offset": 958
             },
             "End": {
               "Line": 26,
               "Col": 0,
-              "Offset": 928
+              "Offset": 992
             }
           }
         }

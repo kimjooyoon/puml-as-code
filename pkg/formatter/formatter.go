@@ -118,7 +118,6 @@ func (s *formatterState) formatMember(member ast.Member) {
 	default:
 		panic("unreachable")
 	}
-	s.emitBlockEndTrivia(member)
 }
 
 func (s *formatterState) formatStatement(stmt ast.Statement) {

@@ -15,8 +15,8 @@ This is a block comment attached to Package p after '}'
 
 /' Block comment before Service '/
 class Service { ' This is a single line comment attached to Service after '{'
-  +Process() error
-  ' This is a single line comment attached to Service.Process
+  +Process() error ' This is a single line comment attached to Service.Process
+  ' This is a single line comment that has no member to attach to
 } ' This is a single line comment attached to Service after '}'
 
 ' Leading comment for relationship

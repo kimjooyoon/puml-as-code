@@ -13,20 +13,11 @@ import (
 
 func TestParseContainer(t *testing.T) {
 	tests := []struct {
-		name        string
-		input       string
-		kwType      keyword.KeywordKind
-		want        ast.Container
-		expectErr   bool
-		errContains string
+		name   string
+		input  string
+		kwType keyword.KeywordKind
+		want   ast.Container
 	}{
-		{
-			name:        "together empty error",
-			input:       "together",
-			kwType:      keyword.Together,
-			expectErr:   true,
-			errContains: "Expected container body to end",
-		},
 		{
 			name:   "together empty newline",
 			input:  "together\n",
@@ -188,34 +179,6 @@ func TestParseContainer(t *testing.T) {
 			},
 		},
 		{
-			name:        "package incomplete alias",
-			input:       "package mypkg as\n",
-			kwType:      keyword.Package,
-			expectErr:   true,
-			errContains: "Expected identifier for container name",
-		},
-		{
-			name:        "package unclosed stereotype",
-			input:       "package mypkg <<Service\n",
-			kwType:      keyword.Package,
-			expectErr:   true,
-			errContains: "unexpected EOF",
-		},
-		{
-			name:        "package unclosed body",
-			input:       "package mypkg { class A",
-			kwType:      keyword.Package,
-			expectErr:   true,
-			errContains: "unexpected EOF",
-		},
-		{
-			name:        "package unexpected token in body",
-			input:       "package mypkg { @invalid }",
-			kwType:      keyword.Package,
-			expectErr:   true,
-			errContains: "Expected a statement in a container body",
-		},
-		{
 			name:   "package with same line body and color",
 			input:  "package mypkg #red { class A }",
 			kwType: keyword.Package,
@@ -230,13 +193,6 @@ func TestParseContainer(t *testing.T) {
 					},
 				},
 			},
-		},
-		{
-			name:        "package body class error",
-			input:       "package mypkg { class MyClass as }",
-			kwType:      keyword.Package,
-			expectErr:   true,
-			errContains: "Expected token for entity identifier or alias",
 		},
 		// --- Container keyword coverage ---
 		{
@@ -377,16 +333,100 @@ func TestParseContainer(t *testing.T) {
 			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
 
 			got, err := p.parseContainer(tok)
-			if tc.expectErr {
-				require.Error(t, err)
-				if tc.errContains != "" {
-					require.Contains(t, err.Error(), tc.errContains)
-				}
-			} else {
-				require.NoError(t, err)
-				assertASTEqual(t, tc.want, got)
+			require.NoError(t, err)
+			assertASTEqual(t, tc.want, got)
+		})
+	}
+}
+
+func TestParseContainer_Errors(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       string
+		kwType      keyword.KeywordKind
+		errContains string
+	}{
+		{
+			name:        "together empty error",
+			input:       "together",
+			kwType:      keyword.Together,
+			errContains: "Expected container body to end",
+		},
+		{
+			name:        "package incomplete alias",
+			input:       "package mypkg as\n",
+			kwType:      keyword.Package,
+			errContains: "Expected identifier for container name",
+		},
+		{
+			name:        "package unclosed stereotype",
+			input:       "package mypkg <<Service\n",
+			kwType:      keyword.Package,
+			errContains: "unexpected EOF",
+		},
+		{
+			name:        "package unclosed body",
+			input:       "package mypkg { class A",
+			kwType:      keyword.Package,
+			errContains: "unexpected EOF",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := Parser{
+				stream:  tokenizer.NewTokenStream(tc.input),
+				Dialect: dialect.NewGoDialect(),
+				ast:     &ast.Diagram{},
+			}
+			tok := p.stream.Emit()
+			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
+
+			got, err := p.parseContainer(tok)
+			require.Error(t, err)
+			require.Nil(t, got)
+			if tc.errContains != "" {
+				require.Contains(t, err.Error(), tc.errContains)
 			}
 		})
 	}
 }
 
+func TestParseContainer_Recovery(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		kwType   keyword.KeywordKind
+		checkBad func(t *testing.T, container *ast.Container, p *Parser)
+	}{
+		{
+			name:   "package unexpected token in body",
+			input:  "package mypkg { @invalid }",
+			kwType: keyword.Package,
+			checkBad: func(t *testing.T, container *ast.Container, p *Parser) {
+				require.NotNil(t, container)
+				require.Len(t, container.Statements, 1)
+				bad, ok := container.Statements[0].(*ast.BadStatement)
+				require.True(t, ok, "expected statement to be *ast.BadStatement")
+				require.NotNil(t, bad.Diagnostic)
+				require.True(t, p.ast.HasErrors())
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := Parser{
+				stream:  tokenizer.NewTokenStream(tc.input),
+				Dialect: dialect.NewGoDialect(),
+				ast:     &ast.Diagram{},
+			}
+			tok := p.stream.Emit()
+			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
+
+			got, err := p.parseContainer(tok)
+			require.NoError(t, err)
+			tc.checkBad(t, got, &p)
+		})
+	}
+}

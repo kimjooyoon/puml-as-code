@@ -79,7 +79,7 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 
 			blockNum++
 
-			startBound, err = p.readDiagramBounds()
+			startBound, err = p.readStartBounds()
 			if err != nil {
 				return nil, err
 			} else if !startBound.IsStart {
@@ -112,31 +112,19 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 
 	for {
 		// End condition check should be before consuming a token to avoid swallowing '@'
-		if !p.IsBoundless && p.isEndMarker() {
-			boundLeading := p.stream.DumpCollectedTrivia()
-			endBound, err := p.readDiagramBounds()
-			if err != nil {
-				return nil, err
-			}
-			if endBound.IsStart {
-				return nil, NewParserError(p.stream.PeekTokenAt(0), "Unexpected diagram end marker")
-			}
-			if endBound.Type != startBound.Type {
-				return nil, NewParserError(p.stream.PeekTokenAt(0), "Types of starting and ending markers don't match")
-			}
-			endBound.LeadingTrivia = boundLeading
-			p.stream.EmitCommentToks()
-			endBound = ast.WithMetadata(endBound, endBound.NodeSpan, p.stream.DumpCollectedTrivia())
-			p.ast.Statements = append(p.ast.Statements, endBound)
-			break
-		}
-
 		tok := p.stream.Emit()
 		if tok.Type == tokenizer.EOF {
 			if p.IsBoundless {
 				break
 			}
-			return p.ast, WrapParserError(tok, tokenizer.ErrUnexpectedEOF)
+			eofDiagnst := &ast.Diagnostic{
+				ID:      len(p.ast.Diagnostics),
+				Message: tokenizer.ErrUnexpectedEOF.Error(),
+				Span:    p.stream.LastSemanticToken().Span,
+				Err:     tokenizer.ErrUnexpectedEOF,
+			}
+			p.ast.Diagnostics = append(p.ast.Diagnostics, eofDiagnst)
+			break
 		} else if tok.Type == tokenizer.NEWLINE {
 			// We can leave it like this for now
 			// If the newline is relevant it will be consumed
@@ -156,6 +144,19 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 
 		stmt := p.routeDiagramStatement(tok)
 		p.ast.Statements = append(p.ast.Statements, stmt)
+		if endBound, ok := stmt.(*ast.DiagramBound); ok && !endBound.IsStart {
+			if endBound.Type != startBound.Type {
+				msg := fmt.Errorf("types of starting and ending markers don't match")
+				p.ast.Diagnostics = append(p.ast.Diagnostics, &ast.Diagnostic{
+					ID:      len(p.ast.Diagnostics),
+					Message: msg.Error(),
+					Span:    endBound.NodeSpan,
+					Node:    endBound,
+					Err:     msg,
+				})
+			}
+			break
+		}
 	}
 
 	if p.TargetID == "" {
@@ -237,6 +238,9 @@ func (p *Parser) parseContainerStatement(tok tokenizer.Token) (ast.Statement, er
 }
 
 func (p *Parser) parseDiagramOnlyStatement(tok tokenizer.Token) (ast.Statement, error) {
+	if !p.IsBoundless && p.isDiagramEndMarker(tok) {
+		return p.readEndBounds(tok)
+	}
 	if tok.Type == tokenizer.LANGLE && p.stream.AssertSeq([]tokenizer.Token{amb(tokenizer.IDENTIFIER, "style"), unamb(tokenizer.RANGLE)}) {
 		return p.parseStyleBlock(tok)
 	}

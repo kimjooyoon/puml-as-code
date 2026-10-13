@@ -155,7 +155,7 @@ func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 	s.emitBlockStartTrivia(block)
 	s.buf.WriteByte('\n')
 
-	s.formatBlockStatements(block.Statements)
+	s.formatBlockStatements(block, block.Statements)
 
 	s.emitWithIndent("}")
 }
@@ -181,7 +181,7 @@ func printStyleBlock(s *formatterState, block *ast.StyleBlock) {
 	s.emitBlockStartTrivia(block)
 	s.buf.WriteByte('\n')
 
-	s.formatBlockStatements(block.Statements)
+	s.formatBlockStatements(block, block.Statements)
 
 	s.emitWithIndent("</style>")
 }
@@ -198,7 +198,7 @@ func printStyleRule(s *formatterState, block *ast.StyleRule) {
 	s.emitBlockStartTrivia(block)
 	s.buf.WriteByte('\n')
 
-	s.formatBlockStatements(block.Statements)
+	s.formatBlockStatements(block, block.Statements)
 
 	s.emitWithIndent("}")
 }
@@ -211,6 +211,7 @@ func printEntity(s *formatterState, ent *ast.Entity) {
 		s.buf.WriteString(" : ")
 		for _, mem := range ent.Members {
 			s.formatMember(mem)
+			s.emitBlockEndTrivia(mem)
 		}
 		return
 	}
@@ -252,7 +253,7 @@ func printEntity(s *formatterState, ent *ast.Entity) {
 	s.emitBlockStartTrivia(ent)
 	s.buf.WriteByte('\n')
 
-	s.formatBlockMembers(ent.Members)
+	s.formatBlockMembers(ent, ent.Members)
 
 	if ent.Kind != ast.EntityUnknown {
 		s.emitWithIndent("}")
@@ -314,7 +315,7 @@ func printContainer(s *formatterState, cont *ast.Container) {
 	s.emitBlockStartTrivia(cont)
 	s.buf.WriteByte('\n')
 
-	s.formatBlockStatements(cont.Statements)
+	s.formatBlockStatements(cont, cont.Statements)
 
 	if cont.Kind != ast.ContainerUnknown {
 		s.emitWithIndent("}")

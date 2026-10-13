@@ -144,6 +144,16 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 		ent.Members = append(ent.Members, member)
 	}
 
+	if p.stream.AssertType(tokenizer.EOF) {
+		p.ast.Diagnostics = append(p.ast.Diagnostics, &ast.Diagnostic{
+			ID:      len(p.ast.Diagnostics),
+			Message: tokenizer.ErrUnexpectedEOF.Error(),
+			Span:    p.stream.LastSemanticToken().Span,
+			Err:     tokenizer.ErrUnexpectedEOF,
+		})
+		return nil, tokenizer.ErrUnexpectedEOF
+	}
+
 	p.stream.TryConsumeType(tokenizer.RBRACE)
 
 	return wrapInContainers(ent, pkgPath), nil

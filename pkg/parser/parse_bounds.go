@@ -31,11 +31,29 @@ func (p *Parser) isEndMarker() bool {
 	return strings.HasPrefix(tok.Literal, "end")
 }
 
+// isDiagramEndMarker checks if the next token is a diagram end marker.
+func (p *Parser) isDiagramEndMarker(tok tokenizer.Token) bool {
+	if tok.Type != tokenizer.AT {
+		return false
+	}
+	tok = p.stream.PeekTokenAt(0)
+	return strings.HasPrefix(tok.Literal, "end")
+}
+
 func (p *Parser) isDiagramBound() bool {
 	return p.isStartMarker() || p.isEndMarker()
 }
 
-func (p *Parser) readDiagramBounds() (*ast.DiagramBound, error) {
+var possibleBounds = []string{
+	"uml",
+	"gantt",
+	"mindmap",
+	"def",
+}
+
+// readStartBounds reads the diagram bounds of a diagram.
+// You must assert that the following tokens are of a diagram bounds start/end marker.
+func (p *Parser) readStartBounds() (*ast.DiagramBound, error) {
 	atTok, consumed := p.stream.TryConsumeType(tokenizer.AT)
 	if !consumed {
 		return nil, fmt.Errorf("expected @ at diagram bounds start, got %s", atTok.Type)
@@ -53,28 +71,15 @@ func (p *Parser) readDiagramBounds() (*ast.DiagramBound, error) {
 		return nil, fmt.Errorf("invalid bounding marker for diagram, expected something that starts with 'start' or 'end'")
 	}
 
-	diag := &ast.DiagramBound{}
-
-	possibleBounds := []string{
-		"uml",
-		"gantt",
-		"mindmap",
-		"def",
+	diag := &ast.DiagramBound{
+		IsStart: true,
 	}
 
 	if typ, found := strings.CutPrefix(tok.Literal, "start"); found {
 		if !slices.Contains(possibleBounds, typ) {
 			return nil, fmt.Errorf("invalid starting marker for diagram, expected one of %s, got %s", possibleBounds, typ)
 		}
-		diag.IsStart = true
 		diag.Type = typ
-	} else if typ, found := strings.CutPrefix(tok.Literal, "end"); found {
-		if !slices.Contains(possibleBounds, typ) {
-			return nil, fmt.Errorf("invalid starting marker for diagram, expected one of %s, got %s", possibleBounds, typ)
-		}
-		diag.IsStart = false
-		diag.Type = typ
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
 	}
 
 	if !p.stream.AssertType(tokenizer.LPAREN) && !p.stream.AssertType(tokenizer.LBRACE) {
@@ -198,4 +203,29 @@ func (p *Parser) readDiagramBounds() (*ast.DiagramBound, error) {
 	}
 
 	return ast.WithMetadata(diag, p.Span(m), nil), nil
+}
+
+func (p *Parser) readEndBounds(atTok tokenizer.Token) (*ast.DiagramBound, error) {
+	if atTok.Type != tokenizer.AT {
+		return nil, fmt.Errorf("expected @ at diagram bounds start, got %s", atTok.Type)
+	}
+
+	bnd := &ast.DiagramBound{
+		IsStart: false,
+		BaseNode: ast.BaseNode{
+			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+		},
+	}
+
+	tok, ok := p.stream.TryConsumeType(tokenizer.IDENTIFIER)
+	if !ok {
+		return nil, NewParserErrorf(tok, "expected identifier at diagram bounds, got %s", tok.Type)
+	}
+
+	bnd.Type, ok = strings.CutPrefix(tok.Literal, "end")
+	if !ok {
+		return nil, NewParserErrorf(tok, "invalid ending marker for diagram, expected something that starts with 'end', got %s", tok.Literal)
+	}
+
+	return bnd, nil
 }

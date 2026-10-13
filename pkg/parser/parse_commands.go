@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -382,6 +381,7 @@ func (p *Parser) parseSetDirective(startTok tokenizer.Token) (ast.Statement, err
 		},
 	}, nil
 }
+
 func parseLayoutAlignmentToken(tok tokenizer.Token, blockKind ast.TextBlockKind) (horiz string, vert string, isAlign bool) {
 	switch strings.ToLower(tok.Literal) {
 	case "left", "right", "center":
@@ -459,9 +459,6 @@ func (p *Parser) parseLayoutStatement(kwTok tokenizer.Token, prefixAlignment *to
 		var err error
 		body, err = p.stream.ConsumeTextBlock("end", kwTok.Literal)
 		if err != nil {
-			if errors.Is(err, tokenizer.ErrScopeDelimiterHit) {
-				return nil, NewParserErrorf(kwTok, "unterminated block statement for %s (hit enclosing scope delimiter)", kwTok.Literal)
-			}
 			return nil, NewParserErrorf(kwTok, "unterminated block statement for %s", kwTok.Literal)
 		}
 	} else {

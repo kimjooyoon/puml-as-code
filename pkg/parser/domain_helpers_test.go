@@ -176,7 +176,7 @@ func TestReadDiagramBounds(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			p := newParserForTest(tc.input)
-			b, err := p.readDiagramBounds()
+			b, err := p.readStartBounds()
 			if tc.expectError {
 				require.Error(t, err)
 				return
@@ -208,7 +208,8 @@ func TestReadDiagramBounds(t *testing.T) {
 			}
 
 			p.stream.TryConsumeType(tokenizer.NEWLINE)
-			b, err = p.readDiagramBounds()
+			atTok := p.stream.Emit()
+			b, err = p.readEndBounds(atTok)
 			require.NoError(t, err)
 			require.False(t, b.IsStart)
 			require.Equal(t, tc.expectedType, b.Type)

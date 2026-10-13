@@ -13,11 +13,10 @@ import (
 
 func TestParseEntity(t *testing.T) {
 	tests := []struct {
-		name      string
-		input     string
-		kwType    keyword.KeywordKind
-		want      ast.Statement
-		expectErr bool
+		name   string
+		input  string
+		kwType keyword.KeywordKind
+		want   ast.Statement
 	}{
 		{
 			name:   "simple class",
@@ -46,13 +45,6 @@ func TestParseEntity(t *testing.T) {
 				Alias:      "\"MC\"",
 				Kind:       ast.EntityClass,
 			},
-		},
-		{
-			name:      "class with invalid alias (not a string)",
-			input:     "class MyClass as MC",
-			kwType:    keyword.Class,
-			want:      nil,
-			expectErr: true,
 		},
 		{
 			name:   "class with stereotype",
@@ -134,34 +126,6 @@ func TestParseEntity(t *testing.T) {
 			},
 		},
 		{
-			name:      "invalid alias",
-			input:     "class MyClass as",
-			kwType:    keyword.Class,
-			want:      nil,
-			expectErr: true,
-		},
-		{
-			name:      "unclosed stereotype",
-			input:     "class MyClass <<Stereo",
-			kwType:    keyword.Class,
-			want:      nil,
-			expectErr: true,
-		},
-		{
-			name:      "unclosed body",
-			input:     "class MyClass {",
-			kwType:    keyword.Class,
-			want:      nil,
-			expectErr: true,
-		},
-		{
-			name:      "invalid member inside body",
-			input:     "class MyClass {\n  name : invalid\n}",
-			kwType:    keyword.Class,
-			want:      nil,
-			expectErr: true,
-		},
-		{
 			name:   "sketch field inside body",
 			input:  "class MyClass {\n  untypedField\n}",
 			kwType: keyword.Class,
@@ -205,17 +169,99 @@ func TestParseEntity(t *testing.T) {
 			p := Parser{
 				stream:  tokenizer.NewTokenStream(tc.input),
 				Dialect: dialect.NewGoDialect(),
+				ast:     &ast.Diagram{},
 			}
 			tok := p.stream.Emit()
 			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
 
 			got, err := p.parseEntity(tok)
-			if tc.expectErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-				assertASTEqual(t, tc.want, got)
+			require.NoError(t, err)
+			assertASTEqual(t, tc.want, got)
+		})
+	}
+}
+
+func TestParseEntity_Errors(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		kwType keyword.KeywordKind
+	}{
+		{
+			name:   "class with invalid alias (not a string)",
+			input:  "class MyClass as MC",
+			kwType: keyword.Class,
+		},
+		{
+			name:   "invalid alias",
+			input:  "class MyClass as",
+			kwType: keyword.Class,
+		},
+		{
+			name:   "unclosed stereotype",
+			input:  "class MyClass <<Stereo",
+			kwType: keyword.Class,
+		},
+		{
+			name:   "unclosed body",
+			input:  "class MyClass {",
+			kwType: keyword.Class,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := Parser{
+				stream:  tokenizer.NewTokenStream(tc.input),
+				Dialect: dialect.NewGoDialect(),
+				ast:     &ast.Diagram{},
 			}
+			tok := p.stream.Emit()
+			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
+
+			got, err := p.parseEntity(tok)
+			require.Error(t, err)
+			require.Nil(t, got)
+		})
+	}
+}
+
+func TestParseEntity_Recovery(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		kwType   keyword.KeywordKind
+		checkBad func(t *testing.T, stmt ast.Statement, p *Parser)
+	}{
+		{
+			name:   "invalid member inside body",
+			input:  "class MyClass {\n  name : invalid\n}",
+			kwType: keyword.Class,
+			checkBad: func(t *testing.T, stmt ast.Statement, p *Parser) {
+				ent, ok := stmt.(*ast.Entity)
+				require.True(t, ok, "expected statement to be *ast.Entity")
+				require.Len(t, ent.Members, 1)
+				bad, ok := ent.Members[0].(*ast.BadMember)
+				require.True(t, ok, "expected member to be *ast.BadMember")
+				require.NotNil(t, bad.Diagnostic)
+				require.True(t, p.ast.HasErrors())
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := Parser{
+				stream:  tokenizer.NewTokenStream(tc.input),
+				Dialect: dialect.NewGoDialect(),
+				ast:     &ast.Diagram{},
+			}
+			tok := p.stream.Emit()
+			require.Equal(t, tc.kwType, keyword.Classify(tok.Literal))
+
+			got, err := p.parseEntity(tok)
+			require.NoError(t, err)
+			tc.checkBad(t, got, &p)
 		})
 	}
 }
@@ -585,4 +631,3 @@ func TestParseEntityAndContainerTags(t *testing.T) {
 		})
 	}
 }
-
