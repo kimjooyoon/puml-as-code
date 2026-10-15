@@ -58,7 +58,7 @@ func (p *Parser) fallbackRoute(
 
 	dgnst.Node = badStmt
 
-	p.ast.Diagnostics = append(p.ast.Diagnostics, dgnst)
+	p.recordDiagnostic(dgnst)
 	return badStmt
 }
 

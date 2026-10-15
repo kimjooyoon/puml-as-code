@@ -20,7 +20,7 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 	segments := []string{firstTok.Literal}
 
 	for {
-		length, ok := p.stream.AssertPackageSeparator()
+		length, ok := p.stream.MatchPackageSeparatorAt(0)
 		if !ok {
 			break
 		}

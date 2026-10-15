@@ -145,7 +145,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	}
 
 	if p.stream.AssertType(tokenizer.EOF) {
-		p.ast.Diagnostics = append(p.ast.Diagnostics, &ast.Diagnostic{
+		p.recordDiagnostic(&ast.Diagnostic{
 			ID:      len(p.ast.Diagnostics),
 			Message: tokenizer.ErrUnexpectedEOF.Error(),
 			Span:    p.stream.LastSemanticToken().Span,
@@ -210,7 +210,7 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 	}
 
 	diagst.Node = badMember
-	p.ast.Diagnostics = append(p.ast.Diagnostics, diagst)
+	p.recordDiagnostic(diagst)
 	return badMember
 }
 

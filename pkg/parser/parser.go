@@ -123,7 +123,7 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 				Span:    p.stream.LastSemanticToken().Span,
 				Err:     tokenizer.ErrUnexpectedEOF,
 			}
-			p.ast.Diagnostics = append(p.ast.Diagnostics, eofDiagnst)
+			p.recordDiagnostic(eofDiagnst)
 			break
 		} else if tok.Type == tokenizer.NEWLINE {
 			// We can leave it like this for now
@@ -147,7 +147,7 @@ func (p *Parser) Parse(input string) (*ast.Diagram, error) {
 		if endBound, ok := stmt.(*ast.DiagramBound); ok && !endBound.IsStart {
 			if endBound.Type != startBound.Type {
 				msg := fmt.Errorf("types of starting and ending markers don't match")
-				p.ast.Diagnostics = append(p.ast.Diagnostics, &ast.Diagnostic{
+				p.recordDiagnostic(&ast.Diagnostic{
 					ID:      len(p.ast.Diagnostics),
 					Message: msg.Error(),
 					Span:    endBound.NodeSpan,

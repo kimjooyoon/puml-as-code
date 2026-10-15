@@ -97,14 +97,10 @@ func printDiagramBound(s *formatterState, bound *ast.DiagramBound) {
 		s.buf.WriteString("{")
 		s.buf.WriteString(bound.Tools.File)
 		if bound.Tools.Caption != "" {
-			s.buf.WriteString(", ")
-			s.buf.WriteString(bound.Tools.Caption)
+			fmt.Fprintf(&s.buf, ", %s", bound.Tools.Caption)
 		}
 		for _, opt := range bound.Tools.Options {
-			s.buf.WriteString(", ")
-			s.buf.WriteString(opt.Key)
-			s.buf.WriteString("=")
-			s.buf.WriteString(opt.Value)
+			fmt.Fprintf(&s.buf, ", %s=%s", opt.Key, opt.Value)
 		}
 		s.buf.WriteString("}")
 	} else if bound.TrailingName != "" {
@@ -121,9 +117,7 @@ func printScaleCommand(s *formatterState, scaleCmd *ast.ScaleCommand) {
 	s.buf.WriteString(scaleCmd.Lhs)
 	if scaleCmd.Sep != "" {
 		if scaleCmd.Sep != "." {
-			s.buf.WriteByte(' ')
-			s.buf.WriteString(scaleCmd.Sep)
-			s.buf.WriteByte(' ')
+			fmt.Fprintf(&s.buf, " %s ", scaleCmd.Sep)
 		} else {
 			s.buf.WriteString(scaleCmd.Sep)
 		}
@@ -147,9 +141,7 @@ func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 		s.buf.WriteByte(' ')
 	}
 	if block.Stereotype != "" {
-		s.buf.WriteString("<<")
-		s.buf.WriteString(block.Stereotype)
-		s.buf.WriteString(">> ")
+		fmt.Fprintf(&s.buf, "<<%s>> ", block.Stereotype)
 	}
 	s.buf.WriteString("{")
 	s.emitBlockStartTrivia(block)
