@@ -9,287 +9,342 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func TestDisambiguateIdent(t *testing.T) {
-	t.Run("relationships", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input string
-			check func(t *testing.T, stmt ast.Statement, err error)
-		}{
-			{
-				name:  "simple solid arrow",
-				input: "User --> Order",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "User", rel.LHS.Entity)
-					require.Equal(t, "Order", rel.RHS.Entity)
-				},
+func TestDisambiguateIdent_Relationships(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  *ast.Relationship
+	}{
+		{
+			name:  "simple solid arrow",
+			input: "User --> Order",
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "User"},
+				Body:      '-',
+				RArrow:    '>',
+				BodyCount: 2,
+				TypeRHS:   ast.RelationAssociation,
+				RHS:       ast.TargetRef{Entity: "Order"},
 			},
-			{
-				name:  "contextual keyword as LHS relationship",
-				input: "class --> Order",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "class", rel.LHS.Entity)
-					require.Equal(t, "Order", rel.RHS.Entity)
-				},
+		},
+		{
+			name:  "contextual keyword as LHS relationship",
+			input: "class --> Order",
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "class"},
+				Body:      '-',
+				RArrow:    '>',
+				BodyCount: 2,
+				TypeRHS:   ast.RelationAssociation,
+				RHS:       ast.TargetRef{Entity: "Order"},
 			},
-			{
-				name:  "contextual keyword with dash link",
-				input: "class - cls",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "class", rel.LHS.Entity)
-					require.Equal(t, "cls", rel.RHS.Entity)
-				},
+		},
+		{
+			name:  "contextual keyword with dash link",
+			input: "class - cls",
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "class"},
+				Body:      '-',
+				BodyCount: 1,
+				RHS:       ast.TargetRef{Entity: "cls"},
 			},
-			{
-				name:  "relationship with LHS multiplicity",
-				input: `User "1" --> "*" Order`,
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "User", rel.LHS.Entity)
-					require.Equal(t, "1", rel.MultLHS.Raw)
-					require.Equal(t, "*", rel.MultRHS.Raw)
-					require.Equal(t, "Order", rel.RHS.Entity)
-				},
+		},
+		{
+			name:  "relationship with LHS multiplicity",
+			input: `User "1" --> "*" Order`,
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "User"},
+				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
+				Body:      '-',
+				RArrow:    '>',
+				BodyCount: 2,
+				TypeRHS:   ast.RelationAssociation,
+				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
+				RHS:       ast.TargetRef{Entity: "Order"},
 			},
-			{
-				name:  "relationship with left extension arrow and multiplicity",
-				input: `User "1" <|-- "*" Order`,
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "User", rel.LHS.Entity)
-					require.Equal(t, '|', rel.LArrow)
-					require.Equal(t, "Order", rel.RHS.Entity)
-				},
+		},
+		{
+			name:  "relationship with left extension arrow and multiplicity",
+			input: `User "1" <|-- "*" Order`,
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "User"},
+				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
+				LArrow:    '|',
+				Body:      '-',
+				BodyCount: 2,
+				TypeLHS:   ast.RelationInheritance,
+				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
+				RHS:       ast.TargetRef{Entity: "Order"},
 			},
-			{
-				name:  "relationship with left arrow and multiplicity",
-				input: `User "1" <-- "*" Order`,
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, "User", rel.LHS.Entity)
-					require.Equal(t, '<', rel.LArrow)
-				},
+		},
+		{
+			name:  "relationship with left arrow and multiplicity",
+			input: `User "1" <-- "*" Order`,
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{Entity: "User"},
+				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
+				LArrow:    '<',
+				Body:      '-',
+				BodyCount: 2,
+				TypeLHS:   ast.RelationAssociation,
+				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
+				RHS:       ast.TargetRef{Entity: "Order"},
 			},
-			{
-				name:  "qualified relationship",
-				input: "net.http.Client --> Server",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, []string{"net", "http"}, rel.LHS.PackagePath)
-					require.Equal(t, "Client", rel.LHS.Entity)
-					require.Equal(t, "Server", rel.RHS.Entity)
-				},
+		},
+		{
+			name:  "qualified relationship",
+			input: "net.http.Client --> Server",
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client"},
+				Body:      '-',
+				RArrow:    '>',
+				BodyCount: 2,
+				TypeRHS:   ast.RelationAssociation,
+				RHS:       ast.TargetRef{Entity: "Server"},
 			},
-			{
-				name:  "qualified relationship with multiplicity",
-				input: `net.http.Client "1" --> "*" Server`,
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					rel, ok := stmt.(*ast.Relationship)
-					require.True(t, ok)
-					require.Equal(t, []string{"net", "http"}, rel.LHS.PackagePath)
-					require.Equal(t, "Client", rel.LHS.Entity)
-					require.Equal(t, "1", rel.MultLHS.Raw)
-				},
+		},
+		{
+			name:  "qualified relationship with multiplicity",
+			input: `net.http.Client "1" --> "*" Server`,
+			want: &ast.Relationship{
+				LHS:       ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client"},
+				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
+				Body:      '-',
+				RArrow:    '>',
+				BodyCount: 2,
+				TypeRHS:   ast.RelationAssociation,
+				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
+				RHS:       ast.TargetRef{Entity: "Server"},
 			},
-		}
+		},
+	}
 
-		for _, tc := range tests {
-			t.Run(tc.name, func(t *testing.T) {
-				p := &Parser{
-					Dialect: dialect.NewGoDialect(),
-					stream:  tokenizer.NewTokenStream(tc.input),
-					ast:     &ast.Diagram{},
-				}
-				firstTok := p.stream.Emit()
-				stmt, err := p.disambiguateIdent(firstTok)
-				tc.check(t, stmt, err)
-			})
-		}
-	})
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := &Parser{
+				Dialect: dialect.NewGoDialect(),
+				stream:  tokenizer.NewTokenStream(tc.input),
+				ast:     &ast.Diagram{},
+			}
+			firstTok := p.stream.Emit()
+			stmt, err := p.disambiguateIdent(firstTok)
+			require.NoError(t, err)
+			assertASTEqual(t, tc.want, stmt)
+		})
+	}
+}
 
-	t.Run("inline members", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input string
-			check func(t *testing.T, stmt ast.Statement, err error)
-		}{
-			{
-				name:  "simple inline member",
-				input: "User : +id string",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					ent, ok := stmt.(*ast.Entity)
-					require.True(t, ok)
-					require.Equal(t, "User", ent.Identifier)
-					require.Len(t, ent.Members, 1)
+func TestDisambiguateIdent_InlineMembers(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  ast.Statement
+	}{
+		{
+			name:  "simple inline member",
+			input: "User : +id string",
+			want: &ast.Entity{
+				Identifier: "User",
+				Kind:       ast.EntityUnknown,
+				Members: []ast.Member{
+					&ast.FieldDeclaration{
+						Visibility: ast.VisibilityPublic,
+						Field: &dialect.GoField{
+							Name: "id",
+							Type: dialect.NamedRef("string"),
+						},
+					},
 				},
 			},
-			{
-				name:  "contextual keyword as inline member target",
-				input: "class : +field int",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					ent, ok := stmt.(*ast.Entity)
-					require.True(t, ok)
-					require.Equal(t, "class", ent.Identifier)
-					require.Len(t, ent.Members, 1)
+		},
+		{
+			name:  "contextual keyword as inline member target",
+			input: "class : +field int",
+			want: &ast.Entity{
+				Identifier: "class",
+				Kind:       ast.EntityUnknown,
+				Members: []ast.Member{
+					&ast.FieldDeclaration{
+						Visibility: ast.VisibilityPublic,
+						Field: &dialect.GoField{
+							Name: "field",
+							Type: dialect.NamedRef("int"),
+						},
+					},
 				},
 			},
-			{
-				name:  "note followed by colon is parsed as inline member on note class",
-				input: "note : text",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					ent, ok := stmt.(*ast.Entity)
-					require.True(t, ok)
-					require.Equal(t, "note", ent.Identifier)
-					require.Len(t, ent.Members, 1)
+		},
+		{
+			name:  "note followed by colon is parsed as inline member on note class",
+			input: "note : text",
+			want: &ast.Entity{
+				Identifier: "note",
+				Kind:       ast.EntityUnknown,
+				Members: []ast.Member{
+					&ast.FieldDeclaration{
+						Visibility: ast.VisibilityUnknown,
+						Field: &dialect.GoField{
+							Name: "text",
+						},
+					},
 				},
 			},
-			{
-				name:  "qualified inline member",
-				input: "net.http.Client : +Do() error",
-				check: func(t *testing.T, stmt ast.Statement, err error) {
-					require.NoError(t, err)
-					// Wrapped in container hierarchy
-					cont, ok := stmt.(*ast.Container)
-					require.True(t, ok)
-					require.Equal(t, "net", cont.Identifier)
+		},
+		{
+			name:  "qualified inline member",
+			input: "net.http.Client : +Do() error",
+			want: &ast.Container{
+				Identifier: "net",
+				Statements: []ast.Statement{
+					&ast.Container{
+						Identifier: "http",
+						Statements: []ast.Statement{
+							&ast.Entity{
+								Identifier: "Client",
+								Kind:       ast.EntityUnknown,
+								Members: []ast.Member{
+									&ast.MethodDeclaration{
+										Visibility: ast.VisibilityPublic,
+										Method: &dialect.GoMethod{
+											Name: "Do",
+											ReturnType: []dialect.GoParameter{
+												{Type: dialect.NamedRef("error")},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
-		}
+		},
+	}
 
-		for _, tc := range tests {
-			t.Run(tc.name, func(t *testing.T) {
-				p := &Parser{
-					Dialect: dialect.NewGoDialect(),
-					stream:  tokenizer.NewTokenStream(tc.input),
-					ast:     &ast.Diagram{},
-				}
-				firstTok := p.stream.Emit()
-				stmt, err := p.disambiguateIdent(firstTok)
-				tc.check(t, stmt, err)
-			})
-		}
-	})
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := &Parser{
+				Dialect: dialect.NewGoDialect(),
+				stream:  tokenizer.NewTokenStream(tc.input),
+				ast:     &ast.Diagram{},
+			}
+			firstTok := p.stream.Emit()
+			stmt, err := p.disambiguateIdent(firstTok)
+			require.NoError(t, err)
+			assertASTEqual(t, tc.want, stmt)
+		})
+	}
+}
 
-	t.Run("delegation to keyword resolution (returns nil, nil)", func(t *testing.T) {
-		tests := []struct {
-			name  string
-			input string
-		}{
-			{name: "class declaration", input: "class Foo"},
-			{name: "class with display name and alias", input: `class "Display Name" as Foo`},
-			{name: "class with display name and generic", input: `class "Display Name" <T>`},
-			{name: "class with display name and stereotype", input: `class "Display Name" <<Service>>`},
-			{name: "class with display name and color", input: `class "Display Name" #red`},
-			{name: "class with display name and body", input: "class \"Display Name\" {\n}"},
-			{name: "package declaration", input: "package mypkg"},
-			{name: "package with body", input: "package mypkg {\n}"},
-			{name: "anonymous together block", input: "together {\n}"},
-			{name: "title statement", input: "title My Title"},
-			{name: "hide statement", input: "hide empty members"},
-			{name: "scale statement", input: "scale 1.5"},
-			{name: "note statement", input: "note left of Foo"},
-		}
+func TestDisambiguateIdent_Delegation(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+	}{
+		{name: "class declaration", input: "class Foo"},
+		{name: "class with display name and alias", input: `class "Display Name" as Foo`},
+		{name: "class with display name and generic", input: `class "Display Name" <T>`},
+		{name: "class with display name and stereotype", input: `class "Display Name" <<Service>>`},
+		{name: "class with display name and color", input: `class "Display Name" #red`},
+		{name: "class with display name and body", input: "class \"Display Name\" {\n}"},
+		{name: "package declaration", input: "package mypkg"},
+		{name: "package with body", input: "package mypkg {\n}"},
+		{name: "anonymous together block", input: "together {\n}"},
+		{name: "title statement", input: "title My Title"},
+		{name: "hide statement", input: "hide empty members"},
+		{name: "scale statement", input: "scale 1.5"},
+		{name: "note statement", input: "note left of Foo"},
+	}
 
-		for _, tc := range tests {
-			t.Run(tc.name, func(t *testing.T) {
-				p := &Parser{
-					Dialect: dialect.NewGoDialect(),
-					stream:  tokenizer.NewTokenStream(tc.input),
-					ast:     &ast.Diagram{},
-				}
-				firstTok := p.stream.Emit()
-				stmt, err := p.disambiguateIdent(firstTok)
-				require.NoError(t, err)
-				require.Nil(t, stmt, "expected statement to be delegated (nil, nil) for input: %q", tc.input)
-			})
-		}
-	})
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			p := &Parser{
+				Dialect: dialect.NewGoDialect(),
+				stream:  tokenizer.NewTokenStream(tc.input),
+				ast:     &ast.Diagram{},
+			}
+			firstTok := p.stream.Emit()
+			stmt, err := p.disambiguateIdent(firstTok)
+			require.NoError(t, err)
+			require.Nil(t, stmt, "expected statement to be delegated (nil, nil) for input: %q", tc.input)
+		})
+	}
+}
 
-	t.Run("skinparam block", func(t *testing.T) {
-		input := "skinparam {\n  ClassFontColor blue\n}"
+func TestDisambiguateIdent_Skinparam(t *testing.T) {
+	input := "skinparam {\n  ClassFontColor blue\n}"
+	p := &Parser{
+		Dialect: dialect.NewGoDialect(),
+		stream:  tokenizer.NewTokenStream(input),
+		ast:     &ast.Diagram{},
+	}
+	firstTok := p.stream.Emit()
+	stmt, err := p.disambiguateIdent(firstTok)
+	require.NoError(t, err)
+	require.NotNil(t, stmt)
+	_, ok := stmt.(*ast.SkinparamBlock)
+	require.True(t, ok)
+}
+
+func TestDisambiguateIdent_QualifiedTargetError(t *testing.T) {
+	input := "com.example.User"
+	p := &Parser{
+		Dialect: dialect.NewGoDialect(),
+		stream:  tokenizer.NewTokenStream(input),
+		ast:     &ast.Diagram{},
+	}
+	firstTok := p.stream.Emit()
+	stmt, err := p.disambiguateIdent(firstTok)
+	require.Error(t, err)
+	require.Nil(t, stmt)
+	require.Contains(t, err.Error(), "expected relationship arrow or ':' after qualified target")
+}
+
+func TestDisambiguateIdent_CustomPackageSeparatorDash(t *testing.T) {
+	t.Run("kebab target with arrow", func(t *testing.T) {
+		input := "note-left->text"
 		p := &Parser{
 			Dialect: dialect.NewGoDialect(),
 			stream:  tokenizer.NewTokenStream(input),
 			ast:     &ast.Diagram{},
 		}
+		p.stream.PackageSeparator = "-"
 		firstTok := p.stream.Emit()
 		stmt, err := p.disambiguateIdent(firstTok)
 		require.NoError(t, err)
-		require.NotNil(t, stmt)
-		_, ok := stmt.(*ast.SkinparamBlock)
-		require.True(t, ok)
+
+		want := &ast.Relationship{
+			LHS:       ast.TargetRef{PackagePath: []string{"note"}, Entity: "left"},
+			Body:      '-',
+			RArrow:    '>',
+			BodyCount: 1,
+			TypeRHS:   ast.RelationAssociation,
+			RHS:       ast.TargetRef{Entity: "text"},
+		}
+		assertASTEqual(t, want, stmt)
 	})
 
-	t.Run("qualified target syntax error without relationship or colon", func(t *testing.T) {
-		input := "com.example.User"
+	t.Run("target with styled arrow", func(t *testing.T) {
+		input := "note-[bold]->text"
 		p := &Parser{
 			Dialect: dialect.NewGoDialect(),
 			stream:  tokenizer.NewTokenStream(input),
 			ast:     &ast.Diagram{},
 		}
+		p.stream.PackageSeparator = "-"
 		firstTok := p.stream.Emit()
 		stmt, err := p.disambiguateIdent(firstTok)
-		require.Error(t, err)
-		require.Nil(t, stmt)
-		require.Contains(t, err.Error(), "expected relationship arrow or ':' after qualified target")
-	})
+		require.NoError(t, err)
 
-	t.Run("custom package separator set to dash", func(t *testing.T) {
-		t.Run("kebab target with arrow", func(t *testing.T) {
-			input := "note-left->text"
-			p := &Parser{
-				Dialect: dialect.NewGoDialect(),
-				stream:  tokenizer.NewTokenStream(input),
-				ast:     &ast.Diagram{},
-			}
-			p.stream.PackageSeparator = "-"
-			firstTok := p.stream.Emit()
-			stmt, err := p.disambiguateIdent(firstTok)
-			require.NoError(t, err)
-			rel, ok := stmt.(*ast.Relationship)
-			require.True(t, ok)
-			require.Equal(t, []string{"note"}, rel.LHS.PackagePath)
-			require.Equal(t, "left", rel.LHS.Entity)
-			require.Equal(t, "text", rel.RHS.Entity)
-		})
-
-		t.Run("target with styled arrow", func(t *testing.T) {
-			input := "note-[bold]->text"
-			p := &Parser{
-				Dialect: dialect.NewGoDialect(),
-				stream:  tokenizer.NewTokenStream(input),
-				ast:     &ast.Diagram{},
-			}
-			p.stream.PackageSeparator = "-"
-			firstTok := p.stream.Emit()
-			stmt, err := p.disambiguateIdent(firstTok)
-			require.NoError(t, err)
-			rel, ok := stmt.(*ast.Relationship)
-			require.True(t, ok)
-			require.Equal(t, "note", rel.LHS.Entity)
-			require.Equal(t, []string{"bold"}, rel.Attrs)
-			require.Equal(t, "text", rel.RHS.Entity)
-		})
+		want := &ast.Relationship{
+			LHS:       ast.TargetRef{Entity: "note"},
+			Body:      '-',
+			RArrow:    '>',
+			BodyCount: 2,
+			Attrs:     []string{"bold"},
+			TypeRHS:   ast.RelationAssociation,
+			RHS:       ast.TargetRef{Entity: "text"},
+		}
+		assertASTEqual(t, want, stmt)
 	})
 }
