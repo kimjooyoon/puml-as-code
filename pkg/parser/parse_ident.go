@@ -65,6 +65,9 @@ func (p *Parser) disambiguateIdent(identTok tokenizer.Token) (ast.Statement, err
 			// it is a relationship multiplicity
 			return p.parseRelationship(identTok)
 		case tokenizer.COLON:
+			if p.stream.PeekTokenAt(offst+1).Type == tokenizer.COLON {
+				return p.parseRelationship(identTok)
+			}
 			return p.parseInlineMember(identTok)
 		}
 
@@ -81,6 +84,9 @@ func (p *Parser) disambiguateIdent(identTok tokenizer.Token) (ast.Statement, err
 	case tokenizer.STRING:
 		followingTok := p.stream.PeekTokenAt(offst + 1)
 		if followingTok.Type == tokenizer.IDENTIFIER {
+			if followingTok.Literal == "o" || followingTok.Literal == "x" {
+				return p.parseRelationship(identTok)
+			}
 			// We should have a container or an entity
 			// basically delegate to keyword resolution
 			return nil, nil
@@ -94,9 +100,6 @@ func (p *Parser) disambiguateIdent(identTok tokenizer.Token) (ast.Statement, err
 				// stereotype
 				return nil, nil
 			case tokenizer.IDENTIFIER:
-				if followingTok.Literal == "o" || followingTok.Literal == "x" {
-					return p.parseRelationship(identTok)
-				}
 				// generic
 				return nil, nil
 			default:
@@ -114,6 +117,9 @@ func (p *Parser) disambiguateIdent(identTok tokenizer.Token) (ast.Statement, err
 			return nil, nil
 		}
 	case tokenizer.COLON:
+		if p.stream.PeekTokenAt(offst+1).Type == tokenizer.COLON {
+			return p.parseRelationship(identTok)
+		}
 		return p.parseInlineMember(identTok)
 	default:
 		// return error here

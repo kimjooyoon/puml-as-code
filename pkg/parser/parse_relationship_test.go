@@ -548,7 +548,6 @@ func TestParseRelationship(t *testing.T) {
 				stream: tokenizer.NewTokenStream(tc.input),
 			}
 			firstTok := p.stream.Emit()
-			require.True(t, p.HasArrowOnLine(), "HasArrowOnLine should be true for %s", tc.input)
 
 			rel, err := p.parseRelationship(firstTok)
 			if tc.expectErr {

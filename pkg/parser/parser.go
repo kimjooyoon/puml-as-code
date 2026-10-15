@@ -179,8 +179,8 @@ func (p *Parser) parseContainerStatement(tok tokenizer.Token) (ast.Statement, er
 		return p.parseDirective(tok)
 	}
 
-	if rel, err, isRel := p.tryParseRelationship(tok); isRel {
-		return rel, err
+	if stmt, err := p.disambiguateIdent(tok); stmt != nil || err != nil {
+		return stmt, err
 	}
 
 	switch keyword.Classify(tok.Literal) {
@@ -229,12 +229,7 @@ func (p *Parser) parseContainerStatement(tok tokenizer.Token) (ast.Statement, er
 		return p.parseNote(tok)
 	}
 
-	switch tok.Type {
-	case tokenizer.IDENTIFIER:
-		return p.parseInlineMember(tok)
-	default:
-		return nil, nil
-	}
+	return nil, nil
 }
 
 func (p *Parser) parseDiagramOnlyStatement(tok tokenizer.Token) (ast.Statement, error) {
@@ -248,8 +243,8 @@ func (p *Parser) parseDiagramOnlyStatement(tok tokenizer.Token) (ast.Statement, 
 		return p.parseDirective(tok)
 	}
 
-	if rel, err, isRel := p.tryParseRelationship(tok); isRel {
-		return rel, err
+	if stmt, err := p.disambiguateIdent(tok); stmt != nil || err != nil {
+		return stmt, err
 	}
 
 	switch keyword.Classify(tok.Literal) {
