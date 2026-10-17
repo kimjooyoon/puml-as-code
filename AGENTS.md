@@ -57,3 +57,19 @@ go doc ./pkg/generator/go
 ### Current Backlog
 
 Full list of tasks is available in [`plan.md`](file:///home/yur4uwe/Projects/puml-as-code/plan.md).
+
+## 4. Rules
+
+### 1. Implicit Containers
+
+Implicit containers are entities or containers that are not explicitly declared in the source code via a declaration syntax, but whose existanceimplied by other explicit declarations. E.g.:
+
+```puml
+class pkg.Foo
+```
+
+In this snippet package `pkg` is implicitly declared as a container. In AST such containers only have their name as it is the only inferrable thing. They may become explicit containers under resolution pass which unifies all declarations, but after that point the concepts of AST aren't applicable.
+
+### 2. Stereotype
+
+There can be multiple stereotypes in a single entity/container declaration. Everything inside <<...>> is a single stereotype. Commas are valid but they break the `<style>...</style>` styling because it thinks of `.Stereo1, Stereo2 {...}` as 2 different selectors for the same style.

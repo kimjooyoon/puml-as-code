@@ -63,9 +63,6 @@ func wrapInContainers(ent *ast.Entity, pkgPath []string) ast.Statement {
 func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	ent := &ast.Entity{
 		Kind: p.mapTokenToEntityKind(tok),
-		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
-		},
 	}
 
 	// Unexpectedly, class and other entity definitions have very strict syntax:
@@ -164,6 +161,8 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 	detach := p.stream.Attach(collector)
 	defer detach()
 
+	leadingTrivia := p.stream.DumpCollectedTrivia()
+
 	memberMark := p.Mark(tok)
 	member, err := p.parseEntityMember()
 	if err == nil {
@@ -172,15 +171,8 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 		}
 		detach()
 		p.stream.EmitCommentToks()
-		member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
+		member.SetMetadata(p.Span(memberMark), leadingTrivia, p.stream.DumpCollectedTrivia())
 		return member
-	}
-
-	var leadingTrivia []tokenizer.Token
-	if member == nil {
-		leadingTrivia = p.stream.DumpCollectedTrivia()
-	} else {
-		leadingTrivia = member.GetLeadingTrivia()
 	}
 
 	p.syncToLineOrBlockEnd()
@@ -228,8 +220,7 @@ func (p *Parser) parseEntityMember() (ast.Member, error) {
 	vis := ast.VisibilityUnknown
 	if mod, err := p.tryReadModifier(); err == nil {
 		// Handle scope modifiers
-		leadingTrivia := p.stream.DumpCollectedTrivia()
-		member, err = p.parseFieldOrMethod(&mod, vis, unamb(tokenizer.LBRACE), leadingTrivia)
+		member, err = p.parseFieldOrMethod(&mod, vis, unamb(tokenizer.LBRACE))
 		if err != nil {
 			return nil, err
 		}
@@ -240,7 +231,6 @@ func (p *Parser) parseEntityMember() (ast.Member, error) {
 	}
 
 	tok := p.stream.Emit()
-	leadingTrivia := p.stream.DumpCollectedTrivia()
 	switch tok.Type {
 	case tokenizer.RBRACE:
 		// It shouldn't arrive here, but just in case
@@ -255,14 +245,14 @@ func (p *Parser) parseEntityMember() (ast.Member, error) {
 	default:
 		return nil, NewParserError(tok, "Unexpected token in entity body")
 	}
-	return p.parseFieldOrMethod(nil, vis, tok, leadingTrivia)
+	return p.parseFieldOrMethod(nil, vis, tok)
 }
 
 // Can be either a field or a method
 // but start with a field as either start the same
 //
 // Returns the parsed field or method, must be asserted to be a field or method
-func (p *Parser) parseFieldOrMethod(mod *string, vis ast.VisibilityKind, entryTok tokenizer.Token, leadingTrivia []tokenizer.Token) (ast.Member, error) {
+func (p *Parser) parseFieldOrMethod(mod *string, vis ast.VisibilityKind, entryTok tokenizer.Token) (ast.Member, error) {
 	// Can enter this function with one of:
 	// - Name
 	// - Visibility
@@ -345,9 +335,6 @@ outer:
 			return nil, err
 		}
 		return &ast.MethodDeclaration{
-			BaseNode: ast.BaseNode{
-				LeadingTrivia: leadingTrivia,
-			},
 			Visibility: vis,
 			Modifiers:  mods,
 			Method:     method,
@@ -358,9 +345,6 @@ outer:
 			return nil, err
 		}
 		return &ast.FieldDeclaration{
-			BaseNode: ast.BaseNode{
-				LeadingTrivia: leadingTrivia,
-			},
 			Visibility: vis,
 			Modifiers:  mods,
 			Field:      field,
@@ -369,8 +353,6 @@ outer:
 }
 
 func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, error) {
-	leadingTrivia := p.stream.DumpCollectedTrivia()
-
 	targetRef, err := p.parseTargetRef(firstTok)
 	if err != nil {
 		return nil, err
@@ -397,12 +379,12 @@ func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, err
 		p.stream.Emit()
 	}
 	memberMark := p.Mark(entryTok)
-	member, err := p.parseFieldOrMethod(mod, vis, entryTok, leadingTrivia)
+	member, err := p.parseFieldOrMethod(mod, vis, entryTok)
 	if err != nil {
 		return nil, err
 	}
 	p.stream.EmitCommentToks()
-	member = ast.WithMetadata(member, p.Span(memberMark), p.stream.DumpCollectedTrivia())
+	member.SetMetadata(p.Span(memberMark), p.stream.DumpCollectedTrivia(), p.stream.DumpCollectedTrivia())
 
 	ent := &ast.Entity{
 		Identifier: targetRef.Entity,

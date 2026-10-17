@@ -6,7 +6,7 @@ type Node interface {
 	Span() tokenizer.SourceSpan
 	GetLeadingTrivia() []tokenizer.Token
 	GetTrailingTrivia() []tokenizer.Token
-	SetMetadata(span tokenizer.SourceSpan, trailing []tokenizer.Token)
+	SetMetadata(span tokenizer.SourceSpan, leading, trailing []tokenizer.Token)
 }
 
 type BaseNode struct {
@@ -19,12 +19,21 @@ func (bn *BaseNode) GetLeadingTrivia() []tokenizer.Token  { return bn.LeadingTri
 func (bn *BaseNode) GetTrailingTrivia() []tokenizer.Token { return bn.TrailingTrivia }
 func (bn *BaseNode) Span() tokenizer.SourceSpan           { return bn.NodeSpan }
 
-func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, trailing []tokenizer.Token) {
+func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, leading, trailing []tokenizer.Token) {
 	bn.NodeSpan = span
-	if len(bn.TrailingTrivia) > 0 && len(trailing) > 0 {
-		bn.TrailingTrivia = append(bn.TrailingTrivia, trailing...)
-	} else if len(trailing) > 0 {
-		bn.TrailingTrivia = trailing
+	if len(leading) > 0 {
+		if len(bn.LeadingTrivia) > 0 {
+			bn.LeadingTrivia = append(bn.LeadingTrivia, leading...)
+		} else {
+			bn.LeadingTrivia = leading
+		}
+	}
+	if len(trailing) > 0 {
+		if len(bn.TrailingTrivia) > 0 {
+			bn.TrailingTrivia = append(bn.TrailingTrivia, trailing...)
+		} else {
+			bn.TrailingTrivia = trailing
+		}
 	}
 }
 
@@ -60,9 +69,3 @@ type BadStatement struct {
 func (b *BadStatement) StatementNode() Statement { return b }
 
 var _ Statement = (*BadStatement)(nil)
-
-// WithMetadata attaches SourceSpan and TrailingTrivia to any Node and returns the updated Node.
-func WithMetadata[T Node](node T, span tokenizer.SourceSpan, trailing []tokenizer.Token) T {
-	node.SetMetadata(span, trailing)
-	return node
-}

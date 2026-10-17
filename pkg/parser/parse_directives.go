@@ -37,9 +37,6 @@ func (p *Parser) parseIncludeDirective(tok tokenizer.Token) (*ast.IncludeDirecti
 
 	dir := &ast.IncludeDirective{
 		Kind: kind,
-		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
-		},
 	}
 
 	filePathToks := p.stream.ConsumeUntilType(tokenizer.NEWLINE, tokenizer.EXCLAMATION)

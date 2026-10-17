@@ -70,6 +70,8 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 
 	mark := p.Mark(tok)
 
+	leadingTrivia := p.stream.DumpCollectedTrivia()
+
 	stmt, err := p.parseDiagramOnlyStatement(tok)
 	if err != nil {
 		return p.fallbackRoute(tok, stmt, err, mark, collector, detach, false)
@@ -77,7 +79,7 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
 		return stmt
 	}
 
@@ -88,7 +90,7 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
 		return stmt
 	}
 
@@ -103,6 +105,8 @@ func (p *Parser) routeContainerStatement(tok tokenizer.Token) ast.Statement {
 
 	mark := p.Mark(tok)
 
+	leadingTrivia := p.stream.DumpCollectedTrivia()
+
 	stmt, err := p.parseContainerStatement(tok)
 	if err != nil {
 		return p.fallbackRoute(tok, stmt, err, mark, collector, detach, true)
@@ -110,7 +114,7 @@ func (p *Parser) routeContainerStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt = ast.WithMetadata(stmt, p.Span(mark), p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
 		return stmt
 	}
 
