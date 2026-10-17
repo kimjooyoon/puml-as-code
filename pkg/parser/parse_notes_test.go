@@ -35,7 +35,7 @@ func TestParseNote(t *testing.T) {
 				Kind:      ast.NoteTargeted,
 				Text:      "some note text",
 				Direction: ast.DirectionRight,
-				Target:    &ast.TargetRef{Entity: "MyClass"},
+				Target:    identRefPtr("MyClass"),
 			},
 		},
 		{
@@ -45,7 +45,7 @@ func TestParseNote(t *testing.T) {
 				Kind:      ast.NoteTargeted,
 				Text:      "some note text",
 				Direction: ast.DirectionTop,
-				Target:    &ast.TargetRef{Entity: "MyClass"},
+				Target:    identRefPtr("MyClass"),
 				Color:     "#green",
 			},
 		},
@@ -56,7 +56,7 @@ func TestParseNote(t *testing.T) {
 				Kind:      ast.NoteLink,
 				Text:      "some note text",
 				Direction: ast.DirectionBottom,
-				Target:    &ast.TargetRef{Entity: "link"},
+				Target:    identRefPtr("link"),
 			},
 		},
 		{
@@ -75,7 +75,7 @@ func TestParseNote(t *testing.T) {
 				Kind:      ast.NoteTargeted,
 				Text:      "some note text",
 				Direction: ast.DirectionLeft,
-				Target:    &ast.TargetRef{Entity: "MyClass"},
+				Target:    identRefPtr("MyClass"),
 			},
 		},
 		{
@@ -104,7 +104,7 @@ func TestParseNote(t *testing.T) {
 			want: &ast.Note{
 				Kind:       ast.NoteAlias,
 				Text:       "some note text",
-				Identifier: "N1",
+				Identifier: identRef("N1"),
 			},
 		},
 		{
@@ -113,7 +113,7 @@ func TestParseNote(t *testing.T) {
 			want: &ast.Note{
 				Kind:       ast.NoteAlias,
 				Text:       "some note text",
-				Identifier: "N1",
+				Identifier: identRef("N1"),
 				Color:      "#blue",
 			},
 		},
@@ -155,7 +155,7 @@ func TestParseNote(t *testing.T) {
 			want: &ast.Note{
 				Kind:       ast.NoteAlias,
 				Text:       "some note text",
-				Identifier: "N1",
+				Identifier: identRef("N1"),
 			},
 		},
 
@@ -166,7 +166,7 @@ func TestParseNote(t *testing.T) {
 			want: &ast.Note{
 				Kind:   ast.NoteLink,
 				Text:   "some note text",
-				Target: &ast.TargetRef{Entity: "link"},
+				Target: identRefPtr("link"),
 			},
 		},
 		{
@@ -175,7 +175,7 @@ func TestParseNote(t *testing.T) {
 			want: &ast.Note{
 				Kind:   ast.NoteLink,
 				Text:   "some note text",
-				Target: &ast.TargetRef{Entity: "link"},
+				Target: identRefPtr("link"),
 			},
 		},
 		{

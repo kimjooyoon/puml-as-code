@@ -59,9 +59,6 @@ func formatNode(s *formatterState, node ast.Node) {
 	}
 
 	leadingTrivia := node.GetLeadingTrivia()
-	if len(leadingTrivia) == 0 {
-		leadingTrivia = getImplicitLeadingTrivia(node)
-	}
 	for _, comment := range leadingTrivia {
 		// Check leading trivia for pragmas
 		if strings.Contains(comment.Literal, "pac:fmt:off") {
@@ -90,23 +87,6 @@ func formatNode(s *formatterState, node ast.Node) {
 	s.lastNode = node
 }
 
-func getImplicitLeadingTrivia(node ast.Node) []tokenizer.Token {
-	switch n := node.(type) {
-	case *ast.Entity:
-		if n.Kind == ast.EntityUnknown && len(n.Members) > 0 {
-			return n.Members[0].GetLeadingTrivia()
-		}
-	case *ast.Container:
-		if n.Kind == ast.ContainerUnknown {
-			_, innerStmt := unwrapImplicitContainer(n)
-			if innerEnt, ok := innerStmt.(*ast.Entity); ok && innerEnt.Kind == ast.EntityUnknown && len(innerEnt.Members) > 0 {
-				return innerEnt.Members[0].GetLeadingTrivia()
-			}
-		}
-	}
-	return nil
-}
-
 func (s *formatterState) formatMember(member ast.Member) {
 	switch mem := member.(type) {
 	case *ast.ClassSeparator:
@@ -130,6 +110,8 @@ func (s *formatterState) formatStatement(stmt ast.Statement) {
 		s.emitRawSpan(st.NodeSpan)
 	case *ast.Entity:
 		printEntity(s, st)
+	case *ast.InlineMember:
+		printInlineMember(s, st)
 	case *ast.Container:
 		printContainer(s, st)
 	case *ast.Relationship:

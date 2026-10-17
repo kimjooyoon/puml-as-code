@@ -57,7 +57,40 @@
           "Offset": 111
         }
       },
-      "Identifier": "Controller",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Controller",
+          "Span": {
+            "Start": {
+              "Line": 3,
+              "Col": 7,
+              "Offset": 81
+            },
+            "End": {
+              "Line": 3,
+              "Col": 17,
+              "Offset": 91
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -74,7 +107,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Index",
             "ReturnType": [

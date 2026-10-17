@@ -35,67 +35,6 @@
       }
     },
     {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
-              },
-              "Identifier": "Client",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 5,
-                      "Col": 3,
-                      "Offset": 71
-                    },
-                    "End": {
-                      "Line": 6,
-                      "Col": 0,
-                      "Offset": 83
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "timeout",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "int"
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "NodeSpan": {
-            "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            },
-            "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            }
-          }
-        }
-      ],
       "NodeSpan": {
         "Start": {
           "Line": 4,
@@ -107,70 +46,102 @@
           "Col": 0,
           "Offset": 85
         }
-      }
-    },
-    {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 4,
+                "Col": 7,
+                "Offset": 51
               },
-              "Identifier": "Server",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 9,
-                      "Col": 3,
-                      "Offset": 113
-                    },
-                    "End": {
-                      "Line": 10,
-                      "Col": 0,
-                      "Offset": 122
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "port",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "int"
-                    }
-                  }
-                }
-              ]
+              "End": {
+                "Line": 4,
+                "Col": 10,
+                "Offset": 54
+              }
             }
-          ],
-          "NodeSpan": {
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 4,
+                "Col": 11,
+                "Offset": 55
+              },
+              "End": {
+                "Line": 4,
+                "Col": 15,
+                "Offset": 59
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
             "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 4,
+              "Col": 16,
+              "Offset": 60
             },
             "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 4,
+              "Col": 22,
+              "Offset": 66
             }
           }
         }
-      ],
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 5,
+              "Col": 3,
+              "Offset": 71
+            },
+            "End": {
+              "Line": 6,
+              "Col": 0,
+              "Offset": 83
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "timeout",
+            "Type": {
+              "Typ": "named",
+              "Name": "int"
+            }
+          }
+        }
+      ]
+    },
+    {
       "NodeSpan": {
         "Start": {
           "Line": 8,
@@ -182,22 +153,205 @@
           "Col": 0,
           "Offset": 124
         }
-      }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 8,
+                "Col": 7,
+                "Offset": 93
+              },
+              "End": {
+                "Line": 8,
+                "Col": 10,
+                "Offset": 96
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 8,
+                "Col": 11,
+                "Offset": 97
+              },
+              "End": {
+                "Line": 8,
+                "Col": 15,
+                "Offset": 101
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 8,
+              "Col": 16,
+              "Offset": 102
+            },
+            "End": {
+              "Line": 8,
+              "Col": 22,
+              "Offset": 108
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 9,
+              "Col": 3,
+              "Offset": 113
+            },
+            "End": {
+              "Line": 10,
+              "Col": 0,
+              "Offset": 122
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "port",
+            "Type": {
+              "Typ": "named",
+              "Name": "int"
+            }
+          }
+        }
+      ]
     },
     {
       "LHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 12,
+                "Col": 1,
+                "Offset": 126
+              },
+              "End": {
+                "Line": 12,
+                "Col": 4,
+                "Offset": 129
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 12,
+                "Col": 5,
+                "Offset": 130
+              },
+              "End": {
+                "Line": 12,
+                "Col": 9,
+                "Offset": 134
+              }
+            }
+          }
         ],
-        "Entity": "Client"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 12,
+              "Col": 10,
+              "Offset": 135
+            },
+            "End": {
+              "Line": 12,
+              "Col": 16,
+              "Offset": 141
+            }
+          }
+        }
       },
       "RHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 12,
+                "Col": 21,
+                "Offset": 146
+              },
+              "End": {
+                "Line": 12,
+                "Col": 24,
+                "Offset": 149
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 12,
+                "Col": 25,
+                "Offset": 150
+              },
+              "End": {
+                "Line": 12,
+                "Col": 29,
+                "Offset": 154
+              }
+            }
+          }
         ],
-        "Entity": "Server"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 12,
+              "Col": 30,
+              "Offset": 155
+            },
+            "End": {
+              "Line": 12,
+              "Col": 36,
+              "Offset": 161
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,
@@ -236,67 +390,6 @@
       }
     },
     {
-      "Identifier": "auth",
-      "Statements": [
-        {
-          "Identifier": "oauth",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
-              },
-              "Identifier": "Provider",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 17,
-                      "Col": 3,
-                      "Offset": 224
-                    },
-                    "End": {
-                      "Line": 18,
-                      "Col": 0,
-                      "Offset": 237
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "token",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "string"
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "NodeSpan": {
-            "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            },
-            "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            }
-          }
-        }
-      ],
       "NodeSpan": {
         "Start": {
           "Line": 16,
@@ -308,70 +401,102 @@
           "Col": 0,
           "Offset": 239
         }
-      }
-    },
-    {
-      "Identifier": "auth",
-      "Statements": [
-        {
-          "Identifier": "oauth",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "auth",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 7,
+                "Offset": 198
               },
-              "Identifier": "Client",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 21,
-                      "Col": 3,
-                      "Offset": 271
-                    },
-                    "End": {
-                      "Line": 22,
-                      "Col": 0,
-                      "Offset": 281
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "id",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "string"
-                    }
-                  }
-                }
-              ]
+              "End": {
+                "Line": 16,
+                "Col": 11,
+                "Offset": 202
+              }
             }
-          ],
-          "NodeSpan": {
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "oauth",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 13,
+                "Offset": 204
+              },
+              "End": {
+                "Line": 16,
+                "Col": 18,
+                "Offset": 209
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Provider",
+          "Span": {
             "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 16,
+              "Col": 20,
+              "Offset": 211
             },
             "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 16,
+              "Col": 28,
+              "Offset": 219
             }
           }
         }
-      ],
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 17,
+              "Col": 3,
+              "Offset": 224
+            },
+            "End": {
+              "Line": 18,
+              "Col": 0,
+              "Offset": 237
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "token",
+            "Type": {
+              "Typ": "named",
+              "Name": "string"
+            }
+          }
+        }
+      ]
+    },
+    {
       "NodeSpan": {
         "Start": {
           "Line": 20,
@@ -383,22 +508,205 @@
           "Col": 0,
           "Offset": 283
         }
-      }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "auth",
+            "Span": {
+              "Start": {
+                "Line": 20,
+                "Col": 7,
+                "Offset": 247
+              },
+              "End": {
+                "Line": 20,
+                "Col": 11,
+                "Offset": 251
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "oauth",
+            "Span": {
+              "Start": {
+                "Line": 20,
+                "Col": 13,
+                "Offset": 253
+              },
+              "End": {
+                "Line": 20,
+                "Col": 18,
+                "Offset": 258
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 20,
+              "Col": 20,
+              "Offset": 260
+            },
+            "End": {
+              "Line": 20,
+              "Col": 26,
+              "Offset": 266
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 21,
+              "Col": 3,
+              "Offset": 271
+            },
+            "End": {
+              "Line": 22,
+              "Col": 0,
+              "Offset": 281
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "id",
+            "Type": {
+              "Typ": "named",
+              "Name": "string"
+            }
+          }
+        }
+      ]
     },
     {
       "LHS": {
         "PackagePath": [
-          "auth",
-          "oauth"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "auth",
+            "Span": {
+              "Start": {
+                "Line": 24,
+                "Col": 1,
+                "Offset": 285
+              },
+              "End": {
+                "Line": 24,
+                "Col": 5,
+                "Offset": 289
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "oauth",
+            "Span": {
+              "Start": {
+                "Line": 24,
+                "Col": 7,
+                "Offset": 291
+              },
+              "End": {
+                "Line": 24,
+                "Col": 12,
+                "Offset": 296
+              }
+            }
+          }
         ],
-        "Entity": "Client"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 24,
+              "Col": 14,
+              "Offset": 298
+            },
+            "End": {
+              "Line": 24,
+              "Col": 20,
+              "Offset": 304
+            }
+          }
+        }
       },
       "RHS": {
         "PackagePath": [
-          "auth",
-          "oauth"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "auth",
+            "Span": {
+              "Start": {
+                "Line": 24,
+                "Col": 25,
+                "Offset": 309
+              },
+              "End": {
+                "Line": 24,
+                "Col": 29,
+                "Offset": 313
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "oauth",
+            "Span": {
+              "Start": {
+                "Line": 24,
+                "Col": 31,
+                "Offset": 315
+              },
+              "End": {
+                "Line": 24,
+                "Col": 36,
+                "Offset": 320
+              }
+            }
+          }
         ],
-        "Entity": "Provider"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Provider",
+          "Span": {
+            "Start": {
+              "Line": 24,
+              "Col": 38,
+              "Offset": 322
+            },
+            "End": {
+              "Line": 24,
+              "Col": 46,
+              "Offset": 330
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,

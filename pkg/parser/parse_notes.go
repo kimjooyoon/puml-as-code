@@ -48,7 +48,7 @@ func (p *Parser) parseDirectedNote(note *ast.Note, dirTok tokenizer.Token) error
 			return err
 		}
 		if relativeTok.Literal == "on" {
-			if strings.ToLower(target.Entity) != "link" {
+			if strings.ToLower(target.EntityName()) != "link" {
 				return NewParserError(relativeTok, "Unexpected identifier for a note link target")
 			}
 			note.Kind = ast.NoteLink
@@ -66,7 +66,7 @@ func (p *Parser) parseDirectedNote(note *ast.Note, dirTok tokenizer.Token) error
 }
 
 func (p *Parser) parseInlineIdentNote(note *ast.Note, stringTok tokenizer.Token) error {
-	note.Text = stringTok.Literal
+	note.Text = strings.Trim(stringTok.Literal, "\"")
 	note.Kind = ast.NoteAlias
 	if aliasTok, ok := p.stream.TryConsumeKW(keyword.Alias); !ok {
 		return NewParserError(aliasTok, "Expected alias keyword after note text")
@@ -75,7 +75,7 @@ func (p *Parser) parseInlineIdentNote(note *ast.Note, stringTok tokenizer.Token)
 	if !ok {
 		return NewParserError(tok, "Expected identifier after alias keyword")
 	}
-	note.Identifier = tok.Literal
+	note.Identifier = ast.TargetRef{Name: tok}
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color
 	}
@@ -91,7 +91,7 @@ func (p *Parser) parseMultilineAliasNote(note *ast.Note) error {
 	if !ok {
 		return NewParserError(tok, "Expected identifier after alias keyword")
 	}
-	note.Identifier = tok.Literal
+	note.Identifier = ast.TargetRef{Name: tok}
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color
 	}
@@ -105,10 +105,11 @@ func (p *Parser) parseLinkNote(note *ast.Note, onTok tokenizer.Token) error {
 	if onTok.Literal != "on" {
 		return NewParserError(onTok, "Unexpected identifier after 'note'")
 	}
-	if _, ok := p.stream.TryConsume(amb(tokenizer.IDENTIFIER, "link")); !ok {
+	linkTok, ok := p.stream.TryConsumeType(tokenizer.IDENTIFIER)
+	if !ok || linkTok.Literal != "link" {
 		return NewParserError(onTok, "Expected 'link' after 'note on'")
 	}
-	note.Target = &ast.TargetRef{Entity: "link"}
+	note.Target = &ast.TargetRef{Name: linkTok}
 	note.Kind = ast.NoteLink
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color

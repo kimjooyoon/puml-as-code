@@ -293,7 +293,7 @@ package mypkg {
 
 		ent, ok := cont.Statements[1].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "Foo", ent.Identifier)
+		assertASTEqual(t, identRef("Foo"), ent.Identifier)
 	})
 
 	t.Run("unterminated block errors", func(t *testing.T) {

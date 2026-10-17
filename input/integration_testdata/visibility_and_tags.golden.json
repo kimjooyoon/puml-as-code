@@ -127,7 +127,40 @@
           "Offset": 208
         }
       },
-      "Identifier": "User",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 9,
+              "Col": 7,
+              "Offset": 134
+            },
+            "End": {
+              "Line": 9,
+              "Col": 11,
+              "Offset": 138
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Stereotype": "Entity",
       "Tags": [
@@ -149,7 +182,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "id",
             "Type": {
@@ -172,7 +204,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "name",
             "Type": {
@@ -196,7 +227,40 @@
           "Offset": 273
         }
       },
-      "Identifier": "PaymentService",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "PaymentService",
+          "Span": {
+            "Start": {
+              "Line": 14,
+              "Col": 7,
+              "Offset": 216
+            },
+            "End": {
+              "Line": 14,
+              "Col": 21,
+              "Offset": 230
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Stereotype": "Service",
       "Tags": [
@@ -217,7 +281,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Charge",
             "ReturnType": [
@@ -245,7 +308,40 @@
           "Offset": 325
         }
       },
-      "Identifier": "InternalHelper",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "InternalHelper",
+          "Span": {
+            "Start": {
+              "Line": 18,
+              "Col": 7,
+              "Offset": 281
+            },
+            "End": {
+              "Line": 18,
+              "Col": 21,
+              "Offset": 295
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Tags": [
         "internal"
@@ -265,7 +361,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "HelperFunc"
           }
@@ -273,7 +368,40 @@
       ]
     },
     {
-      "Identifier": "Services",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Services",
+          "Span": {
+            "Start": {
+              "Line": 22,
+              "Col": 9,
+              "Offset": 335
+            },
+            "End": {
+              "Line": 22,
+              "Col": 17,
+              "Offset": 343
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "package",
       "Tags": [
         "backend"
@@ -292,7 +420,40 @@
               "Offset": 394
             }
           },
-          "Identifier": "Gateway",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "Gateway",
+              "Span": {
+                "Start": {
+                  "Line": 23,
+                  "Col": 9,
+                  "Offset": 363
+                },
+                "End": {
+                  "Line": 23,
+                  "Col": 16,
+                  "Offset": 370
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "class",
           "Tags": [
             "api"
@@ -312,7 +473,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Method": {
                 "Name": "Route"
               }

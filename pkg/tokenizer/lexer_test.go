@@ -64,7 +64,7 @@ func TestReadNumber(t *testing.T) {
 
 func TestReadString(t *testing.T) {
 	lex := NewLexer("\"a\\\"b\"")
-	require.Equal(t, "a\\\"b", lex.readString())
+	require.Equal(t, "\"a\\\"b\"", lex.readString())
 }
 
 func TestReadLineComment(t *testing.T) {

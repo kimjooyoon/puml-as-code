@@ -28,13 +28,6 @@ func isBlockNode(node ast.Node) bool {
 	}
 	switch n := node.(type) {
 	case *ast.Container:
-		if n.Kind == ast.ContainerUnknown {
-			_, inner := unwrapImplicitContainer(n)
-			if innerEnt, ok := inner.(*ast.Entity); ok {
-				return innerEnt.Kind != ast.EntityUnknown
-			}
-			return false
-		}
 		return true
 	case *ast.Entity:
 		return n.Kind != ast.EntityUnknown
@@ -61,15 +54,11 @@ func categorizeNode(node ast.Node) statementCategory {
 	case *ast.StyleBlock, *ast.StyleRule, *ast.SkinparamBlock, *ast.SkinparamSetting:
 		return catStyling
 	case *ast.Container:
-		if n.Kind == ast.ContainerUnknown {
-			return catInlineMemberDecl
-		}
 		return catDeclaration
 	case *ast.Entity:
-		if n.Kind == ast.EntityUnknown {
-			return catInlineMemberDecl
-		}
 		return catDeclaration
+	case *ast.InlineMember:
+		return catInlineMemberDecl
 	case *ast.Relationship:
 		return catRelationship
 	case *ast.IncludeDirective:
@@ -89,9 +78,6 @@ func nodeStartLine(node ast.Node) int {
 	}
 	start := int(node.Span().Start.Line)
 	leading := node.GetLeadingTrivia()
-	if len(leading) == 0 {
-		leading = getImplicitLeadingTrivia(node)
-	}
 	if len(leading) > 0 {
 		start = int(leading[0].Span.Start.Line)
 	}

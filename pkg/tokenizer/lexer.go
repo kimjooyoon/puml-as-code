@@ -292,8 +292,8 @@ state_validate:
 }
 
 func (l *Lexer) readString() string {
-	l.readChar() // consume opening "
 	start := l.position
+	l.readChar() // consume opening "
 	for l.ch != '"' && !l.isEOF() {
 		if l.ch == '\\' && l.peekChar() != 0 {
 			l.readChar() // consume backslash
@@ -302,8 +302,8 @@ func (l *Lexer) readString() string {
 			l.readChar()
 		}
 	}
-	end := l.position
 	l.readChar() // consume closing "
+	end := l.position
 	return string(l.input[start:end])
 }
 

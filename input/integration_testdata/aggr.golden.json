@@ -31,7 +31,40 @@
           "Offset": 52
         }
       },
-      "Identifier": "Team",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Team",
+          "Span": {
+            "Start": {
+              "Line": 2,
+              "Col": 7,
+              "Offset": 29
+            },
+            "End": {
+              "Line": 2,
+              "Col": 11,
+              "Offset": 33
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -48,7 +81,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "name",
             "Type": {
@@ -72,7 +104,40 @@
           "Offset": 83
         }
       },
-      "Identifier": "Player",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Player",
+          "Span": {
+            "Start": {
+              "Line": 5,
+              "Col": 7,
+              "Offset": 59
+            },
+            "End": {
+              "Line": 5,
+              "Col": 13,
+              "Offset": 65
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -89,7 +154,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "number",
             "Type": {
@@ -102,10 +166,40 @@
     },
     {
       "LHS": {
-        "Entity": "Team"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Team",
+          "Span": {
+            "Start": {
+              "Line": 9,
+              "Col": 1,
+              "Offset": 85
+            },
+            "End": {
+              "Line": 9,
+              "Col": 5,
+              "Offset": 89
+            }
+          }
+        }
       },
       "RHS": {
-        "Entity": "Player"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Player",
+          "Span": {
+            "Start": {
+              "Line": 9,
+              "Col": 21,
+              "Offset": 105
+            },
+            "End": {
+              "Line": 9,
+              "Col": 27,
+              "Offset": 111
+            }
+          }
+        }
       },
       "TypeLHS": "aggregation",
       "MultLHS": {

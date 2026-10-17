@@ -26,7 +26,7 @@ func TestResolveUnambiguousToken_String(t *testing.T) {
 
 	require.True(t, resolved)
 	assertTokenType(t, STRING, tok.Type)
-	require.Equal(t, `hello world`, tok.Literal)
+	require.Equal(t, `"hello world"`, tok.Literal)
 }
 
 func TestResolveUnambiguousToken_Physical(t *testing.T) {
@@ -202,28 +202,28 @@ func TestSourceFidelity(t *testing.T) {
 			input := `"hello world"`
 			toks := tokenizeAll(t, input)
 			require.GreaterOrEqual(t, len(toks), 1)
-			assertTokenFidelity(t, input, toks[0], STRING, "hello world", `"hello world"`)
+			assertTokenFidelity(t, input, toks[0], STRING, `"hello world"`, `"hello world"`)
 		})
 
 		t.Run("string with escape sequences", func(t *testing.T) {
 			input := `"hello \"world\""`
 			toks := tokenizeAll(t, input)
 			require.GreaterOrEqual(t, len(toks), 1)
-			assertTokenFidelity(t, input, toks[0], STRING, `hello \"world\"`, `"hello \"world\""`)
+			assertTokenFidelity(t, input, toks[0], STRING, `"hello \"world\""`, `"hello \"world\""`)
 		})
 
 		t.Run("empty string", func(t *testing.T) {
 			input := `""`
 			toks := tokenizeAll(t, input)
 			require.GreaterOrEqual(t, len(toks), 1)
-			assertTokenFidelity(t, input, toks[0], STRING, "", `""`)
+			assertTokenFidelity(t, input, toks[0], STRING, `""`, `""`)
 		})
 
 		t.Run("non-ascii unicode string", func(t *testing.T) {
 			input := `"Привіт"`
 			toks := tokenizeAll(t, input)
 			require.GreaterOrEqual(t, len(toks), 1, "token count mismatch")
-			assertTokenFidelity(t, input, toks[0], STRING, "Привіт", `"Привіт"`)
+			assertTokenFidelity(t, input, toks[0], STRING, `"Привіт"`, `"Привіт"`)
 			require.Equal(t, uint(len([]rune(input))), toks[0].Span.End.Offset, "length mismatch")
 		})
 	})

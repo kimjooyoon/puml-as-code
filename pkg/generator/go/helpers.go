@@ -15,8 +15,8 @@ func targetFieldName(target *resolver.EntitySymbol) string {
 	if target == nil {
 		return "unknown"
 	}
-	if target.AST != nil && target.AST.Identifier != "" {
-		return target.AST.Identifier
+	if target.AST != nil && target.AST.Identifier.EntityName() != "" {
+		return target.AST.Identifier.EntityName()
 	}
 	return stdlib.SimpleName(target.FQN)
 }

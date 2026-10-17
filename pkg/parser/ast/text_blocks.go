@@ -91,7 +91,7 @@ type Note struct {
 	Direction  DirectionKind `json:",omitempty"`
 	Target     *TargetRef    `json:",omitempty"`
 	Color      string        `json:",omitempty"`
-	Identifier string        `json:",omitempty"`
+	Identifier TargetRef
 	BaseNode
 }
 

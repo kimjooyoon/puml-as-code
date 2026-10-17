@@ -33,9 +33,9 @@ func summarizeContainer(t *testing.T, c *ast.Container) []string {
 	t.Helper()
 
 	label := c.Kind.String()
-	id := c.Identifier
-	if id == "" {
-		id = c.Alias
+	id := c.Identifier.EntityName()
+	if id == "" && !c.Alias.IsZero() {
+		id = c.Alias.Literal
 	}
 
 	summary := []string{label + ":" + id}
@@ -54,9 +54,9 @@ func summarizeStatement(t *testing.T, stmt ast.Statement) []string {
 
 	switch s := stmt.(type) {
 	case *ast.Entity:
-		return []string{s.Kind.String() + ":" + s.Identifier}
+		return []string{s.Kind.String() + ":" + s.Identifier.EntityName()}
 	case *ast.Relationship:
-		return []string{"rel:" + s.LHS.Entity + "->" + s.RHS.Entity}
+		return []string{"rel:" + s.LHS.EntityName() + "->" + s.RHS.EntityName()}
 	case *ast.Container:
 		return summarizeContainer(t, s)
 	case *ast.IncludeDirective:

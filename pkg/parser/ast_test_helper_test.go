@@ -2,9 +2,11 @@ package parser
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
@@ -99,4 +101,56 @@ func stripValue(val reflect.Value) reflect.Value {
 	default:
 		return val
 	}
+}
+
+func identRef(name string, pkg ...string) ast.TargetRef {
+	var pkgToks []tokenizer.Token
+	for _, p := range pkg {
+		pkgToks = append(pkgToks, tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: p})
+	}
+	return ast.TargetRef{
+		PackagePath: pkgToks,
+		Name:        tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: name},
+	}
+}
+
+func identRefPtr(name string, pkg ...string) *ast.TargetRef {
+	ref := identRef(name, pkg...)
+	return &ref
+}
+
+func identRefMember(name string, member string, pkg ...string) ast.TargetRef {
+	ref := identRef(name, pkg...)
+	ref.Member = &ast.MemberRef{
+		Name: tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: member},
+	}
+	return ref
+}
+
+func identRefMethod(name, method string, sig []tokenizer.Token, pkg ...string) ast.TargetRef {
+	ref := identRef(name, pkg...)
+	ref.Member = &ast.MemberRef{
+		Name:      tokIdent(method),
+		Signature: sig,
+	}
+	return ref
+}
+
+func identRefStringMember(name string, memberStr string, pkg ...string) ast.TargetRef {
+	ref := identRef(name, pkg...)
+	ref.Member = &ast.MemberRef{
+		Name: tokString(memberStr),
+	}
+	return ref
+}
+
+func tokIdent(lit string) tokenizer.Token {
+	return tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: lit}
+}
+
+func tokString(lit string) tokenizer.Token {
+	if !strings.HasPrefix(lit, "\"") || !strings.HasSuffix(lit, "\"") {
+		lit = "\"" + lit + "\""
+	}
+	return tokenizer.Token{Type: tokenizer.STRING, Literal: lit}
 }

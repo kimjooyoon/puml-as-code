@@ -3,8 +3,6 @@ package parser
 import (
 	"errors"
 	"log"
-	"slices"
-	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/parser/keyword"
@@ -41,7 +39,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 		postTags := p.tryReadTags()
 		if len(preTags) > 0 {
 			if len(postTags) > 0 {
-				log.Printf("warning: tags %v after stereotype on container %q are ignored in favor of pre-stereotype tags %v\n", postTags, container.Identifier, preTags)
+				log.Printf("warning: tags %v after stereotype on container %q are ignored in favor of pre-stereotype tags %v\n", postTags, container.Identifier.EntityName(), preTags)
 			}
 			container.Tags = preTags
 		} else if len(postTags) > 0 {
@@ -55,7 +53,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 		if !p.stream.AssertType(tokenizer.NEWLINE) {
 			return nil, NewParserError(p.stream.PeekTokenAt(0), "Expected container body to end")
 		}
-		return p.wrapImplicitPackageContainers(container), nil
+		return container, nil
 	}
 
 	p.stream.EmitCommentToks()
@@ -75,112 +73,75 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 		container.Statements = append(container.Statements, stmt)
 	}
 
-	return p.wrapImplicitPackageContainers(container), nil
+	return container, nil
 }
 
-func (p *Parser) wrapImplicitPackageContainers(c *ast.Container) *ast.Container {
-	if p.stream.PackageSeparator == "" || !strings.Contains(c.Identifier, p.stream.PackageSeparator) {
-		return c
-	}
-	segments := strings.Split(c.Identifier, p.stream.PackageSeparator)
-	if len(segments) <= 1 {
-		return c
-	}
-
-	current := &ast.Container{
-		Kind:       c.Kind,
-		Identifier: segments[len(segments)-1],
-		Alias:      c.Alias,
-		Stereotype: c.Stereotype,
-		Color:      c.Color,
-		Statements: c.Statements,
-	}
-	for _, pkg := range slices.Backward(segments[:len(segments)-1]) {
-		current = &ast.Container{
-			Kind:       c.Kind,
-			Identifier: pkg,
-			Statements: []ast.Statement{current},
-		}
-	}
-	return current
-}
-
-func (p *Parser) parseContinerIdent(tok tokenizer.Token) (tokenizer.Token, error) {
-	if tok.Type == tokenizer.STRING {
-		return tok, nil
-	}
-	if tok.Type != tokenizer.IDENTIFIER {
-		return tokenizer.Token{}, NewParserError(tok, "Expected identifier for container name")
-	}
-
-	var sb strings.Builder
-	sb.WriteString(tok.Literal)
-	lastTok := tok
-	for tok = p.stream.PeekTokenAt(0); tok.Type != tokenizer.EOF; tok = p.stream.PeekRawTokenAt(0) {
-		// early exit if we see an alias keyword and not hit the
-		// the double identifier case
-		if keyword.Classify(tok.Literal) == keyword.Alias {
-			return amb(tokenizer.IDENTIFIER, sb.String()), nil
-		}
-		if sep, ok := p.stream.TryConsumePackageSeparator(); ok {
-			sb.WriteString(sep)
-			lastTok = tokenizer.Token{Type: tokenizer.DOT}
-			continue
-		}
-		if lastTok.Type == tokenizer.IDENTIFIER && tok.Type == tokenizer.IDENTIFIER {
-			return tokenizer.Token{}, NewParserError(tok, "Expected container name to be a single identifier")
-		}
-		switch tok.Type {
-		case tokenizer.LBRACE, tokenizer.LANGLE, tokenizer.HASH, tokenizer.NEWLINE, tokenizer.DOLLAR:
-			return amb(tokenizer.IDENTIFIER, sb.String()), nil
-		default:
-			sb.WriteString(tok.Literal)
-			p.stream.Emit()
-			lastTok = tok
-		}
-	}
-
-	return tokenizer.Token{}, tokenizer.ErrUnexpectedEOF
-}
-
-// parseContainerIdentAndAlias parses the container name and alias
+// parseContainerIdentAndAlias parses the container name and alias.
 //
-// Returns
-// - Alias
-// - Identifier
+// Returns:
+// - Alias (Token)
+// - Identifier (TargetRef)
 // - error
-func (p *Parser) parseContainerIdentAndAlias() (string, string, error) {
-	lhs, err := p.parseContinerIdent(p.stream.Emit())
-	if err != nil {
-		return "", "", err
-	}
-	if _, ok := p.stream.TryConsumeKW(keyword.Alias); !ok {
-		if lhs.Type == tokenizer.STRING {
-			return "", p.stream.SliceInputEnclosingTokens(lhs), nil
-		}
-		return "", lhs.Literal, nil
-	}
-	rhs, err := p.parseContinerIdent(p.stream.Emit())
-	if err != nil {
-		return "", "", err
-	}
-	lhsStr := lhs.Literal
-	if lhs.Type == tokenizer.STRING {
-		lhsStr = p.stream.SliceInputEnclosingTokens(lhs)
-	}
-	rhsStr := rhs.Literal
-	if rhs.Type == tokenizer.STRING {
-		rhsStr = p.stream.SliceInputEnclosingTokens(rhs)
-	}
-	if lhs.Type == rhs.Type {
-		return lhsStr, rhsStr, nil
-	}
-	switch lhs.Type {
+func (p *Parser) parseContainerIdentAndAlias() (tokenizer.Token, ast.TargetRef, error) {
+	firstTok := p.stream.Emit()
+	var (
+		lhsTok      tokenizer.Token
+		lhsTarget   ast.TargetRef
+		lhsIsTarget bool
+		err         error
+	)
+
+	switch firstTok.Type {
 	case tokenizer.STRING:
-		return lhsStr, rhsStr, nil
+		lhsTok = firstTok
 	case tokenizer.IDENTIFIER:
-		return rhsStr, lhsStr, nil
+		lhsTarget, err = p.parseTargetRef(firstTok)
+		if err != nil {
+			return tokenizer.Token{}, ast.TargetRef{}, err
+		}
+		lhsIsTarget = true
+	default:
+		return tokenizer.Token{}, ast.TargetRef{}, NewParserError(firstTok, "Expected identifier or string for container name")
 	}
-	return "", "", NewParserError(lhs, "Invalid container alias and identifier combination")
+
+	if _, ok := p.stream.TryConsumeKW(keyword.Alias); !ok {
+		if lhsIsTarget {
+			return tokenizer.Token{}, lhsTarget, nil
+		}
+		return tokenizer.Token{}, ast.TargetRef{Name: lhsTok}, nil
+	}
+
+	secondTok := p.stream.Emit()
+	var (
+		rhsTok      tokenizer.Token
+		rhsTarget   ast.TargetRef
+		rhsIsTarget bool
+	)
+
+	switch secondTok.Type {
+	case tokenizer.STRING:
+		rhsTok = secondTok
+	case tokenizer.IDENTIFIER:
+		rhsTarget, err = p.parseTargetRef(secondTok)
+		if err != nil {
+			return tokenizer.Token{}, ast.TargetRef{}, err
+		}
+		rhsIsTarget = true
+	default:
+		return tokenizer.Token{}, ast.TargetRef{}, NewParserError(secondTok, "Expected identifier or string for container alias")
+	}
+
+	if lhsIsTarget && !rhsIsTarget {
+		return rhsTok, lhsTarget, nil
+	}
+	if !lhsIsTarget && rhsIsTarget {
+		return lhsTok, rhsTarget, nil
+	}
+	if lhsIsTarget && rhsIsTarget {
+		// When both are identifiers, alias is on the left, identifier is on the right
+		return lhsTarget.Name, rhsTarget, nil
+	}
+	// When both are strings
+	return lhsTok, ast.TargetRef{Name: rhsTok}, nil
 }
 

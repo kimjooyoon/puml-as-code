@@ -6,9 +6,18 @@ import (
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/resolver"
+	"yur4uwe/pac/pkg/tokenizer"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func targetRef(name string) ast.TargetRef {
+	return ast.TargetRef{
+		Name: tokenizer.Token{
+			Literal: name,
+		},
+	}
+}
 
 func TestBuiltinTypes(t *testing.T) {
 	assert.True(t, IsBuiltinType("error"))
@@ -78,7 +87,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			name: "builtin error",
 			ent: &resolver.EntitySymbol{
 				FQN: "error",
-				AST: &ast.Entity{Identifier: "error"},
+				AST: &ast.Entity{Identifier: targetRef("error")},
 			},
 			expected: true,
 		},
@@ -87,7 +96,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			ent: &resolver.EntitySymbol{
 				FQN:         "time.Time",
 				PackagePath: []string{"time"},
-				AST:         &ast.Entity{Identifier: "Time"},
+				AST:         &ast.Entity{Identifier: targetRef("Time")},
 			},
 			expected: true,
 		},
@@ -96,7 +105,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			ent: &resolver.EntitySymbol{
 				FQN:         "net.http.Request",
 				PackagePath: []string{"net", "http"},
-				AST:         &ast.Entity{Identifier: "Request"},
+				AST:         &ast.Entity{Identifier: targetRef("Request")},
 			},
 			expected: true,
 		},
@@ -104,7 +113,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			name: "time.Time without PackagePath (dot in FQN)",
 			ent: &resolver.EntitySymbol{
 				FQN: "time.Time",
-				AST: &ast.Entity{Identifier: "Time"},
+				AST: &ast.Entity{Identifier: targetRef("Time")},
 			},
 			expected: true,
 		},
@@ -113,7 +122,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			ent: &resolver.EntitySymbol{
 				FQN:         "models.User",
 				PackagePath: []string{"models"},
-				AST:         &ast.Entity{Identifier: "User"},
+				AST:         &ast.Entity{Identifier: targetRef("User")},
 			},
 			expected: false,
 		},
@@ -121,7 +130,7 @@ func TestIsStdlibEntity(t *testing.T) {
 			name: "user custom root struct",
 			ent: &resolver.EntitySymbol{
 				FQN: "Order",
-				AST: &ast.Entity{Identifier: "Order"},
+				AST: &ast.Entity{Identifier: targetRef("Order")},
 			},
 			expected: false,
 		},

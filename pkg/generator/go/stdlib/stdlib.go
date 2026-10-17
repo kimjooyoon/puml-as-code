@@ -112,7 +112,7 @@ func IsStdlibEntity(ent *resolver.EntitySymbol) bool {
 
 	name := ""
 	if ent.AST != nil {
-		name = ent.AST.Identifier
+		name = ent.AST.Identifier.EntityName()
 	}
 	if name == "" {
 		name = SimpleName(ent.FQN)

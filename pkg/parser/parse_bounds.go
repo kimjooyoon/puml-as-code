@@ -84,7 +84,8 @@ func (p *Parser) readStartBounds() (*ast.DiagramBound, error) {
 
 	if !p.stream.AssertType(tokenizer.LPAREN) && !p.stream.AssertType(tokenizer.LBRACE) {
 		diag.TrailingName = p.stream.ReadUntilNewline()
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
+		diag.SetMetadata(p.Span(m), nil, nil)
+		return diag, nil
 	}
 
 	readKvp := func(blockOpener, blockTerminator tokenizer.TokenType) (ast.BoundOption, error) {
@@ -153,7 +154,8 @@ func (p *Parser) readStartBounds() (*ast.DiagramBound, error) {
 
 	if !p.stream.AssertType(tokenizer.LBRACE) {
 		diag.TrailingName = p.stream.ReadUntilNewline()
-		return ast.WithMetadata(diag, p.Span(m), nil), nil
+		diag.SetMetadata(p.Span(m), nil, nil)
+		return diag, nil
 	}
 
 	if _, consumed := p.stream.TryConsumeType(tokenizer.LBRACE); consumed {
@@ -202,7 +204,8 @@ func (p *Parser) readStartBounds() (*ast.DiagramBound, error) {
 		return nil, fmt.Errorf("expected newline after diagram bounds")
 	}
 
-	return ast.WithMetadata(diag, p.Span(m), nil), nil
+	diag.SetMetadata(p.Span(m), nil, nil)
+	return diag, nil
 }
 
 func (p *Parser) readEndBounds(atTok tokenizer.Token) (*ast.DiagramBound, error) {

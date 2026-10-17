@@ -149,7 +149,7 @@
       },
       {
         "t": "STRING",
-        "l": "This is a floating note"
+        "l": "\"This is a floating note\""
       },
       {
         "t": "IDENTIFIER",
@@ -169,7 +169,7 @@
       },
       {
         "t": "STRING",
-        "l": "This note is connected\\nto several objects."
+        "l": "\"This note is connected\\nto several objects.\""
       },
       {
         "t": "IDENTIFIER",
@@ -1339,7 +1339,7 @@
       },
       {
         "t": "STRING",
-        "l": "start(int timeoutms)"
+        "l": "\"start(int timeoutms)\""
       },
       {
         "t": "NEWLINE",
@@ -1403,7 +1403,7 @@
       },
       {
         "t": "STRING",
-        "l": "start(Duration timeout)"
+        "l": "\"start(Duration timeout)\""
       },
       {
         "t": "NEWLINE",

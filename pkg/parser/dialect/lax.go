@@ -48,13 +48,7 @@ func StringifyTokenSlice(toks []tokenizer.Token) string {
 	sb.Grow(int(bufLen) + len(toks))
 
 	for i, tok := range toks {
-		if tok.Type == tokenizer.STRING {
-			sb.WriteRune('"')
-			sb.WriteString(tok.Literal)
-			sb.WriteRune('"')
-		} else {
-			sb.WriteString(tok.Literal)
-		}
+		sb.WriteString(tok.Literal)
 
 		if i < len(toks)-1 && needsSpaceBetween(toks[i], toks[i+1]) {
 			sb.WriteRune(' ')

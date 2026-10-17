@@ -19,102 +19,102 @@ func TestDisambiguateIdent_Relationships(t *testing.T) {
 			name:  "simple solid arrow",
 			input: "User --> Order",
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
-				RHS:       ast.TargetRef{Entity: "Order"},
+				RHS:       identRef("Order"),
 			},
 		},
 		{
 			name:  "contextual keyword as LHS relationship",
 			input: "class --> Order",
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "class"},
+				LHS:       identRef("class"),
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
-				RHS:       ast.TargetRef{Entity: "Order"},
+				RHS:       identRef("Order"),
 			},
 		},
 		{
 			name:  "contextual keyword with dash link",
 			input: "class - cls",
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "class"},
+				LHS:       identRef("class"),
 				Body:      '-',
 				BodyCount: 1,
-				RHS:       ast.TargetRef{Entity: "cls"},
+				RHS:       identRef("cls"),
 			},
 		},
 		{
 			name:  "relationship with LHS multiplicity",
 			input: `User "1" --> "*" Order`,
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
 				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
-				RHS:       ast.TargetRef{Entity: "Order"},
+				RHS:       identRef("Order"),
 			},
 		},
 		{
 			name:  "relationship with left extension arrow and multiplicity",
 			input: `User "1" <|-- "*" Order`,
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
 				LArrow:    '|',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationInheritance,
 				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
-				RHS:       ast.TargetRef{Entity: "Order"},
+				RHS:       identRef("Order"),
 			},
 		},
 		{
 			name:  "relationship with left arrow and multiplicity",
 			input: `User "1" <-- "*" Order`,
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
 				LArrow:    '<',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationAssociation,
 				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
-				RHS:       ast.TargetRef{Entity: "Order"},
+				RHS:       identRef("Order"),
 			},
 		},
 		{
 			name:  "qualified relationship",
 			input: "net.http.Client --> Server",
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client"},
+				LHS:       identRef("Client", "net", "http"),
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
-				RHS:       ast.TargetRef{Entity: "Server"},
+				RHS:       identRef("Server"),
 			},
 		},
 		{
 			name:  "qualified relationship with multiplicity",
 			input: `net.http.Client "1" --> "*" Server`,
 			want: &ast.Relationship{
-				LHS:       ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client"},
+				LHS:       identRef("Client", "net", "http"),
 				MultLHS:   ast.Cardinality{Raw: "1", Min: 1, Max: 1},
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
 				MultRHS:   ast.Cardinality{Raw: "*", Min: 0, Max: -1},
-				RHS:       ast.TargetRef{Entity: "Server"},
+				RHS:       identRef("Server"),
 			},
 		},
 	}
@@ -143,16 +143,13 @@ func TestDisambiguateIdent_InlineMembers(t *testing.T) {
 		{
 			name:  "simple inline member",
 			input: "User : +id string",
-			want: &ast.Entity{
-				Identifier: "User",
-				Kind:       ast.EntityUnknown,
-				Members: []ast.Member{
-					&ast.FieldDeclaration{
-						Visibility: ast.VisibilityPublic,
-						Field: &dialect.GoField{
-							Name: "id",
-							Type: dialect.NamedRef("string"),
-						},
+			want: &ast.InlineMember{
+				Target: identRef("User"),
+				Member: &ast.FieldDeclaration{
+					Visibility: ast.VisibilityPublic,
+					Field: &dialect.GoField{
+						Name: "id",
+						Type: dialect.NamedRef("string"),
 					},
 				},
 			},
@@ -160,16 +157,13 @@ func TestDisambiguateIdent_InlineMembers(t *testing.T) {
 		{
 			name:  "contextual keyword as inline member target",
 			input: "class : +field int",
-			want: &ast.Entity{
-				Identifier: "class",
-				Kind:       ast.EntityUnknown,
-				Members: []ast.Member{
-					&ast.FieldDeclaration{
-						Visibility: ast.VisibilityPublic,
-						Field: &dialect.GoField{
-							Name: "field",
-							Type: dialect.NamedRef("int"),
-						},
+			want: &ast.InlineMember{
+				Target: identRef("class"),
+				Member: &ast.FieldDeclaration{
+					Visibility: ast.VisibilityPublic,
+					Field: &dialect.GoField{
+						Name: "field",
+						Type: dialect.NamedRef("int"),
 					},
 				},
 			},
@@ -177,15 +171,12 @@ func TestDisambiguateIdent_InlineMembers(t *testing.T) {
 		{
 			name:  "note followed by colon is parsed as inline member on note class",
 			input: "note : text",
-			want: &ast.Entity{
-				Identifier: "note",
-				Kind:       ast.EntityUnknown,
-				Members: []ast.Member{
-					&ast.FieldDeclaration{
-						Visibility: ast.VisibilityUnknown,
-						Field: &dialect.GoField{
-							Name: "text",
-						},
+			want: &ast.InlineMember{
+				Target: identRef("note"),
+				Member: &ast.FieldDeclaration{
+					Visibility: ast.VisibilityUnknown,
+					Field: &dialect.GoField{
+						Name: "text",
 					},
 				},
 			},
@@ -193,27 +184,14 @@ func TestDisambiguateIdent_InlineMembers(t *testing.T) {
 		{
 			name:  "qualified inline member",
 			input: "net.http.Client : +Do() error",
-			want: &ast.Container{
-				Identifier: "net",
-				Statements: []ast.Statement{
-					&ast.Container{
-						Identifier: "http",
-						Statements: []ast.Statement{
-							&ast.Entity{
-								Identifier: "Client",
-								Kind:       ast.EntityUnknown,
-								Members: []ast.Member{
-									&ast.MethodDeclaration{
-										Visibility: ast.VisibilityPublic,
-										Method: &dialect.GoMethod{
-											Name: "Do",
-											ReturnType: []dialect.GoParameter{
-												{Type: dialect.NamedRef("error")},
-											},
-										},
-									},
-								},
-							},
+			want: &ast.InlineMember{
+				Target: identRef("Client", "net", "http"),
+				Member: &ast.MethodDeclaration{
+					Visibility: ast.VisibilityPublic,
+					Method: &dialect.GoMethod{
+						Name: "Do",
+						ReturnType: []dialect.GoParameter{
+							{Type: dialect.NamedRef("error")},
 						},
 					},
 				},
@@ -314,12 +292,12 @@ func TestDisambiguateIdent_CustomPackageSeparatorDash(t *testing.T) {
 		require.NoError(t, err)
 
 		want := &ast.Relationship{
-			LHS:       ast.TargetRef{PackagePath: []string{"note"}, Entity: "left"},
+			LHS:       identRef("left", "note"),
 			Body:      '-',
 			RArrow:    '>',
 			BodyCount: 1,
 			TypeRHS:   ast.RelationAssociation,
-			RHS:       ast.TargetRef{Entity: "text"},
+			RHS:       identRef("text"),
 		}
 		assertASTEqual(t, want, stmt)
 	})
@@ -337,13 +315,13 @@ func TestDisambiguateIdent_CustomPackageSeparatorDash(t *testing.T) {
 		require.NoError(t, err)
 
 		want := &ast.Relationship{
-			LHS:       ast.TargetRef{Entity: "note"},
+			LHS:       identRef("note"),
 			Body:      '-',
 			RArrow:    '>',
 			BodyCount: 2,
 			Attrs:     []string{"bold"},
 			TypeRHS:   ast.RelationAssociation,
-			RHS:       ast.TargetRef{Entity: "text"},
+			RHS:       identRef("text"),
 		}
 		assertASTEqual(t, want, stmt)
 	})

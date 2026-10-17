@@ -87,7 +87,40 @@
       ]
     },
     {
-      "Identifier": "p",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "p",
+          "Span": {
+            "Start": {
+              "Line": 5,
+              "Col": 9,
+              "Offset": 211
+            },
+            "End": {
+              "Line": 5,
+              "Col": 10,
+              "Offset": 212
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "package",
       "Statements": [
         {
@@ -121,7 +154,40 @@
               }
             }
           ],
-          "Identifier": "User",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "User",
+              "Span": {
+                "Start": {
+                  "Line": 7,
+                  "Col": 11,
+                  "Offset": 342
+                },
+                "End": {
+                  "Line": 7,
+                  "Col": 15,
+                  "Offset": 346
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "class",
           "Members": [
             {
@@ -156,7 +222,6 @@
                 }
               ],
               "Visibility": "public",
-              "Modifiers": null,
               "Field": {
                 "Name": "id",
                 "Type": {
@@ -296,7 +361,40 @@
           }
         }
       ],
-      "Identifier": "Service",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Service",
+          "Span": {
+            "Start": {
+              "Line": 16,
+              "Col": 7,
+              "Offset": 536
+            },
+            "End": {
+              "Line": 16,
+              "Col": 14,
+              "Offset": 543
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -331,7 +429,6 @@
             }
           ],
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Process",
             "ReturnType": [
@@ -348,10 +445,40 @@
     },
     {
       "LHS": {
-        "Entity": "User"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 22,
+              "Col": 1,
+              "Offset": 853
+            },
+            "End": {
+              "Line": 22,
+              "Col": 5,
+              "Offset": 857
+            }
+          }
+        }
       },
       "RHS": {
-        "Entity": "Service"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Service",
+          "Span": {
+            "Start": {
+              "Line": 22,
+              "Col": 9,
+              "Offset": 861
+            },
+            "End": {
+              "Line": 22,
+              "Col": 16,
+              "Offset": 868
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,

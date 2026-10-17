@@ -42,10 +42,59 @@ type Statement interface {
 	StatementNode() Statement
 }
 
+type MemberRef struct {
+	Name      tokenizer.Token
+	Signature []tokenizer.Token `json:",omitempty"` // "(" ... ")" inclusive, nil if absent
+}
+
+func (m MemberRef) Span() tokenizer.SourceSpan {
+	if len(m.Signature) > 0 {
+		return tokenizer.SourceSpan{
+			Start: m.Name.Span.Start,
+			End:   m.Signature[len(m.Signature)-1].Span.End,
+		}
+	}
+	return m.Name.Span
+}
+
 type TargetRef struct {
-	PackagePath []string `json:",omitempty"`
-	Entity      string   `json:",omitempty"`
-	Member      string   `json:",omitempty"`
+	PackagePath []tokenizer.Token `json:",omitempty"`
+	Name        tokenizer.Token
+	Member      *MemberRef `json:",omitempty"`
+}
+
+func (t TargetRef) Span() tokenizer.SourceSpan {
+	start := t.Name.Span.Start
+	if len(t.PackagePath) > 0 {
+		start = t.PackagePath[0].Span.Start
+	}
+	end := t.Name.Span.End
+	if t.Member != nil {
+		end = t.Member.Span().End
+	}
+	return tokenizer.SourceSpan{Start: start, End: end}
+}
+
+func (t TargetRef) EntityName() string {
+	return t.Name.Literal
+}
+
+func (t TargetRef) MemberName() string {
+	if t.Member != nil {
+		return t.Member.Name.Literal
+	}
+	return ""
+}
+
+func (t TargetRef) PackagePathStrings() []string {
+	if len(t.PackagePath) == 0 {
+		return nil
+	}
+	res := make([]string, len(t.PackagePath))
+	for i, tok := range t.PackagePath {
+		res[i] = tok.Literal
+	}
+	return res
 }
 
 type UnhandledStatement struct {

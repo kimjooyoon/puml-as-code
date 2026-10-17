@@ -114,7 +114,40 @@
           "Offset": 150
         }
       },
-      "Identifier": "Component",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Component",
+          "Span": {
+            "Start": {
+              "Line": 10,
+              "Col": 7,
+              "Offset": 119
+            },
+            "End": {
+              "Line": 10,
+              "Col": 16,
+              "Offset": 128
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -131,7 +164,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Execute",
             "ReturnType": [

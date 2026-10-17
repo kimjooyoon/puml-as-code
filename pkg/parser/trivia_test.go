@@ -31,7 +31,7 @@ Foo --> Bar
 	for _, stmt := range diag.Statements {
 		switch s := stmt.(type) {
 		case *ast.Entity:
-			if s.Identifier == "Foo" {
+			if s.Identifier.EntityName() == "Foo" {
 				fooEntity = s
 			}
 		case *ast.Relationship:
@@ -68,7 +68,7 @@ class Example {
 
 	var exampleEntity *ast.Entity
 	for _, stmt := range diag.Statements {
-		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier == "Example" {
+		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier.EntityName() == "Example" {
 			exampleEntity = ent
 			break
 		}
@@ -117,7 +117,7 @@ class User { /' open comment 1 '/ /' open comment 2 '/
 
 	var userEntity *ast.Entity
 	for _, stmt := range diag.Statements {
-		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier == "User" {
+		if ent, ok := stmt.(*ast.Entity); ok && ent.Identifier.EntityName() == "User" {
 			userEntity = ent
 			break
 		}

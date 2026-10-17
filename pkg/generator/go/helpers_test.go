@@ -11,6 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func targetRefName(name string) ast.TargetRef {
+	return ast.TargetRef{
+		Name: tokenizer.Token{
+			Literal: name,
+		},
+	}
+}
+
 func TestTargetTypeName(t *testing.T) {
 	tt := []struct {
 		name   string
@@ -24,7 +32,7 @@ func TestTargetTypeName(t *testing.T) {
 			target: &resolver.EntitySymbol{
 				FQN: "models.User",
 				AST: &ast.Entity{
-					Identifier: "User",
+					Identifier: targetRefName("User"),
 				},
 				PackagePath: []string{"models"},
 			},
@@ -36,7 +44,7 @@ func TestTargetTypeName(t *testing.T) {
 			target: &resolver.EntitySymbol{
 				FQN: "models.User",
 				AST: &ast.Entity{
-					Identifier: "User",
+					Identifier: targetRefName("User"),
 				},
 				PackagePath: []string{"models"},
 			},
@@ -48,7 +56,7 @@ func TestTargetTypeName(t *testing.T) {
 			target: &resolver.EntitySymbol{
 				FQN: "models.User",
 				AST: &ast.Entity{
-					Identifier: "User",
+					Identifier: targetRefName("User"),
 				},
 				PackagePath: []string{"models"},
 			},
@@ -62,7 +70,7 @@ func TestTargetTypeName(t *testing.T) {
 			target: &resolver.EntitySymbol{
 				FQN: "User",
 				AST: &ast.Entity{
-					Identifier: "User",
+					Identifier: targetRefName("User"),
 				},
 				PackagePath: []string{},
 			},
@@ -365,7 +373,7 @@ func TestToTriviaView(t *testing.T) {
 func TestVisibilityMapping(t *testing.T) {
 	owner := &resolver.EntitySymbol{
 		FQN: "Account",
-		AST: &ast.Entity{Identifier: "Account"},
+		AST: &ast.Entity{Identifier: targetRefName("Account")},
 	}
 
 	t.Run("field visibility", func(t *testing.T) {

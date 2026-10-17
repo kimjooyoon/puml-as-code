@@ -28,10 +28,43 @@
         "End": {
           "Line": 9,
           "Col": 0,
-          "Offset": 111
+          "Offset": 134
         }
       },
-      "Identifier": "User",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 4,
+              "Col": 30,
+              "Offset": 77
+            },
+            "End": {
+              "Line": 4,
+              "Col": 34,
+              "Offset": 81
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "STRING",
+        "Literal": "\"User Class Entity\"",
+        "Span": {
+          "Start": {
+            "Line": 4,
+            "Col": 7,
+            "Offset": 54
+          },
+          "End": {
+            "Line": 4,
+            "Col": 26,
+            "Offset": 73
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -39,16 +72,15 @@
             "Start": {
               "Line": 5,
               "Col": 3,
-              "Offset": 63
+              "Offset": 86
             },
             "End": {
               "Line": 6,
               "Col": 0,
-              "Offset": 73
+              "Offset": 96
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "id",
             "Type": {
@@ -62,16 +94,15 @@
             "Start": {
               "Line": 6,
               "Col": 3,
-              "Offset": 76
+              "Offset": 99
             },
             "End": {
               "Line": 7,
               "Col": 0,
-              "Offset": 88
+              "Offset": 111
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "name",
             "Type": {
@@ -85,16 +116,15 @@
             "Start": {
               "Line": 7,
               "Col": 3,
-              "Offset": 91
+              "Offset": 114
             },
             "End": {
               "Line": 8,
               "Col": 0,
-              "Offset": 109
+              "Offset": 132
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "GetEmail",
             "ReturnType": [
@@ -114,15 +144,48 @@
         "Start": {
           "Line": 10,
           "Col": 1,
-          "Offset": 113
+          "Offset": 136
         },
         "End": {
           "Line": 13,
           "Col": 0,
-          "Offset": 181
+          "Offset": 204
         }
       },
-      "Identifier": "Service",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Service",
+          "Span": {
+            "Start": {
+              "Line": 10,
+              "Col": 11,
+              "Offset": 146
+            },
+            "End": {
+              "Line": 10,
+              "Col": 18,
+              "Offset": 153
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "interface",
       "Stereotype": "API",
       "Generic": "T",
@@ -133,16 +196,15 @@
             "Start": {
               "Line": 11,
               "Col": 3,
-              "Offset": 157
+              "Offset": 180
             },
             "End": {
               "Line": 12,
               "Col": 0,
-              "Offset": 179
+              "Offset": 202
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Process",
             "ReturnType": [
@@ -171,15 +233,48 @@
         "Start": {
           "Line": 14,
           "Col": 1,
-          "Offset": 183
+          "Offset": 206
         },
         "End": {
           "Line": 20,
           "Col": 0,
-          "Offset": 258
+          "Offset": 281
         }
       },
-      "Identifier": "Status",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Status",
+          "Span": {
+            "Start": {
+              "Line": 14,
+              "Col": 6,
+              "Offset": 211
+            },
+            "End": {
+              "Line": 14,
+              "Col": 12,
+              "Offset": 217
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "enum",
       "Members": [
         {
@@ -187,16 +282,15 @@
             "Start": {
               "Line": 15,
               "Col": 3,
-              "Offset": 199
+              "Offset": 222
             },
             "End": {
               "Line": 16,
               "Col": 0,
-              "Offset": 208
+              "Offset": 231
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "Inactive"
           }
@@ -209,12 +303,12 @@
             "Start": {
               "Line": 16,
               "Col": 3,
-              "Offset": 211
+              "Offset": 234
             },
             "End": {
               "Line": 17,
               "Col": 0,
-              "Offset": 235
+              "Offset": 258
             }
           }
         },
@@ -223,16 +317,15 @@
             "Start": {
               "Line": 17,
               "Col": 3,
-              "Offset": 238
+              "Offset": 261
             },
             "End": {
               "Line": 18,
               "Col": 0,
-              "Offset": 245
+              "Offset": 268
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "Active"
           }
@@ -242,16 +335,15 @@
             "Start": {
               "Line": 18,
               "Col": 3,
-              "Offset": 248
+              "Offset": 271
             },
             "End": {
               "Line": 19,
               "Col": 0,
-              "Offset": 256
+              "Offset": 279
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Field": {
             "Name": "Pending"
           }
@@ -259,326 +351,396 @@
       ]
     },
     {
+      "Target": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 22,
+              "Col": 1,
+              "Offset": 316
+            },
+            "End": {
+              "Line": 22,
+              "Col": 5,
+              "Offset": 320
+            }
+          }
+        }
+      },
+      "Member": {
+        "NodeSpan": {
+          "Start": {
+            "Line": 22,
+            "Col": 8,
+            "Offset": 323
+          },
+          "End": {
+            "Line": 23,
+            "Col": 0,
+            "Offset": 331
+          }
+        },
+        "Visibility": "public",
+        "Field": {
+          "Name": "age",
+          "Type": {
+            "Typ": "named",
+            "Name": "int"
+          }
+        }
+      },
       "NodeSpan": {
         "Start": {
           "Line": 22,
           "Col": 1,
-          "Offset": 293
+          "Offset": 316
         },
         "End": {
           "Line": 23,
           "Col": 0,
-          "Offset": 308
+          "Offset": 331
         }
       },
-      "Identifier": "User",
-      "Members": [
+      "LeadingTrivia": [
         {
-          "NodeSpan": {
+          "Type": "COMMENT",
+          "Literal": "Standalone inline declarations",
+          "Span": {
             "Start": {
+              "Line": 21,
+              "Col": 1,
+              "Offset": 283
+            },
+            "End": {
               "Line": 22,
-              "Col": 8,
-              "Offset": 300
-            },
-            "End": {
-              "Line": 23,
               "Col": 0,
-              "Offset": 308
-            }
-          },
-          "LeadingTrivia": [
-            {
-              "Type": "COMMENT",
-              "Literal": "Standalone inline declarations",
-              "Span": {
-                "Start": {
-                  "Line": 21,
-                  "Col": 1,
-                  "Offset": 260
-                },
-                "End": {
-                  "Line": 22,
-                  "Col": 0,
-                  "Offset": 292
-                }
-              }
-            }
-          ],
-          "Visibility": "public",
-          "Modifiers": null,
-          "Field": {
-            "Name": "age",
-            "Type": {
-              "Typ": "named",
-              "Name": "int"
+              "Offset": 315
             }
           }
         }
       ]
     },
     {
+      "Target": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 23,
+              "Col": 1,
+              "Offset": 332
+            },
+            "End": {
+              "Line": 23,
+              "Col": 5,
+              "Offset": 336
+            }
+          }
+        }
+      },
+      "Member": {
+        "NodeSpan": {
+          "Start": {
+            "Line": 23,
+            "Col": 8,
+            "Offset": 339
+          },
+          "End": {
+            "Line": 24,
+            "Col": 0,
+            "Offset": 355
+          }
+        },
+        "Visibility": "public",
+        "Method": {
+          "Name": "SetAge",
+          "Parameters": [
+            {
+              "Name": "age",
+              "Type": {
+                "Typ": "named",
+                "Name": "int"
+              }
+            }
+          ]
+        }
+      },
       "NodeSpan": {
         "Start": {
           "Line": 23,
           "Col": 1,
-          "Offset": 309
-        },
-        "End": {
-          "Line": 24,
-          "Col": 0,
           "Offset": 332
-        }
-      },
-      "Identifier": "User",
-      "Members": [
-        {
-          "NodeSpan": {
-            "Start": {
-              "Line": 23,
-              "Col": 8,
-              "Offset": 316
-            },
-            "End": {
-              "Line": 24,
-              "Col": 0,
-              "Offset": 332
-            }
-          },
-          "Visibility": "public",
-          "Modifiers": null,
-          "Method": {
-            "Name": "SetAge",
-            "Parameters": [
-              {
-                "Name": "age",
-                "Type": {
-                  "Typ": "named",
-                  "Name": "int"
-                }
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "NodeSpan": {
-        "Start": {
+        },
+        "End": {
           "Line": 24,
-          "Col": 1,
-          "Offset": 333
-        },
-        "End": {
-          "Line": 25,
           "Col": 0,
-          "Offset": 352
-        }
-      },
-      "Identifier": "Service",
-      "Members": [
-        {
-          "NodeSpan": {
-            "Start": {
-              "Line": 24,
-              "Col": 11,
-              "Offset": 343
-            },
-            "End": {
-              "Line": 25,
-              "Col": 0,
-              "Offset": 352
-            }
-          },
-          "Visibility": "public",
-          "Modifiers": null,
-          "Method": {
-            "Name": "Cancel"
-          }
-        }
-      ]
-    },
-    {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
-              },
-              "Identifier": "Client",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 27,
-                      "Col": 19,
-                      "Offset": 420
-                    },
-                    "End": {
-                      "Line": 28,
-                      "Col": 0,
-                      "Offset": 432
-                    }
-                  },
-                  "LeadingTrivia": [
-                    {
-                      "Type": "COMMENT",
-                      "Literal": "Inline declaration with package qualification",
-                      "Span": {
-                        "Start": {
-                          "Line": 26,
-                          "Col": 1,
-                          "Offset": 354
-                        },
-                        "End": {
-                          "Line": 27,
-                          "Col": 0,
-                          "Offset": 401
-                        }
-                      }
-                    }
-                  ],
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "Timeout",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "int"
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "NodeSpan": {
-            "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            },
-            "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            }
-          }
-        }
-      ],
-      "NodeSpan": {
-        "Start": {
-          "Line": 27,
-          "Col": 1,
-          "Offset": 402
-        },
-        "End": {
-          "Line": 28,
-          "Col": 0,
-          "Offset": 432
+          "Offset": 355
         }
       }
     },
     {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
-              },
-              "Identifier": "Client",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 28,
-                      "Col": 19,
-                      "Offset": 451
-                    },
-                    "End": {
-                      "Line": 29,
-                      "Col": 0,
-                      "Offset": 485
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Method": {
-                    "Name": "Do",
-                    "ReturnType": [
-                      {
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "Response"
-                        }
-                      },
-                      {
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "error"
-                        }
-                      }
-                    ],
-                    "Parameters": [
-                      {
-                        "Name": "req",
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "Request"
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ],
-          "NodeSpan": {
+      "Target": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Service",
+          "Span": {
             "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 24,
+              "Col": 1,
+              "Offset": 356
             },
             "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 24,
+              "Col": 8,
+              "Offset": 363
             }
           }
         }
-      ],
+      },
+      "Member": {
+        "NodeSpan": {
+          "Start": {
+            "Line": 24,
+            "Col": 11,
+            "Offset": 366
+          },
+          "End": {
+            "Line": 25,
+            "Col": 0,
+            "Offset": 375
+          }
+        },
+        "Visibility": "public",
+        "Method": {
+          "Name": "Cancel"
+        }
+      },
+      "NodeSpan": {
+        "Start": {
+          "Line": 24,
+          "Col": 1,
+          "Offset": 356
+        },
+        "End": {
+          "Line": 25,
+          "Col": 0,
+          "Offset": 375
+        }
+      }
+    },
+    {
+      "Target": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 27,
+                "Col": 1,
+                "Offset": 425
+              },
+              "End": {
+                "Line": 27,
+                "Col": 4,
+                "Offset": 428
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 27,
+                "Col": 5,
+                "Offset": 429
+              },
+              "End": {
+                "Line": 27,
+                "Col": 9,
+                "Offset": 433
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 27,
+              "Col": 10,
+              "Offset": 434
+            },
+            "End": {
+              "Line": 27,
+              "Col": 16,
+              "Offset": 440
+            }
+          }
+        }
+      },
+      "Member": {
+        "NodeSpan": {
+          "Start": {
+            "Line": 27,
+            "Col": 19,
+            "Offset": 443
+          },
+          "End": {
+            "Line": 28,
+            "Col": 0,
+            "Offset": 455
+          }
+        },
+        "Visibility": "public",
+        "Field": {
+          "Name": "Timeout",
+          "Type": {
+            "Typ": "named",
+            "Name": "int"
+          }
+        }
+      },
+      "NodeSpan": {
+        "Start": {
+          "Line": 27,
+          "Col": 1,
+          "Offset": 425
+        },
+        "End": {
+          "Line": 28,
+          "Col": 0,
+          "Offset": 455
+        }
+      },
+      "LeadingTrivia": [
+        {
+          "Type": "COMMENT",
+          "Literal": "Inline declaration with package qualification",
+          "Span": {
+            "Start": {
+              "Line": 26,
+              "Col": 1,
+              "Offset": 377
+            },
+            "End": {
+              "Line": 27,
+              "Col": 0,
+              "Offset": 424
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 28,
+                "Col": 1,
+                "Offset": 456
+              },
+              "End": {
+                "Line": 28,
+                "Col": 4,
+                "Offset": 459
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 28,
+                "Col": 5,
+                "Offset": 460
+              },
+              "End": {
+                "Line": 28,
+                "Col": 9,
+                "Offset": 464
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 28,
+              "Col": 10,
+              "Offset": 465
+            },
+            "End": {
+              "Line": 28,
+              "Col": 16,
+              "Offset": 471
+            }
+          }
+        }
+      },
+      "Member": {
+        "NodeSpan": {
+          "Start": {
+            "Line": 28,
+            "Col": 19,
+            "Offset": 474
+          },
+          "End": {
+            "Line": 29,
+            "Col": 0,
+            "Offset": 508
+          }
+        },
+        "Visibility": "public",
+        "Method": {
+          "Name": "Do",
+          "ReturnType": [
+            {
+              "Type": {
+                "Typ": "named",
+                "Name": "Response"
+              }
+            },
+            {
+              "Type": {
+                "Typ": "named",
+                "Name": "error"
+              }
+            }
+          ],
+          "Parameters": [
+            {
+              "Name": "req",
+              "Type": {
+                "Typ": "named",
+                "Name": "Request"
+              }
+            }
+          ]
+        }
+      },
       "NodeSpan": {
         "Start": {
           "Line": 28,
           "Col": 1,
-          "Offset": 433
+          "Offset": 456
         },
         "End": {
           "Line": 29,
           "Col": 0,
-          "Offset": 485
+          "Offset": 508
         }
       }
     },
@@ -589,12 +751,12 @@
         "Start": {
           "Line": 30,
           "Col": 1,
-          "Offset": 487
+          "Offset": 510
         },
         "End": {
           "Line": 31,
           "Col": 0,
-          "Offset": 494
+          "Offset": 517
         }
       }
     }

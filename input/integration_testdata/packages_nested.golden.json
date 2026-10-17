@@ -19,8 +19,40 @@
       }
     },
     {
-      "Identifier": "core",
-      "Alias": "\"Core Domain\"",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "core",
+          "Span": {
+            "Start": {
+              "Line": 2,
+              "Col": 26,
+              "Offset": 51
+            },
+            "End": {
+              "Line": 2,
+              "Col": 30,
+              "Offset": 55
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "STRING",
+        "Literal": "\"Core Domain\"",
+        "Span": {
+          "Start": {
+            "Line": 2,
+            "Col": 9,
+            "Offset": 34
+          },
+          "End": {
+            "Line": 2,
+            "Col": 22,
+            "Offset": 47
+          }
+        }
+      },
       "Kind": "package",
       "Statements": [
         {
@@ -36,7 +68,40 @@
               "Offset": 108
             }
           },
-          "Identifier": "User",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "User",
+              "Span": {
+                "Start": {
+                  "Line": 3,
+                  "Col": 9,
+                  "Offset": 66
+                },
+                "End": {
+                  "Line": 3,
+                  "Col": 13,
+                  "Offset": 70
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "class",
           "Members": [
             {
@@ -53,7 +118,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Field": {
                 "Name": "id",
                 "Type": {
@@ -76,7 +140,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Field": {
                 "Name": "name",
                 "Type": {
@@ -102,7 +165,40 @@
       }
     },
     {
-      "Identifier": "infra",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "infra",
+          "Span": {
+            "Start": {
+              "Line": 9,
+              "Col": 11,
+              "Offset": 122
+            },
+            "End": {
+              "Line": 9,
+              "Col": 16,
+              "Offset": 127
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "namespace",
       "Statements": [
         {
@@ -118,7 +214,40 @@
               "Offset": 175
             }
           },
-          "Identifier": "Database",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "Database",
+              "Span": {
+                "Start": {
+                  "Line": 10,
+                  "Col": 9,
+                  "Offset": 138
+                },
+                "End": {
+                  "Line": 10,
+                  "Col": 17,
+                  "Offset": 146
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "class",
           "Members": [
             {
@@ -135,7 +264,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Field": {
                 "Name": "connection",
                 "Type": {
@@ -161,11 +289,77 @@
       }
     },
     {
-      "Identifier": "\"Storage\"",
+      "Identifier": {
+        "Name": {
+          "Type": "STRING",
+          "Literal": "\"Storage\"",
+          "Span": {
+            "Start": {
+              "Line": 15,
+              "Col": 8,
+              "Offset": 186
+            },
+            "End": {
+              "Line": 15,
+              "Col": 17,
+              "Offset": 195
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "folder",
       "Statements": [
         {
-          "Identifier": "Server",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "Server",
+              "Span": {
+                "Start": {
+                  "Line": 16,
+                  "Col": 8,
+                  "Offset": 205
+                },
+                "End": {
+                  "Line": 16,
+                  "Col": 14,
+                  "Offset": 211
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "node",
           "Statements": [
             {
@@ -181,7 +375,40 @@
                   "Offset": 256
                 }
               },
-              "Identifier": "Disk",
+              "Identifier": {
+                "Name": {
+                  "Type": "IDENTIFIER",
+                  "Literal": "Disk",
+                  "Span": {
+                    "Start": {
+                      "Line": 17,
+                      "Col": 11,
+                      "Offset": 224
+                    },
+                    "End": {
+                      "Line": 17,
+                      "Col": 15,
+                      "Offset": 228
+                    }
+                  }
+                }
+              },
+              "Alias": {
+                "Type": "ILLEGAL",
+                "Literal": "",
+                "Span": {
+                  "Start": {
+                    "Line": 0,
+                    "Col": 0,
+                    "Offset": 0
+                  },
+                  "End": {
+                    "Line": 0,
+                    "Col": 0,
+                    "Offset": 0
+                  }
+                }
+              },
               "Kind": "class",
               "Members": [
                 {
@@ -198,7 +425,6 @@
                     }
                   },
                   "Visibility": "public",
-                  "Modifiers": null,
                   "Field": {
                     "Name": "capacity",
                     "Type": {
@@ -239,10 +465,40 @@
     },
     {
       "LHS": {
-        "Entity": "User"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "User",
+          "Span": {
+            "Start": {
+              "Line": 23,
+              "Col": 1,
+              "Offset": 264
+            },
+            "End": {
+              "Line": 23,
+              "Col": 5,
+              "Offset": 268
+            }
+          }
+        }
       },
       "RHS": {
-        "Entity": "Database"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Database",
+          "Span": {
+            "Start": {
+              "Line": 23,
+              "Col": 10,
+              "Offset": 273
+            },
+            "End": {
+              "Line": 23,
+              "Col": 18,
+              "Offset": 281
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,

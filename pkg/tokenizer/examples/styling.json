@@ -105,7 +105,7 @@
       },
       {
         "t": "STRING",
-        "l": "1"
+        "l": "\"1\""
       },
       {
         "t": "ASTERISK",
@@ -121,7 +121,7 @@
       },
       {
         "t": "STRING",
-        "l": "many"
+        "l": "\"many\""
       },
       {
         "t": "IDENTIFIER",
@@ -459,7 +459,7 @@
       },
       {
         "t": "STRING",
-        "l": "1"
+        "l": "\"1\""
       },
       {
         "t": "ASTERISK",
@@ -475,7 +475,7 @@
       },
       {
         "t": "STRING",
-        "l": "many"
+        "l": "\"many\""
       },
       {
         "t": "IDENTIFIER",

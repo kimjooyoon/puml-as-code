@@ -3,60 +3,40 @@ package parser
 import (
 	"errors"
 	"log"
-	"slices"
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/parser/keyword"
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (p *Parser) setAliasAndName(ent *ast.Entity, nameOrAlias tokenizer.Token) ([]string, error) {
+func (p *Parser) setAliasAndName(ent *ast.Entity, nameOrAlias tokenizer.Token) error {
 	switch nameOrAlias.Type {
 	case tokenizer.STRING:
-		if ent.Alias != "" {
-			return nil, NewParserError(nameOrAlias, "Entity alias already set")
+		if !ent.Alias.IsZero() {
+			return NewParserError(nameOrAlias, "Entity alias already set")
 		}
-		ent.Alias = p.stream.SliceInputEnclosingTokens(nameOrAlias)
-		return nil, nil
+		ent.Alias = nameOrAlias
+		return nil
 	case tokenizer.IDENTIFIER:
-		if ent.Identifier != "" {
-			return nil, NewParserError(nameOrAlias, "Entity name already set")
-		}
-		if _, ok := p.stream.TryConsumePackageSeparator(); !ok {
-			ent.Identifier = nameOrAlias.Literal
-			return nil, nil
-		}
-		pkgPath := []string{nameOrAlias.Literal}
-		for {
-			tok := p.stream.Emit()
-			if tok.Type != tokenizer.IDENTIFIER {
-				return nil, NewParserError(tok, "Expected identifier after package separator")
+		if !ent.Identifier.Name.IsZero() {
+			if !ent.Alias.IsZero() {
+				return NewParserError(nameOrAlias, "Entity name and alias already set")
 			}
-			ent.Identifier = tok.Literal
-
-			if _, ok := p.stream.TryConsumePackageSeparator(); !ok {
-				break
-			}
-			pkgPath = append(pkgPath, tok.Literal)
+			ent.Alias = nameOrAlias
+			return nil
 		}
-		return pkgPath, nil
+		targetRef, err := p.parseTargetRef(nameOrAlias)
+		if err != nil {
+			return err
+		}
+		if targetRef.Member != nil {
+			return NewParserError(targetRef.Member.Name, "Entity declaration cannot contain member")
+		}
+		ent.Identifier = targetRef
+		return nil
 	default:
-		return nil, NewParserError(nameOrAlias, "Expected token for entity identifier or alias")
+		return NewParserError(nameOrAlias, "Expected token for entity identifier or alias")
 	}
-}
-
-func wrapInContainers(ent *ast.Entity, pkgPath []string) ast.Statement {
-	var current ast.Statement = ent
-	for _, pkg := range slices.Backward(pkgPath) {
-		// Leave with Kind = ast.ContainerUnknown
-		// This will be a good hint to distinguish between
-		// inline and block container declarations
-		current = &ast.Container{
-			Identifier: pkg,
-			Statements: []ast.Statement{current},
-		}
-	}
-	return current
 }
 
 // tok is the kind of an entity (class, interface, struct, enum, etc.)
@@ -68,24 +48,25 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	// Unexpectedly, class and other entity definitions have very strict syntax:
 	// class <entity name> as <entity alias> <generics> <stereotype> <styles> <body>
 
-	pkgPath, err := p.setAliasAndName(ent, p.stream.Emit())
+	err := p.setAliasAndName(ent, p.stream.Emit())
 	if err != nil {
 		return nil, err
 	}
 
 	if _, hasAlias := p.stream.TryConsumeKW(keyword.Alias); hasAlias {
-		aliasPkgPath, err := p.setAliasAndName(ent, p.stream.Emit())
+		err := p.setAliasAndName(ent, p.stream.Emit())
 		if err != nil {
 			return nil, err
 		}
-		if len(aliasPkgPath) > 0 {
-			pkgPath = aliasPkgPath
-		}
 	}
 
-	if ent.Identifier == "" {
+	if !ent.Identifier.Name.IsZero() && !ent.Alias.IsZero() && ent.Alias.Type != tokenizer.STRING {
+		return nil, NewParserError(ent.Alias, "Alias must be a string")
+	}
+
+	if ent.Identifier.Name.IsZero() {
 		// If no identifier is set, use the alias
-		ent.Identifier = ent.Alias
+		ent.Identifier = ast.TargetRef{Name: ent.Alias}
 	}
 
 	if !p.stream.AssertSeq([]tokenizer.Token{{Type: tokenizer.LANGLE}, {Type: tokenizer.LANGLE}}) {
@@ -105,7 +86,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	postTags := p.tryReadTags()
 	if len(preTags) > 0 {
 		if len(postTags) > 0 {
-			log.Printf("warning: tags %v after stereotype on entity %q are ignored in favor of pre-stereotype tags %v\n", postTags, ent.Identifier, preTags)
+			log.Printf("warning: tags %v after stereotype on entity %q are ignored in favor of pre-stereotype tags %v\n", postTags, ent.Identifier.EntityName(), preTags)
 		}
 		ent.Tags = preTags
 	} else if len(postTags) > 0 {
@@ -116,7 +97,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); !ok {
 		// No body return entity as is
-		return wrapInContainers(ent, pkgPath), nil
+		return ent, nil
 	}
 
 	p.stream.EmitCommentToks()
@@ -153,7 +134,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 
 	p.stream.TryConsumeType(tokenizer.RBRACE)
 
-	return wrapInContainers(ent, pkgPath), nil
+	return ent, nil
 }
 
 func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
@@ -353,6 +334,7 @@ outer:
 }
 
 func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, error) {
+	inlineMark := p.Mark(firstTok)
 	targetRef, err := p.parseTargetRef(firstTok)
 	if err != nil {
 		return nil, err
@@ -386,11 +368,11 @@ func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, err
 	p.stream.EmitCommentToks()
 	member.SetMetadata(p.Span(memberMark), p.stream.DumpCollectedTrivia(), p.stream.DumpCollectedTrivia())
 
-	ent := &ast.Entity{
-		Identifier: targetRef.Entity,
-		Kind:       ast.EntityUnknown,
-		Members:    []ast.Member{member},
+	im := &ast.InlineMember{
+		Target: targetRef,
+		Member: member,
 	}
+	im.SetMetadata(p.Span(inlineMark), p.stream.DumpCollectedTrivia(), p.stream.DumpCollectedTrivia())
 
-	return wrapInContainers(ent, targetRef.PackagePath), nil
+	return im, nil
 }

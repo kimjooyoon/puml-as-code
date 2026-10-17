@@ -143,13 +143,13 @@ func TestParseSkinparamAnonymousBlock(t *testing.T) {
 	require.NoError(t, err)
 
 	block, ok := stmt.(*ast.SkinparamBlock)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "skinparam", block.Keyword)
 	require.Equal(t, "", block.Name)
 	require.Len(t, block.Statements, 1)
 
 	entry, ok := block.Statements[0].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "BackgroundColor", entry.Name)
 	require.Equal(t, "PaleGreen", entry.Value)
 }
@@ -161,13 +161,13 @@ func TestParseSkinparamBlockWithStereotype(t *testing.T) {
 	require.NoError(t, err)
 
 	block, ok := stmt.(*ast.SkinparamBlock)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "class", block.Name)
 	require.Equal(t, "Special", block.Stereotype)
 	require.Len(t, block.Statements, 1)
 
 	entry, ok := block.Statements[0].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "BackgroundColor", entry.Name)
 	require.Equal(t, "Gold", entry.Value)
 }
@@ -185,7 +185,7 @@ skinparam class { ' opener comment
 	require.NoError(t, err)
 
 	block, ok := stmt.(*ast.SkinparamBlock)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "class", block.Name)
 	require.NotEmpty(t, block.GetLeadingTrivia())
 	require.Contains(t, block.GetLeadingTrivia()[0].Literal, "leading comment")
@@ -193,7 +193,7 @@ skinparam class { ' opener comment
 
 	// Entry 1
 	e1, ok := block.Statements[0].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "BackgroundColor", e1.Name)
 	require.Equal(t, "PaleGreen", e1.Value)
 	require.NotEmpty(t, e1.GetLeadingTrivia())
@@ -203,7 +203,7 @@ skinparam class { ' opener comment
 
 	// Entry 2
 	e2, ok := block.Statements[1].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "ArrowColor", e2.Name)
 	require.Equal(t, "SeaGreen", e2.Value)
 
@@ -227,28 +227,28 @@ func TestParseSkinparamNestedAndFlattening(t *testing.T) {
 	require.NoError(t, err)
 
 	block, ok := stmt.(*ast.SkinparamBlock)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "class", block.Name)
 	require.Len(t, block.Statements, 4)
 
 	// BackgroundColor
 	s1, ok := block.Statements[0].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "BackgroundColor", s1.Name)
 
 	// Directive
 	_, ok = block.Statements[1].(*ast.IncludeDirective)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 
 	// Nested header block
 	nested, ok := block.Statements[2].(*ast.SkinparamBlock)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "header", nested.Name)
 	require.Len(t, nested.Statements, 2)
 
 	// ArrowColor
 	s4, ok := block.Statements[3].(*ast.SkinparamSetting)
-	require.True(t, ok)
+	require.True(t, ok, "expected skinparam block but got %T", stmt)
 	require.Equal(t, "ArrowColor", s4.Name)
 
 	// Test .Settings() flattening
@@ -316,7 +316,7 @@ class, interface {
 			require.NoError(t, err)
 
 			sb, ok := stmt.(*ast.StyleBlock)
-			require.True(t, ok)
+			require.True(t, ok, "expected skinparam block but got %T", stmt)
 			require.Len(t, sb.Statements, len(tc.wantSelectors))
 
 			for i, wantSel := range tc.wantSelectors {

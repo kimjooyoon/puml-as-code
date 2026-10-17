@@ -35,130 +35,6 @@
       }
     },
     {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
-              },
-              "Identifier": "Client",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 5,
-                      "Col": 3,
-                      "Offset": 65
-                    },
-                    "End": {
-                      "Line": 6,
-                      "Col": 0,
-                      "Offset": 77
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "timeout",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "int"
-                    }
-                  }
-                },
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 6,
-                      "Col": 3,
-                      "Offset": 80
-                    },
-                    "End": {
-                      "Line": 7,
-                      "Col": 0,
-                      "Offset": 91
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Method": {
-                    "Name": "Do",
-                    "ReturnType": [
-                      {
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "error"
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 7,
-                      "Col": 3,
-                      "Offset": 94
-                    },
-                    "End": {
-                      "Line": 8,
-                      "Col": 0,
-                      "Offset": 119
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Method": {
-                    "Name": "Execute",
-                    "ReturnType": [
-                      {
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "bool"
-                        }
-                      }
-                    ],
-                    "Parameters": [
-                      {
-                        "Name": "req",
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "string"
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ],
-          "NodeSpan": {
-            "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            },
-            "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
-            }
-          }
-        }
-      ],
       "NodeSpan": {
         "Start": {
           "Line": 4,
@@ -170,97 +46,163 @@
           "Col": 0,
           "Offset": 121
         }
-      }
-    },
-    {
-      "Identifier": "net",
-      "Statements": [
-        {
-          "Identifier": "http",
-          "Statements": [
-            {
-              "NodeSpan": {
-                "Start": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                },
-                "End": {
-                  "Line": 0,
-                  "Col": 0,
-                  "Offset": 0
-                }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 4,
+                "Col": 7,
+                "Offset": 45
               },
-              "Identifier": "Server",
-              "Kind": "class",
-              "Members": [
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 11,
-                      "Col": 3,
-                      "Offset": 149
-                    },
-                    "End": {
-                      "Line": 12,
-                      "Col": 0,
-                      "Offset": 158
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Field": {
-                    "Name": "port",
-                    "Type": {
-                      "Typ": "named",
-                      "Name": "int"
-                    }
-                  }
-                },
-                {
-                  "NodeSpan": {
-                    "Start": {
-                      "Line": 12,
-                      "Col": 3,
-                      "Offset": 161
-                    },
-                    "End": {
-                      "Line": 13,
-                      "Col": 0,
-                      "Offset": 175
-                    }
-                  },
-                  "Visibility": "public",
-                  "Modifiers": null,
-                  "Method": {
-                    "Name": "Serve",
-                    "ReturnType": [
-                      {
-                        "Type": {
-                          "Typ": "named",
-                          "Name": "error"
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
+              "End": {
+                "Line": 4,
+                "Col": 10,
+                "Offset": 48
+              }
             }
-          ],
-          "NodeSpan": {
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 4,
+                "Col": 11,
+                "Offset": 49
+              },
+              "End": {
+                "Line": 4,
+                "Col": 15,
+                "Offset": 53
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
             "Start": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 4,
+              "Col": 16,
+              "Offset": 54
             },
             "End": {
-              "Line": 0,
-              "Col": 0,
-              "Offset": 0
+              "Line": 4,
+              "Col": 22,
+              "Offset": 60
             }
           }
         }
-      ],
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 5,
+              "Col": 3,
+              "Offset": 65
+            },
+            "End": {
+              "Line": 6,
+              "Col": 0,
+              "Offset": 77
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "timeout",
+            "Type": {
+              "Typ": "named",
+              "Name": "int"
+            }
+          }
+        },
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 6,
+              "Col": 3,
+              "Offset": 80
+            },
+            "End": {
+              "Line": 7,
+              "Col": 0,
+              "Offset": 91
+            }
+          },
+          "Visibility": "public",
+          "Method": {
+            "Name": "Do",
+            "ReturnType": [
+              {
+                "Type": {
+                  "Typ": "named",
+                  "Name": "error"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 7,
+              "Col": 3,
+              "Offset": 94
+            },
+            "End": {
+              "Line": 8,
+              "Col": 0,
+              "Offset": 119
+            }
+          },
+          "Visibility": "public",
+          "Method": {
+            "Name": "Execute",
+            "ReturnType": [
+              {
+                "Type": {
+                  "Typ": "named",
+                  "Name": "bool"
+                }
+              }
+            ],
+            "Parameters": [
+              {
+                "Name": "req",
+                "Type": {
+                  "Typ": "named",
+                  "Name": "string"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "NodeSpan": {
         "Start": {
           "Line": 10,
@@ -272,22 +214,231 @@
           "Col": 0,
           "Offset": 177
         }
-      }
+      },
+      "Identifier": {
+        "PackagePath": [
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 10,
+                "Col": 7,
+                "Offset": 129
+              },
+              "End": {
+                "Line": 10,
+                "Col": 10,
+                "Offset": 132
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 10,
+                "Col": 11,
+                "Offset": 133
+              },
+              "End": {
+                "Line": 10,
+                "Col": 15,
+                "Offset": 137
+              }
+            }
+          }
+        ],
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 10,
+              "Col": 16,
+              "Offset": 138
+            },
+            "End": {
+              "Line": 10,
+              "Col": 22,
+              "Offset": 144
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
+      "Kind": "class",
+      "Members": [
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 11,
+              "Col": 3,
+              "Offset": 149
+            },
+            "End": {
+              "Line": 12,
+              "Col": 0,
+              "Offset": 158
+            }
+          },
+          "Visibility": "public",
+          "Field": {
+            "Name": "port",
+            "Type": {
+              "Typ": "named",
+              "Name": "int"
+            }
+          }
+        },
+        {
+          "NodeSpan": {
+            "Start": {
+              "Line": 12,
+              "Col": 3,
+              "Offset": 161
+            },
+            "End": {
+              "Line": 13,
+              "Col": 0,
+              "Offset": 175
+            }
+          },
+          "Visibility": "public",
+          "Method": {
+            "Name": "Serve",
+            "ReturnType": [
+              {
+                "Type": {
+                  "Typ": "named",
+                  "Name": "error"
+                }
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "LHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 15,
+                "Col": 1,
+                "Offset": 179
+              },
+              "End": {
+                "Line": 15,
+                "Col": 4,
+                "Offset": 182
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 15,
+                "Col": 5,
+                "Offset": 183
+              },
+              "End": {
+                "Line": 15,
+                "Col": 9,
+                "Offset": 187
+              }
+            }
+          }
         ],
-        "Entity": "Client"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 15,
+              "Col": 10,
+              "Offset": 188
+            },
+            "End": {
+              "Line": 15,
+              "Col": 16,
+              "Offset": 194
+            }
+          }
+        }
       },
       "RHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 15,
+                "Col": 20,
+                "Offset": 198
+              },
+              "End": {
+                "Line": 15,
+                "Col": 23,
+                "Offset": 201
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 15,
+                "Col": 24,
+                "Offset": 202
+              },
+              "End": {
+                "Line": 15,
+                "Col": 28,
+                "Offset": 206
+              }
+            }
+          }
         ],
-        "Entity": "Server"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 15,
+              "Col": 29,
+              "Offset": 207
+            },
+            "End": {
+              "Line": 15,
+              "Col": 35,
+              "Offset": 213
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,
@@ -312,19 +463,143 @@
     {
       "LHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 1,
+                "Offset": 225
+              },
+              "End": {
+                "Line": 16,
+                "Col": 4,
+                "Offset": 228
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 5,
+                "Offset": 229
+              },
+              "End": {
+                "Line": 16,
+                "Col": 9,
+                "Offset": 233
+              }
+            }
+          }
         ],
-        "Entity": "Client",
-        "Member": "timeout"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 16,
+              "Col": 10,
+              "Offset": 234
+            },
+            "End": {
+              "Line": 16,
+              "Col": 16,
+              "Offset": 240
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "IDENTIFIER",
+            "Literal": "timeout",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 18,
+                "Offset": 242
+              },
+              "End": {
+                "Line": 16,
+                "Col": 25,
+                "Offset": 249
+              }
+            }
+          }
+        }
       },
       "RHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 29,
+                "Offset": 253
+              },
+              "End": {
+                "Line": 16,
+                "Col": 32,
+                "Offset": 256
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 33,
+                "Offset": 257
+              },
+              "End": {
+                "Line": 16,
+                "Col": 37,
+                "Offset": 261
+              }
+            }
+          }
         ],
-        "Entity": "Server",
-        "Member": "port"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 16,
+              "Col": 38,
+              "Offset": 262
+            },
+            "End": {
+              "Line": 16,
+              "Col": 44,
+              "Offset": 268
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "IDENTIFIER",
+            "Literal": "port",
+            "Span": {
+              "Start": {
+                "Line": 16,
+                "Col": 46,
+                "Offset": 270
+              },
+              "End": {
+                "Line": 16,
+                "Col": 50,
+                "Offset": 274
+              }
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,
@@ -349,19 +624,143 @@
     {
       "LHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 1,
+                "Offset": 282
+              },
+              "End": {
+                "Line": 17,
+                "Col": 4,
+                "Offset": 285
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 5,
+                "Offset": 286
+              },
+              "End": {
+                "Line": 17,
+                "Col": 9,
+                "Offset": 290
+              }
+            }
+          }
         ],
-        "Entity": "Client",
-        "Member": "Do"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 17,
+              "Col": 10,
+              "Offset": 291
+            },
+            "End": {
+              "Line": 17,
+              "Col": 16,
+              "Offset": 297
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "IDENTIFIER",
+            "Literal": "Do",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 18,
+                "Offset": 299
+              },
+              "End": {
+                "Line": 17,
+                "Col": 20,
+                "Offset": 301
+              }
+            }
+          }
+        }
       },
       "RHS": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 24,
+                "Offset": 305
+              },
+              "End": {
+                "Line": 17,
+                "Col": 27,
+                "Offset": 308
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 28,
+                "Offset": 309
+              },
+              "End": {
+                "Line": 17,
+                "Col": 32,
+                "Offset": 313
+              }
+            }
+          }
         ],
-        "Entity": "Server",
-        "Member": "Serve"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Server",
+          "Span": {
+            "Start": {
+              "Line": 17,
+              "Col": 33,
+              "Offset": 314
+            },
+            "End": {
+              "Line": 17,
+              "Col": 39,
+              "Offset": 320
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "IDENTIFIER",
+            "Literal": "Serve",
+            "Span": {
+              "Start": {
+                "Line": 17,
+                "Col": 41,
+                "Offset": 322
+              },
+              "End": {
+                "Line": 17,
+                "Col": 46,
+                "Offset": 327
+              }
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,
@@ -389,10 +788,73 @@
       "Direction": "right",
       "Target": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 19,
+                "Col": 15,
+                "Offset": 353
+              },
+              "End": {
+                "Line": 19,
+                "Col": 18,
+                "Offset": 356
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 19,
+                "Col": 19,
+                "Offset": 357
+              },
+              "End": {
+                "Line": 19,
+                "Col": 23,
+                "Offset": 361
+              }
+            }
+          }
         ],
-        "Entity": "Client"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 19,
+              "Col": 24,
+              "Offset": 362
+            },
+            "End": {
+              "Line": 19,
+              "Col": 30,
+              "Offset": 368
+            }
+          }
+        }
+      },
+      "Identifier": {
+        "Name": {
+          "Type": "ILLEGAL",
+          "Literal": "",
+          "Span": {
+            "Start": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            },
+            "End": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            }
+          }
+        }
       },
       "NodeSpan": {
         "Start": {
@@ -413,11 +875,125 @@
       "Direction": "left",
       "Target": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 20,
+                "Col": 14,
+                "Offset": 407
+              },
+              "End": {
+                "Line": 20,
+                "Col": 17,
+                "Offset": 410
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 20,
+                "Col": 18,
+                "Offset": 411
+              },
+              "End": {
+                "Line": 20,
+                "Col": 22,
+                "Offset": 415
+              }
+            }
+          }
         ],
-        "Entity": "Client",
-        "Member": "Do()"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 20,
+              "Col": 23,
+              "Offset": 416
+            },
+            "End": {
+              "Line": 20,
+              "Col": 29,
+              "Offset": 422
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "IDENTIFIER",
+            "Literal": "Do",
+            "Span": {
+              "Start": {
+                "Line": 20,
+                "Col": 31,
+                "Offset": 424
+              },
+              "End": {
+                "Line": 20,
+                "Col": 33,
+                "Offset": 426
+              }
+            }
+          },
+          "Signature": [
+            {
+              "Type": "LPAREN",
+              "Literal": "(",
+              "Span": {
+                "Start": {
+                  "Line": 20,
+                  "Col": 33,
+                  "Offset": 426
+                },
+                "End": {
+                  "Line": 20,
+                  "Col": 34,
+                  "Offset": 427
+                }
+              }
+            },
+            {
+              "Type": "RPAREN",
+              "Literal": ")",
+              "Span": {
+                "Start": {
+                  "Line": 20,
+                  "Col": 34,
+                  "Offset": 427
+                },
+                "End": {
+                  "Line": 20,
+                  "Col": 35,
+                  "Offset": 428
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Identifier": {
+        "Name": {
+          "Type": "ILLEGAL",
+          "Literal": "",
+          "Span": {
+            "Start": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            },
+            "End": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            }
+          }
+        }
       },
       "NodeSpan": {
         "Start": {
@@ -438,11 +1014,91 @@
       "Direction": "top",
       "Target": {
         "PackagePath": [
-          "net",
-          "http"
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "net",
+            "Span": {
+              "Start": {
+                "Line": 21,
+                "Col": 13,
+                "Offset": 465
+              },
+              "End": {
+                "Line": 21,
+                "Col": 16,
+                "Offset": 468
+              }
+            }
+          },
+          {
+            "Type": "IDENTIFIER",
+            "Literal": "http",
+            "Span": {
+              "Start": {
+                "Line": 21,
+                "Col": 17,
+                "Offset": 469
+              },
+              "End": {
+                "Line": 21,
+                "Col": 21,
+                "Offset": 473
+              }
+            }
+          }
         ],
-        "Entity": "Client",
-        "Member": "Execute(req string)"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Client",
+          "Span": {
+            "Start": {
+              "Line": 21,
+              "Col": 22,
+              "Offset": 474
+            },
+            "End": {
+              "Line": 21,
+              "Col": 28,
+              "Offset": 480
+            }
+          }
+        },
+        "Member": {
+          "Name": {
+            "Type": "STRING",
+            "Literal": "\"Execute(req string)\"",
+            "Span": {
+              "Start": {
+                "Line": 21,
+                "Col": 30,
+                "Offset": 482
+              },
+              "End": {
+                "Line": 21,
+                "Col": 51,
+                "Offset": 503
+              }
+            }
+          }
+        }
+      },
+      "Identifier": {
+        "Name": {
+          "Type": "ILLEGAL",
+          "Literal": "",
+          "Span": {
+            "Start": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            },
+            "End": {
+              "Line": 0,
+              "Col": 0,
+              "Offset": 0
+            }
+          }
+        }
       },
       "NodeSpan": {
         "Start": {

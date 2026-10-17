@@ -2,7 +2,7 @@ Pre-diagram text
 
 @startuml EntityDeclarations
 
-class User {
+class "User Class Entity" as User {
   +id string
   +name string
   +GetEmail() string

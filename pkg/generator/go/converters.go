@@ -206,7 +206,7 @@ func toEnumView(ent *resolver.EntitySymbol) EnumView {
 		panic("enums should always be explicitly defined")
 	}
 	view := EnumView{
-		Name:       ent.AST.Identifier,
+		Name:       ent.AST.Identifier.EntityName(),
 		NotesView:  toNotesView(ent.Notes),
 		TriviaView: toTriviaView(ent.AST.BaseNode),
 	}
@@ -327,7 +327,7 @@ func toFieldView(owner *resolver.EntitySymbol, decl *ast.FieldDeclaration, field
 	trivia := toTriviaView(decl.BaseNode)
 	attachVisibilityComment(&trivia, decl.Visibility)
 	return FieldView{
-		Name:       ensureCorrectCase(owner.AST.Identifier, field.Name, decl.Visibility),
+		Name:       ensureCorrectCase(owner.AST.Identifier.EntityName(), field.Name, decl.Visibility),
 		Type:       field.Type.String(),
 		TriviaView: trivia,
 		NotesView:  toNotesView(owner.MemberNotes[field.Name]),
@@ -344,7 +344,7 @@ func toMethodView(owner *resolver.EntitySymbol, decl *ast.MethodDeclaration, met
 	trivia := toTriviaView(decl.BaseNode)
 	attachVisibilityComment(&trivia, decl.Visibility)
 	return MethodView{
-		Name:       ensureCorrectCase(owner.AST.Identifier, method.Name, decl.Visibility),
+		Name:       ensureCorrectCase(owner.AST.Identifier.EntityName(), method.Name, decl.Visibility),
 		Signature:  method.Signature(),
 		TriviaView: trivia,
 		NotesView:  toNotesView(owner.MemberNotes[method.Name]),

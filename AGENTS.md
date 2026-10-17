@@ -62,7 +62,7 @@ Full list of tasks is available in [`plan.md`](file:///home/yur4uwe/Projects/pum
 
 ### 1. Implicit Containers
 
-Implicit containers are entities or containers that are not explicitly declared in the source code via a declaration syntax, but whose existanceimplied by other explicit declarations. E.g.:
+Implicit containers are entities or containers that are not explicitly declared in the source code via a declaration syntax, but whose existance implied by other explicit declarations. E.g.:
 
 ```puml
 class pkg.Foo

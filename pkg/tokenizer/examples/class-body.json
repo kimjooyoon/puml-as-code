@@ -883,7 +883,7 @@
       },
       {
         "t": "STRING",
-        "l": "private Class"
+        "l": "\"private Class\""
       },
       {
         "t": "LBRACE",
@@ -915,7 +915,7 @@
       },
       {
         "t": "STRING",
-        "l": "protected Class"
+        "l": "\"protected Class\""
       },
       {
         "t": "LBRACE",
@@ -947,7 +947,7 @@
       },
       {
         "t": "STRING",
-        "l": "package private Class"
+        "l": "\"package private Class\""
       },
       {
         "t": "LBRACE",
@@ -979,7 +979,7 @@
       },
       {
         "t": "STRING",
-        "l": "public Class"
+        "l": "\"public Class\""
       },
       {
         "t": "LBRACE",

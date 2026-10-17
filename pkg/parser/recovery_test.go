@@ -30,7 +30,7 @@ class ValidB
 
 		entA, ok := diag.Statements[1].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "ValidA", entA.Identifier)
+		assertASTEqual(t, identRef("ValidA"), entA.Identifier)
 
 		badStmt, ok := diag.Statements[2].(*ast.BadStatement)
 		require.True(t, ok, "expected 3rd statement to be BadStatement")
@@ -40,7 +40,7 @@ class ValidB
 
 		entB, ok := diag.Statements[3].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "ValidB", entB.Identifier)
+		assertASTEqual(t, identRef("ValidB"), entB.Identifier)
 
 		endBound, ok := diag.Statements[4].(*ast.DiagramBound)
 		require.True(t, ok)
@@ -69,12 +69,12 @@ package mypkg {
 
 		cont, ok := diag.Statements[1].(*ast.Container)
 		require.True(t, ok)
-		require.Equal(t, "mypkg", cont.Identifier)
+		assertASTEqual(t, identRef("mypkg"), cont.Identifier)
 		require.Len(t, cont.Statements, 3)
 
 		innerA, ok := cont.Statements[0].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "InnerA", innerA.Identifier)
+		assertASTEqual(t, identRef("InnerA"), innerA.Identifier)
 
 		badStmt, ok := cont.Statements[1].(*ast.BadStatement)
 		require.True(t, ok)
@@ -82,7 +82,7 @@ package mypkg {
 
 		innerB, ok := cont.Statements[2].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "InnerB", innerB.Identifier)
+		assertASTEqual(t, identRef("InnerB"), innerB.Identifier)
 	})
 
 	t.Run("entity level recovers past bad member in body", func(t *testing.T) {
@@ -104,7 +104,7 @@ class Service {
 
 		ent, ok := diag.Statements[1].(*ast.Entity)
 		require.True(t, ok)
-		require.Equal(t, "Service", ent.Identifier)
+		assertASTEqual(t, identRef("Service"), ent.Identifier)
 		require.Len(t, ent.Members, 3)
 
 		field, ok := ent.Members[0].(*ast.FieldDeclaration)

@@ -131,7 +131,40 @@
           "Offset": 225
         }
       },
-      "Identifier": "Service",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "Service",
+          "Span": {
+            "Start": {
+              "Line": 11,
+              "Col": 7,
+              "Offset": 199
+            },
+            "End": {
+              "Line": 11,
+              "Col": 14,
+              "Offset": 206
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -148,7 +181,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "Run",
             "ReturnType": [

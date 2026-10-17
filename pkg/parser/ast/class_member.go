@@ -49,7 +49,7 @@ type Method interface {
 type FieldDeclaration struct {
 	BaseNode
 	Visibility VisibilityKind
-	Modifiers  []string
+	Modifiers  []string `json:",omitempty"`
 	Field      Field
 }
 
@@ -61,7 +61,7 @@ func (fd *FieldDeclaration) FieldName() string  { return fd.Field.FieldName() }
 type MethodDeclaration struct {
 	BaseNode
 	Visibility VisibilityKind
-	Modifiers  []string
+	Modifiers  []string `json:",omitempty"`
 	Method     Method
 }
 
@@ -69,3 +69,13 @@ var _ Member = (*MethodDeclaration)(nil)
 
 func (md *MethodDeclaration) MemberNode() Member { return md }
 func (md *MethodDeclaration) MethodName() string { return md.Method.MethodName() }
+
+type InlineMember struct {
+	Target TargetRef
+	Member Member
+	BaseNode
+}
+
+var _ Statement = (*InlineMember)(nil)
+
+func (im *InlineMember) StatementNode() Statement { return im }

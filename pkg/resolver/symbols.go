@@ -46,13 +46,16 @@ func (tbl *SymbolTable) Lookup(name string) *EntitySymbol {
 }
 
 func (tbl *SymbolTable) LookupByRef(ref ast.TargetRef, pkgPath []string) *EntitySymbol {
-	if len(ref.PackagePath) > 0 {
-		if ent, ok := tbl.lookup[FQN(ref.Entity, ref.PackagePath)]; ok {
+	pkgPathStrings := ref.PackagePathStrings()
+	entityName := ref.EntityName()
+
+	if len(pkgPathStrings) > 0 {
+		if ent, ok := tbl.lookup[FQN(entityName, pkgPathStrings)]; ok {
 			return ent
 		}
 		if len(pkgPath) > 0 {
-			relPkg := append(slices.Clone(pkgPath), ref.PackagePath...)
-			if ent, ok := tbl.lookup[FQN(ref.Entity, relPkg)]; ok {
+			relPkg := append(slices.Clone(pkgPath), pkgPathStrings...)
+			if ent, ok := tbl.lookup[FQN(entityName, relPkg)]; ok {
 				return ent
 			}
 		}
@@ -61,20 +64,20 @@ func (tbl *SymbolTable) LookupByRef(ref ast.TargetRef, pkgPath []string) *Entity
 
 	// 1. Current package scope
 	if len(pkgPath) > 0 {
-		if ent, ok := tbl.lookup[FQN(ref.Entity, pkgPath)]; ok {
+		if ent, ok := tbl.lookup[FQN(entityName, pkgPath)]; ok {
 			return ent
 		}
 	}
 
 	// 2. Parent package scopes up to root
 	for i := len(pkgPath) - 1; i >= 1; i-- {
-		if ent, ok := tbl.lookup[FQN(ref.Entity, pkgPath[:i])]; ok {
+		if ent, ok := tbl.lookup[FQN(entityName, pkgPath[:i])]; ok {
 			return ent
 		}
 	}
 
 	// 3. Root scope
-	if ent, ok := tbl.lookup[ref.Entity]; ok {
+	if ent, ok := tbl.lookup[entityName]; ok {
 		return ent
 	}
 
@@ -85,7 +88,7 @@ func (tbl *SymbolTable) LookupByRef(ref ast.TargetRef, pkgPath []string) *Entity
 		if idx := strings.LastIndex(ent.FQN, "."); idx != -1 {
 			simpleName = ent.FQN[idx+1:]
 		}
-		if simpleName == ref.Entity || (ent.AST != nil && ent.AST.Identifier == ref.Entity) {
+		if simpleName == entityName || (ent.AST != nil && ent.AST.Identifier.EntityName() == entityName) {
 			if candidate == nil {
 				candidate = ent
 			} else if candidate.FQN != ent.FQN {
@@ -103,13 +106,13 @@ func (tbl *SymbolTable) FindOrCreateByRef(ref ast.TargetRef, pkgPath []string) *
 		return ent
 	}
 
-	targetPkg := ref.PackagePath
+	targetPkg := ref.PackagePathStrings()
 	if len(targetPkg) == 0 && len(pkgPath) > 0 {
 		targetPkg = slices.Clone(pkgPath)
 	}
 
 	newEnt := &EntitySymbol{
-		FQN:         FQN(ref.Entity, targetPkg),
+		FQN:         FQN(ref.EntityName(), targetPkg),
 		PackagePath: slices.Clone(targetPkg),
 	}
 	tbl.Entities = append(tbl.Entities, newEnt)
@@ -133,10 +136,11 @@ func FQN(name string, pkgPath []string) string {
 }
 
 func newEntitySymbol(ent *ast.Entity, pkgPath []string) *EntitySymbol {
+	combinedPkgPath := append(slices.Clone(pkgPath), ent.Identifier.PackagePathStrings()...)
 	return &EntitySymbol{
-		FQN:         FQN(ent.Identifier, pkgPath),
+		FQN:         FQN(ent.Identifier.EntityName(), combinedPkgPath),
 		AST:         ent,
-		PackagePath: pkgPath,
+		PackagePath: combinedPkgPath,
 	}
 }
 
@@ -156,10 +160,10 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 
 	if headL >= HeadContainment && headR >= HeadContainment {
 		if headL == HeadGeneralization && headR == HeadGeneralization {
-			return nil, fmt.Errorf("cannot have bidirectional inheritance: %s and %s", rel.LHS.Entity, rel.RHS.Entity)
+			return nil, fmt.Errorf("cannot have bidirectional inheritance: %s and %s", rel.LHS.EntityName(), rel.RHS.EntityName())
 		}
 		if headL == HeadContainment && headR == HeadContainment {
-			return nil, fmt.Errorf("cannot have bidirectional composition/aggregation: %s and %s", rel.LHS.Entity, rel.RHS.Entity)
+			return nil, fmt.Errorf("cannot have bidirectional composition/aggregation: %s and %s", rel.LHS.EntityName(), rel.RHS.EntityName())
 		}
 		return nil, fmt.Errorf("conflicting relationship heads: cannot combine %s and %s on the same line", rel.TypeLHS, rel.TypeRHS)
 	}
@@ -171,7 +175,7 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 	switch {
 	case headL == HeadGeneralization:
 		if headR == HeadNavigation {
-			log.Printf("warning: ignoring redundant association arrow on inheritance %s <|%c%c %s", rel.LHS.Entity, rel.Body, rel.Body, rel.RHS.Entity)
+			log.Printf("warning: ignoring redundant association arrow on inheritance %s <|%c%c %s", rel.LHS.EntityName(), rel.Body, rel.Body, rel.RHS.EntityName())
 		}
 		symb.Type = rel.TypeLHS
 		symb.Source = tbl.FindOrCreateByRef(rel.RHS, pkgPath) // Subclass / Implementer
@@ -181,7 +185,7 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 
 	case headR == HeadGeneralization:
 		if headL == HeadNavigation {
-			log.Printf("warning: ignoring redundant association arrow on inheritance %s %c%c|> %s", rel.LHS.Entity, rel.Body, rel.Body, rel.RHS.Entity)
+			log.Printf("warning: ignoring redundant association arrow on inheritance %s %c%c|> %s", rel.LHS.EntityName(), rel.Body, rel.Body, rel.RHS.EntityName())
 		}
 		symb.Type = rel.TypeRHS
 		symb.Source = tbl.FindOrCreateByRef(rel.LHS, pkgPath) // Subclass / Implementer
@@ -191,7 +195,7 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 
 	case headL == HeadContainment:
 		if headR == HeadNavigation {
-			log.Printf("warning: ignoring redundant association arrow on containment %s %c-- %s", rel.LHS.Entity, rel.LArrow, rel.RHS.Entity)
+			log.Printf("warning: ignoring redundant association arrow on containment %s %c-- %s", rel.LHS.EntityName(), rel.LArrow, rel.RHS.EntityName())
 		}
 		symb.Type = rel.TypeLHS
 		symb.Source = tbl.FindOrCreateByRef(rel.LHS, pkgPath) // Owner
@@ -201,7 +205,7 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 
 	case headR == HeadContainment:
 		if headL == HeadNavigation {
-			log.Printf("warning: ignoring redundant association arrow on containment %s --%c %s", rel.LHS.Entity, rel.RArrow, rel.RHS.Entity)
+			log.Printf("warning: ignoring redundant association arrow on containment %s --%c %s", rel.LHS.EntityName(), rel.RArrow, rel.RHS.EntityName())
 		}
 		symb.Type = rel.TypeRHS
 		symb.Source = tbl.FindOrCreateByRef(rel.RHS, pkgPath) // Owner
@@ -242,7 +246,7 @@ func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []st
 
 func createImplicitEntity(ref ast.TargetRef, pkgPath []string) *EntitySymbol {
 	ent := &ast.Entity{
-		Identifier: ref.Entity,
+		Identifier: ref,
 	}
 	implicitEntity := newEntitySymbol(ent, pkgPath)
 	return implicitEntity
@@ -250,15 +254,15 @@ func createImplicitEntity(ref ast.TargetRef, pkgPath []string) *EntitySymbol {
 
 func attachNote(tbl *SymbolTable, noteRef, noteTargetRef ast.TargetRef, note *ast.Note, noteLookup map[string]*ast.Note, pkgPath []string) {
 	noteTarget := tbl.FindOrCreateByRef(noteTargetRef, pkgPath)
-	if noteTargetRef.Member != "" {
+	if noteTargetRef.MemberName() != "" {
 		if noteTarget.MemberNotes == nil {
 			noteTarget.MemberNotes = make(map[string][]*ast.Note)
 		}
-		noteTarget.MemberNotes[noteTargetRef.Member] = append(noteTarget.MemberNotes[noteTargetRef.Member], note)
+		noteTarget.MemberNotes[noteTargetRef.MemberName()] = append(noteTarget.MemberNotes[noteTargetRef.MemberName()], note)
 	} else {
 		noteTarget.Notes = append(noteTarget.Notes, note)
 	}
-	delete(noteLookup, noteRef.Entity)
+	delete(noteLookup, noteRef.EntityName())
 }
 
 func mergeEntity(target *ast.Entity, incoming *ast.Entity) error {
@@ -280,7 +284,7 @@ func mergeEntity(target *ast.Entity, incoming *ast.Entity) error {
 	if incoming.Color != "" {
 		target.Color = incoming.Color
 	}
-	if incoming.Alias != "" {
+	if !incoming.Alias.IsZero() {
 		target.Alias = incoming.Alias
 	}
 	if len(incoming.Tags) > 0 {
@@ -295,7 +299,9 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
 		case *ast.Entity:
-			if ent, ok := tbl.lookup[FQN(s.Identifier, pkgPath)]; ok {
+			combinedPkgPath := append(slices.Clone(pkgPath), s.Identifier.PackagePathStrings()...)
+			fqn := FQN(s.Identifier.EntityName(), combinedPkgPath)
+			if ent, ok := tbl.lookup[fqn]; ok {
 				if ent.AST == nil {
 					ent.AST = s
 					continue
@@ -308,14 +314,26 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 			ent := newEntitySymbol(s, pkgPath)
 			tbl.Entities = append(tbl.Entities, ent)
 			tbl.lookup[ent.FQN] = ent
+			if !s.Alias.IsZero() {
+				tbl.lookup[s.Alias.Literal] = ent
+			}
+		case *ast.InlineMember:
+			ent := tbl.FindOrCreateByRef(s.Target, pkgPath)
+			if ent.AST == nil {
+				ent.AST = &ast.Entity{
+					Identifier: s.Target,
+				}
+			}
+			ent.AST.Members = append(ent.AST.Members, s.Member)
 		case *ast.Container:
-			childPkgPath := append(pkgPath, s.Identifier)
+			containerPath := append(s.Identifier.PackagePathStrings(), s.Identifier.EntityName())
+			childPkgPath := append(slices.Clone(pkgPath), containerPath...)
 			if err := resolveStatements(tbl, s.Statements, childPkgPath, noteLookup, namedNotes); err != nil {
 				return err
 			}
 		case *ast.Note:
 			// get rid of the link notes
-			if s.Target != nil && s.Target.Entity == "link" {
+			if s.Target != nil && s.Target.EntityName() == "link" {
 				if prevRelationship == nil {
 					return fmt.Errorf("no relationship found for link note %s", s.Text)
 				}
@@ -324,8 +342,8 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 			}
 
 			// get rid of the referenced notes
-			if s.Identifier != "" {
-				noteLookup[s.Identifier] = s
+			if !s.Identifier.Name.IsZero() {
+				noteLookup[s.Identifier.EntityName()] = s
 				*namedNotes = append(*namedNotes, s)
 				continue
 			}
@@ -336,11 +354,11 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 				if target == nil {
 					return fmt.Errorf("no entity found for targeted note %v", s)
 				}
-				if s.Target.Member != "" {
+				if s.Target.MemberName() != "" {
 					if target.MemberNotes == nil {
 						target.MemberNotes = make(map[string][]*ast.Note)
 					}
-					target.MemberNotes[s.Target.Member] = append(target.MemberNotes[s.Target.Member], s)
+					target.MemberNotes[s.Target.MemberName()] = append(target.MemberNotes[s.Target.MemberName()], s)
 					continue
 				}
 				target.Notes = append(target.Notes, s)
@@ -355,10 +373,10 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 			}
 			prevRelationship = rel
 
-			if note, ok := noteLookup[rel.AST.LHS.Entity]; ok {
+			if note, ok := noteLookup[rel.AST.LHS.EntityName()]; ok {
 				attachNote(tbl, rel.AST.LHS, rel.AST.RHS, note, noteLookup, pkgPath)
 				continue
-			} else if note, ok := noteLookup[rel.AST.RHS.Entity]; ok {
+			} else if note, ok := noteLookup[rel.AST.RHS.EntityName()]; ok {
 				attachNote(tbl, rel.AST.RHS, rel.AST.LHS, note, noteLookup, pkgPath)
 				continue
 			}
@@ -381,7 +399,7 @@ func ResolveSymbols(diagram *ast.Diagram) (*SymbolTable, error) {
 		return nil, err
 	}
 	for _, n := range namedNotes {
-		if _, ok := noteLookup[n.Identifier]; ok {
+		if _, ok := noteLookup[n.Identifier.EntityName()]; ok {
 			tbl.Notes = append(tbl.Notes, n)
 		}
 	}

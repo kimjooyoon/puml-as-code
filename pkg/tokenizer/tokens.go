@@ -83,6 +83,10 @@ func (t Token) EndPos() Pos {
 	return t.Span.End
 }
 
+func (t Token) IsZero() bool {
+	return t == Token{}
+}
+
 var singleCharTokens = map[rune]TokenType{
 	'\n': NEWLINE,
 	'(':  LPAREN,

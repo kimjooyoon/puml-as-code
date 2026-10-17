@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"strings"
-
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/tokenizer"
 )
@@ -17,7 +15,7 @@ func (p *Parser) tryParseColor() string {
 
 func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error) {
 	var ref ast.TargetRef
-	segments := []string{firstTok.Literal}
+	tokens := []tokenizer.Token{firstTok}
 
 	for {
 		length, ok := p.stream.MatchPackageSeparatorAt(0)
@@ -26,7 +24,7 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 		}
 
 		afterPkgSep := p.stream.PeekTokenAt(length)
-		if afterPkgSep.Type != tokenizer.IDENTIFIER && afterPkgSep.Type != tokenizer.STRING {
+		if afterPkgSep.Type != tokenizer.IDENTIFIER {
 			// We have hit the case where the separator token is not a part of the entity reference
 			break
 		}
@@ -35,14 +33,35 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 			p.stream.Emit()
 		}
 
-		segments = append(segments, p.stream.Emit().Literal)
+		tokens = append(tokens, p.stream.Emit())
 	}
 
-	if len(segments) > 0 {
-		ref.Entity = segments[len(segments)-1]
-		if len(segments) > 1 {
-			ref.PackagePath = segments[:len(segments)-1]
+	if len(tokens) > 0 {
+		ref.Name = tokens[len(tokens)-1]
+		if len(tokens) > 1 {
+			ref.PackagePath = tokens[:len(tokens)-1]
 		}
+	}
+
+	// If encountering a () we in the case where package separator is '::' and encountered method reference
+	if p.stream.AssertType(tokenizer.LPAREN) {
+		lparenTok := p.stream.Emit() // consume (
+		memberRef := &ast.MemberRef{
+			Name: ref.Name,
+		}
+		paramToks := p.stream.ConsumeUntilType(tokenizer.RPAREN, tokenizer.NEWLINE)
+		rparenTok, ok := p.stream.TryConsumeType(tokenizer.RPAREN)
+		if !ok {
+			return ref, NewParserError(p.stream.PeekTokenAt(0), "Expected ')' closing method signature in target ref")
+		}
+		sig := make([]tokenizer.Token, 0, len(paramToks)+2)
+		sig = append(sig, lparenTok)
+		sig = append(sig, paramToks...)
+		sig = append(sig, rparenTok)
+		memberRef.Signature = sig
+		ref.Name = ref.PackagePath[len(ref.PackagePath)-1]
+		ref.PackagePath = ref.PackagePath[:len(ref.PackagePath)-1]
+		ref.Member = memberRef
 	}
 
 	if p.stream.AssertTypeSeq([]tokenizer.TokenType{tokenizer.COLON, tokenizer.COLON}) {
@@ -52,21 +71,26 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 		tok := p.stream.Emit()
 		switch tok.Type {
 		case tokenizer.STRING:
-			ref.Member = tok.Literal
+			ref.Member = &ast.MemberRef{
+				Name: tok,
+			}
 		case tokenizer.IDENTIFIER:
-			var sb strings.Builder
-			sb.WriteString(tok.Literal)
-			if p.stream.AssertType(tokenizer.LPAREN) {
-				p.stream.Emit() // consume (
-				sb.WriteString("(")
-				paramToks := p.stream.ConsumeUntilType(tokenizer.RPAREN, tokenizer.NEWLINE, tokenizer.EOF)
-				sb.WriteString(p.stream.TokensToString(paramToks))
-				if _, ok := p.stream.TryConsumeType(tokenizer.RPAREN); !ok {
+			memberRef := &ast.MemberRef{
+				Name: tok,
+			}
+			if lparenTok, ok := p.stream.TryConsumeType(tokenizer.LPAREN); ok {
+				paramToks := p.stream.ConsumeUntilType(tokenizer.RPAREN, tokenizer.NEWLINE)
+				rparenTok, ok := p.stream.TryConsumeType(tokenizer.RPAREN)
+				if !ok {
 					return ref, NewParserError(p.stream.PeekTokenAt(0), "Expected ')' closing method signature in target ref")
 				}
-				sb.WriteString(")")
+				sig := make([]tokenizer.Token, 0, len(paramToks)+2)
+				sig = append(sig, lparenTok)
+				sig = append(sig, paramToks...)
+				sig = append(sig, rparenTok)
+				memberRef.Signature = sig
 			}
-			ref.Member = sb.String()
+			ref.Member = memberRef
 		default:
 			return ref, NewParserError(tok, "Expected member identifier or string after '::'")
 		}

@@ -9,13 +9,16 @@ import (
 func (s *formatterState) targetFQN(target ast.TargetRef) string {
 	var sb strings.Builder
 	for _, pkg := range target.PackagePath {
-		sb.WriteString(pkg)
+		sb.WriteString(pkg.Literal)
 		sb.WriteString(s.packageSeparator)
 	}
-	sb.WriteString(target.Entity)
-	if target.Member != "" {
+	sb.WriteString(target.Name.Literal)
+	if target.Member != nil {
 		sb.WriteString("::")
-		sb.WriteString(target.Member)
+		sb.WriteString(target.Member.Name.Literal)
+		for _, sigTok := range target.Member.Signature {
+			sb.WriteString(sigTok.Literal)
+		}
 	}
 	return sb.String()
 }

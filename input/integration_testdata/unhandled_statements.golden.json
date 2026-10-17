@@ -292,7 +292,40 @@
       }
     },
     {
-      "Identifier": "CoreService",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "CoreService",
+          "Span": {
+            "Start": {
+              "Line": 45,
+              "Col": 9,
+              "Offset": 838
+            },
+            "End": {
+              "Line": 45,
+              "Col": 20,
+              "Offset": 849
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "package",
       "Statements": [
         {
@@ -371,7 +404,40 @@
               "Offset": 1097
             }
           },
-          "Identifier": "AuthService",
+          "Identifier": {
+            "Name": {
+              "Type": "IDENTIFIER",
+              "Literal": "AuthService",
+              "Span": {
+                "Start": {
+                  "Line": 54,
+                  "Col": 9,
+                  "Offset": 1026
+                },
+                "End": {
+                  "Line": 54,
+                  "Col": 20,
+                  "Offset": 1037
+                }
+              }
+            }
+          },
+          "Alias": {
+            "Type": "ILLEGAL",
+            "Literal": "",
+            "Span": {
+              "Start": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              },
+              "End": {
+                "Line": 0,
+                "Col": 0,
+                "Offset": 0
+              }
+            }
+          },
           "Kind": "class",
           "Members": [
             {
@@ -388,7 +454,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Field": {
                 "Name": "Token",
                 "Type": {
@@ -411,7 +476,6 @@
                 }
               },
               "Visibility": "public",
-              "Modifiers": null,
               "Method": {
                 "Name": "Authenticate",
                 "ReturnType": [
@@ -462,7 +526,40 @@
           "Offset": 1148
         }
       },
-      "Identifier": "UserStore",
+      "Identifier": {
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "UserStore",
+          "Span": {
+            "Start": {
+              "Line": 60,
+              "Col": 7,
+              "Offset": 1107
+            },
+            "End": {
+              "Line": 60,
+              "Col": 16,
+              "Offset": 1116
+            }
+          }
+        }
+      },
+      "Alias": {
+        "Type": "ILLEGAL",
+        "Literal": "",
+        "Span": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        }
+      },
       "Kind": "class",
       "Members": [
         {
@@ -479,7 +576,6 @@
             }
           },
           "Visibility": "public",
-          "Modifiers": null,
           "Method": {
             "Name": "FindUser",
             "ReturnType": [
@@ -505,10 +601,40 @@
     },
     {
       "LHS": {
-        "Entity": "AuthService"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "AuthService",
+          "Span": {
+            "Start": {
+              "Line": 64,
+              "Col": 1,
+              "Offset": 1150
+            },
+            "End": {
+              "Line": 64,
+              "Col": 12,
+              "Offset": 1161
+            }
+          }
+        }
       },
       "RHS": {
-        "Entity": "UserStore"
+        "Name": {
+          "Type": "IDENTIFIER",
+          "Literal": "UserStore",
+          "Span": {
+            "Start": {
+              "Line": 64,
+              "Col": 17,
+              "Offset": 1166
+            },
+            "End": {
+              "Line": 64,
+              "Col": 26,
+              "Offset": 1175
+            }
+          }
+        }
       },
       "TypeRHS": "association",
       "MultLHS": null,

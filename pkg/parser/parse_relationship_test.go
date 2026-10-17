@@ -470,61 +470,61 @@ func TestParseRelationship(t *testing.T) {
 			name:  "composition left-headed without right arrowhead",
 			input: "Car *-- Engine",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "Car"},
+				LHS:       identRef("Car"),
 				LArrow:    '*',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationComposition,
-				RHS:       ast.TargetRef{Entity: "Engine"},
+				RHS:       identRef("Engine"),
 			},
 		},
 		{
 			name:  "aggregation left-headed without right arrowhead",
 			input: "Car o-- Wheel",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "Car"},
+				LHS:       identRef("Car"),
 				LArrow:    'o',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationAggregation,
-				RHS:       ast.TargetRef{Entity: "Wheel"},
+				RHS:       identRef("Wheel"),
 			},
 		},
 		{
 			name:  "inheritance left-headed without right arrowhead",
 			input: "Vehicle <|-- Car",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "Vehicle"},
+				LHS:       identRef("Vehicle"),
 				LArrow:    '|',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationInheritance,
-				RHS:       ast.TargetRef{Entity: "Car"},
+				RHS:       identRef("Car"),
 			},
 		},
 		{
 			name:  "composition with multiplicity on target",
 			input: "Car *-- \"1..*\" Engine",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "Car"},
+				LHS:       identRef("Car"),
 				LArrow:    '*',
 				Body:      '-',
 				BodyCount: 2,
 				TypeLHS:   ast.RelationComposition,
 				MultRHS:   ast.Cardinality{Raw: "1..*", Min: 1, Max: -1},
-				RHS:       ast.TargetRef{Entity: "Engine"},
+				RHS:       identRef("Engine"),
 			},
 		},
 		{
 			name:  "association with label",
 			input: "User --> Service : uses",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				Body:      '-',
 				RArrow:    '>',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationAssociation,
-				RHS:       ast.TargetRef{Entity: "Service"},
+				RHS:       identRef("Service"),
 				Label:     "uses",
 			},
 		},
@@ -532,12 +532,12 @@ func TestParseRelationship(t *testing.T) {
 			name:  "realization with right arrowhead",
 			input: "User ..|> Greeter",
 			want: ast.Relationship{
-				LHS:       ast.TargetRef{Entity: "User"},
+				LHS:       identRef("User"),
 				Body:      '.',
 				RArrow:    '|',
 				BodyCount: 2,
 				TypeRHS:   ast.RelationRealization,
-				RHS:       ast.TargetRef{Entity: "Greeter"},
+				RHS:       identRef("Greeter"),
 			},
 		},
 	}
@@ -569,37 +569,40 @@ func TestParseTargetRef(t *testing.T) {
 		{
 			name:  "simple entity",
 			input: "Client",
-			want:  ast.TargetRef{Entity: "Client"},
+			want:  identRef("Client"),
 		},
 		{
 			name:  "package path and entity",
 			input: "net.http.Client",
-			want:  ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client"},
+			want:  identRef("Client", "net", "http"),
 		},
 		{
 			name:  "entity and simple member",
 			input: "Client::Do",
-			want:  ast.TargetRef{Entity: "Client", Member: "Do"},
+			want:  identRefMember("Client", "Do"),
 		},
 		{
 			name:  "entity and method parens",
 			input: "Client::Do()",
-			want:  ast.TargetRef{Entity: "Client", Member: "Do()"},
+			want: identRefMethod("Client", "Do", []tokenizer.Token{
+				{Type: tokenizer.LPAREN, Literal: "("},
+				{Type: tokenizer.RPAREN, Literal: ")"},
+			}),
 		},
 		{
 			name:  "entity and method with parameters",
 			input: `Client::"Do(req Request)"`,
-			want:  ast.TargetRef{Entity: "Client", Member: "Do(req Request)"},
+			want:  identRefStringMember("Client", "Do(req Request)"),
 		},
 		{
 			name:  "package path entity and method in quotes",
 			input: `net.http.Client::"Do(Context)"`,
-			want:  ast.TargetRef{PackagePath: []string{"net", "http"}, Entity: "Client", Member: "Do(Context)"},
+			want:  identRefStringMember("Client", "Do(Context)", "net", "http"),
 		},
 		{
 			name:  "package separator follows the entity but not a part of it",
 			input: "Foo ..|> Bar",
-			want:  ast.TargetRef{Entity: "Foo"},
+			want:  identRef("Foo"),
 		},
 	}
 
@@ -613,8 +616,7 @@ func TestParseTargetRef(t *testing.T) {
 			firstTok := p.stream.Emit()
 			got, err := p.parseTargetRef(firstTok)
 			require.NoError(t, err)
-			require.Equal(t, tc.want, got)
+			assertASTEqual(t, tc.want, got)
 		})
 	}
 }
-
