@@ -6,14 +6,13 @@ import (
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/resolver"
-	"yur4uwe/pac/pkg/tokenizer"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func targetRef(name string) ast.TargetRef {
 	return ast.TargetRef{
-		Name: tokenizer.Token{
+		Name: ast.Ident{
 			Literal: name,
 		},
 	}

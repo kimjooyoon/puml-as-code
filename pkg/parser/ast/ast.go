@@ -1,25 +1,29 @@
 package ast
 
-import "yur4uwe/pac/pkg/tokenizer"
+import (
+	"strings"
+
+	"yur4uwe/pac/pkg/tokenizer"
+)
 
 type Node interface {
 	Span() tokenizer.SourceSpan
-	GetLeadingTrivia() []tokenizer.Token
-	GetTrailingTrivia() []tokenizer.Token
-	SetMetadata(span tokenizer.SourceSpan, leading, trailing []tokenizer.Token)
+	GetLeadingTrivia() []Comment
+	GetTrailingTrivia() []Comment
+	SetMetadata(span tokenizer.SourceSpan, leading, trailing []Comment)
 }
 
 type BaseNode struct {
 	NodeSpan       tokenizer.SourceSpan
-	LeadingTrivia  []tokenizer.Token `json:",omitempty"`
-	TrailingTrivia []tokenizer.Token `json:",omitempty"`
+	LeadingTrivia  []Comment `json:",omitempty"`
+	TrailingTrivia []Comment `json:",omitempty"`
 }
 
-func (bn *BaseNode) GetLeadingTrivia() []tokenizer.Token  { return bn.LeadingTrivia }
-func (bn *BaseNode) GetTrailingTrivia() []tokenizer.Token { return bn.TrailingTrivia }
+func (bn *BaseNode) GetLeadingTrivia() []Comment  { return bn.LeadingTrivia }
+func (bn *BaseNode) GetTrailingTrivia() []Comment { return bn.TrailingTrivia }
 func (bn *BaseNode) Span() tokenizer.SourceSpan           { return bn.NodeSpan }
 
-func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, leading, trailing []tokenizer.Token) {
+func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, leading, trailing []Comment) {
 	bn.NodeSpan = span
 	if len(leading) > 0 {
 		if len(bn.LeadingTrivia) > 0 {
@@ -42,8 +46,76 @@ type Statement interface {
 	StatementNode() Statement
 }
 
+type Ident struct {
+	Literal string
+	Span    tokenizer.SourceSpan
+}
+
+func (i Ident) String() string { return i.Literal }
+func (i Ident) IsZero() bool {
+	return i.Literal == "" &&
+		i.Span.Start.Offset == 0 &&
+		i.Span.End.Offset == 0
+}
+
+func IdentFromToken(tok tokenizer.Token) Ident {
+	return Ident{
+		Literal: tok.Literal,
+		Span:    tok.Span,
+	}
+}
+
+func IdentFromTokens(tokens ...tokenizer.Token) Ident {
+	if len(tokens) == 0 {
+		return Ident{}
+	}
+	if len(tokens) == 1 {
+		return Ident{
+			Literal: tokens[0].Literal,
+			Span:    tokens[0].Span,
+		}
+	}
+	var sb strings.Builder
+	for _, tok := range tokens {
+		sb.WriteString(tok.Literal)
+	}
+	return Ident{
+		Literal: sb.String(),
+		Span: tokenizer.SourceSpan{
+			Start: tokens[0].Span.Start,
+			End:   tokens[len(tokens)-1].Span.End,
+		},
+	}
+}
+
+type Comment struct {
+	Text string
+	Span tokenizer.SourceSpan
+}
+
+func (c Comment) IsZero() bool {
+	return c.Text == "" &&
+		c.Span.Start.Offset == 0 &&
+		c.Span.End.Offset == 0
+}
+
+func (c Comment) String() string {
+	return c.Text
+}
+
+// Content returns the comment text stripped of PlantUML comment delimiters.
+func (c Comment) Content() string {
+	text := c.Text
+	if strings.HasPrefix(text, "/'") && strings.HasSuffix(text, "'/") {
+		text = text[2 : len(text)-2]
+	} else {
+		text = strings.TrimPrefix(text, "'")
+	}
+	return strings.TrimSpace(text)
+}
+
 type MemberRef struct {
-	Name      tokenizer.Token
+	Name      Ident
 	Signature []tokenizer.Token `json:",omitempty"` // "(" ... ")" inclusive, nil if absent
 }
 
@@ -58,8 +130,8 @@ func (m MemberRef) Span() tokenizer.SourceSpan {
 }
 
 type TargetRef struct {
-	PackagePath []tokenizer.Token `json:",omitempty"`
-	Name        tokenizer.Token
+	PackagePath []Ident `json:",omitempty"`
+	Name        Ident
 	Member      *MemberRef `json:",omitempty"`
 }
 

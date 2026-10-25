@@ -3,6 +3,7 @@ package parser
 import (
 	"errors"
 	"log"
+	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/parser/keyword"
@@ -15,14 +16,14 @@ func (p *Parser) setAliasAndName(ent *ast.Entity, nameOrAlias tokenizer.Token) e
 		if !ent.Alias.IsZero() {
 			return NewParserError(nameOrAlias, "Entity alias already set")
 		}
-		ent.Alias = nameOrAlias
+		ent.Alias = ast.IdentFromToken(nameOrAlias)
 		return nil
 	case tokenizer.IDENTIFIER:
 		if !ent.Identifier.Name.IsZero() {
 			if !ent.Alias.IsZero() {
 				return NewParserError(nameOrAlias, "Entity name and alias already set")
 			}
-			ent.Alias = nameOrAlias
+			ent.Alias = ast.IdentFromToken(nameOrAlias)
 			return nil
 		}
 		targetRef, err := p.parseTargetRef(nameOrAlias)
@@ -30,7 +31,7 @@ func (p *Parser) setAliasAndName(ent *ast.Entity, nameOrAlias tokenizer.Token) e
 			return err
 		}
 		if targetRef.Member != nil {
-			return NewParserError(targetRef.Member.Name, "Entity declaration cannot contain member")
+			return NewParserErrorFromIdent(targetRef.Member.Name, "Entity declaration cannot contain member")
 		}
 		ent.Identifier = targetRef
 		return nil
@@ -60,8 +61,8 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 		}
 	}
 
-	if !ent.Identifier.Name.IsZero() && !ent.Alias.IsZero() && ent.Alias.Type != tokenizer.STRING {
-		return nil, NewParserError(ent.Alias, "Alias must be a string")
+	if !ent.Identifier.Name.IsZero() && !ent.Alias.IsZero() && !strings.HasPrefix(ent.Alias.Literal, "\"") {
+		return nil, NewParserErrorFromIdent(ent.Alias, "Alias must be a string")
 	}
 
 	if ent.Identifier.Name.IsZero() {
@@ -101,7 +102,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	}
 
 	p.stream.EmitCommentToks()
-	ent.TrailingTrivia = p.stream.DumpCollectedTrivia()
+	ent.TrailingTrivia = p.dumpTrivia()
 
 	// We are inside a body
 	for {
@@ -142,7 +143,7 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 	detach := p.stream.Attach(collector)
 	defer detach()
 
-	leadingTrivia := p.stream.DumpCollectedTrivia()
+	leadingTrivia := p.dumpTrivia()
 
 	memberMark := p.Mark(tok)
 	member, err := p.parseEntityMember()
@@ -152,7 +153,7 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 		}
 		detach()
 		p.stream.EmitCommentToks()
-		member.SetMetadata(p.Span(memberMark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		member.SetMetadata(p.Span(memberMark), leadingTrivia, p.dumpTrivia())
 		return member
 	}
 
@@ -178,7 +179,7 @@ func (p *Parser) routeEntityMember(tok tokenizer.Token) ast.Member {
 		BaseNode: ast.BaseNode{
 			NodeSpan:       span,
 			LeadingTrivia:  leadingTrivia,
-			TrailingTrivia: p.stream.DumpCollectedTrivia(),
+			TrailingTrivia: p.dumpTrivia(),
 		},
 	}
 
@@ -366,13 +367,13 @@ func (p *Parser) parseInlineMember(firstTok tokenizer.Token) (ast.Statement, err
 		return nil, err
 	}
 	p.stream.EmitCommentToks()
-	member.SetMetadata(p.Span(memberMark), p.stream.DumpCollectedTrivia(), p.stream.DumpCollectedTrivia())
+	member.SetMetadata(p.Span(memberMark), p.dumpTrivia(), p.dumpTrivia())
 
 	im := &ast.InlineMember{
 		Target: targetRef,
 		Member: member,
 	}
-	im.SetMetadata(p.Span(inlineMark), p.stream.DumpCollectedTrivia(), p.stream.DumpCollectedTrivia())
+	im.SetMetadata(p.Span(inlineMark), p.dumpTrivia(), p.dumpTrivia())
 
 	return im, nil
 }

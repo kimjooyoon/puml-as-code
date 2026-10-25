@@ -380,7 +380,7 @@ func toNotesView(note []*ast.Note) NotesView {
 func toTriviaView(t ast.BaseNode) TriviaView {
 	var leadingTrivia []string
 	for _, tok := range t.GetLeadingTrivia() {
-		lines := strings.SplitSeq(tok.Literal, "\n")
+		lines := strings.SplitSeq(tok.Content(), "\n")
 		for line := range lines {
 			trimmed := strings.TrimSpace(line)
 			if trimmed != "" {
@@ -394,7 +394,7 @@ func toTriviaView(t ast.BaseNode) TriviaView {
 	var currentLine uint
 
 	for _, tok := range t.GetTrailingTrivia() {
-		lit := strings.TrimSpace(tok.Literal)
+		lit := tok.Content()
 		lines := strings.Split(lit, "\n")
 		for i, line := range lines {
 			lines[i] = strings.TrimSpace(line)

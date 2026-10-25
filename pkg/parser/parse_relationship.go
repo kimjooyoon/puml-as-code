@@ -28,7 +28,7 @@ func (p *Parser) parseRelationship(firstTargetTok tokenizer.Token) (*ast.Relatio
 	var err error
 	rel := &ast.Relationship{
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 	rel.LHS, err = p.parseTargetRef(firstTargetTok)

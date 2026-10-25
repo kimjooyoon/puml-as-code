@@ -5,6 +5,21 @@ import (
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
+func (p *Parser) dumpTrivia() []ast.Comment {
+	toks := p.stream.DumpCollectedTrivia()
+	if len(toks) == 0 {
+		return nil
+	}
+	comments := make([]ast.Comment, len(toks))
+	for i, tok := range toks {
+		comments[i] = ast.Comment{
+			Text: p.stream.SliceInput(tok.Span.Start.Offset, tok.Span.End.Offset),
+			Span: tok.Span,
+		}
+	}
+	return comments
+}
+
 func (p *Parser) tryParseColor() string {
 	if !p.stream.AssertType(tokenizer.HASH) {
 		return ""
@@ -37,9 +52,13 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 	}
 
 	if len(tokens) > 0 {
-		ref.Name = tokens[len(tokens)-1]
+		ref.Name = ast.IdentFromToken(tokens[len(tokens)-1])
 		if len(tokens) > 1 {
-			ref.PackagePath = tokens[:len(tokens)-1]
+			pkgIdents := make([]ast.Ident, len(tokens)-1)
+			for i, tok := range tokens[:len(tokens)-1] {
+				pkgIdents[i] = ast.IdentFromToken(tok)
+			}
+			ref.PackagePath = pkgIdents
 		}
 	}
 
@@ -72,11 +91,11 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 		switch tok.Type {
 		case tokenizer.STRING:
 			ref.Member = &ast.MemberRef{
-				Name: tok,
+				Name: ast.IdentFromToken(tok),
 			}
 		case tokenizer.IDENTIFIER:
 			memberRef := &ast.MemberRef{
-				Name: tok,
+				Name: ast.IdentFromToken(tok),
 			}
 			if lparenTok, ok := p.stream.TryConsumeType(tokenizer.LPAREN); ok {
 				paramToks := p.stream.ConsumeUntilType(tokenizer.RPAREN, tokenizer.NEWLINE)

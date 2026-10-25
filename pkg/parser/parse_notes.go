@@ -12,7 +12,7 @@ func (p *Parser) parseNote(startTok tokenizer.Token) (*ast.Note, error) {
 	// tok is a keyword 'note'
 	note := &ast.Note{
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 	tok := p.stream.Emit()
@@ -75,7 +75,7 @@ func (p *Parser) parseInlineIdentNote(note *ast.Note, stringTok tokenizer.Token)
 	if !ok {
 		return NewParserError(tok, "Expected identifier after alias keyword")
 	}
-	note.Identifier = ast.TargetRef{Name: tok}
+	note.Identifier = ast.TargetRef{Name: ast.IdentFromToken(tok)}
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color
 	}
@@ -91,7 +91,7 @@ func (p *Parser) parseMultilineAliasNote(note *ast.Note) error {
 	if !ok {
 		return NewParserError(tok, "Expected identifier after alias keyword")
 	}
-	note.Identifier = ast.TargetRef{Name: tok}
+	note.Identifier = ast.TargetRef{Name: ast.IdentFromToken(tok)}
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color
 	}
@@ -109,7 +109,7 @@ func (p *Parser) parseLinkNote(note *ast.Note, onTok tokenizer.Token) error {
 	if !ok || linkTok.Literal != "link" {
 		return NewParserError(onTok, "Expected 'link' after 'note on'")
 	}
-	note.Target = &ast.TargetRef{Name: linkTok}
+	note.Target = &ast.TargetRef{Name: ast.IdentFromToken(linkTok)}
 	note.Kind = ast.NoteLink
 	if color := p.tryParseColor(); color != "" {
 		note.Color = color
@@ -125,7 +125,7 @@ func (p *Parser) parseNoteBody(note *ast.Note) error {
 		note.Text = p.stream.ReadUntilNewline()
 		return nil
 	case tokenizer.NEWLINE:
-		note.TrailingTrivia = p.stream.DumpCollectedTrivia()
+		note.TrailingTrivia = p.dumpTrivia()
 		body, err := p.stream.ConsumeTextBlock("end", "note")
 		if err != nil {
 			return err

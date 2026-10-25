@@ -61,9 +61,9 @@ func formatNode(s *formatterState, node ast.Node) {
 	leadingTrivia := node.GetLeadingTrivia()
 	for _, comment := range leadingTrivia {
 		// Check leading trivia for pragmas
-		if strings.Contains(comment.Literal, "pac:fmt:off") {
+		if strings.Contains(comment.Text, "pac:fmt:off") {
 			s.disabled = true
-		} else if strings.Contains(comment.Literal, "pac:fmt:on") {
+		} else if strings.Contains(comment.Text, "pac:fmt:on") {
 			s.disabled = false
 		}
 		s.emitTrivia(comment)

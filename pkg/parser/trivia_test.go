@@ -41,11 +41,11 @@ Foo --> Bar
 
 	require.NotNil(t, fooEntity, "Expected Foo entity to be present")
 	require.NotEmpty(t, fooEntity.LeadingTrivia, "Expected leading trivia on Foo entity")
-	require.Contains(t, fooEntity.LeadingTrivia[0].Literal, "Leading comment for class")
+	require.Contains(t, fooEntity.LeadingTrivia[0].Text, "Leading comment for class")
 
 	require.NotNil(t, relStmt, "Expected relationship statement to be present")
 	require.NotEmpty(t, relStmt.LeadingTrivia, "Expected leading trivia on relationship statement")
-	require.Contains(t, relStmt.LeadingTrivia[0].Literal, "Single line comment for relationship")
+	require.Contains(t, relStmt.LeadingTrivia[0].Text, "Single line comment for relationship")
 }
 
 func TestMemberAndTrailingTriviaAttachment(t *testing.T) {
@@ -75,7 +75,7 @@ class Example {
 	}
 	require.NotNil(t, exampleEntity, "Expected Example entity")
 	require.NotEmpty(t, exampleEntity.TrailingTrivia, "Expected trailing trivia on Example entity closing")
-	require.Contains(t, exampleEntity.TrailingTrivia[0].Literal, "Class closing trailing comment")
+	require.Contains(t, exampleEntity.TrailingTrivia[0].Text, "Class closing trailing comment")
 
 	require.Len(t, exampleEntity.Members, 3, "Expected 3 members: field, separator, method")
 
@@ -83,9 +83,9 @@ class Example {
 	field, ok := exampleEntity.Members[0].(*ast.FieldDeclaration)
 	require.True(t, ok, "Expected FieldDeclaration")
 	require.NotEmpty(t, field.LeadingTrivia, "Expected leading trivia on field")
-	require.Contains(t, field.LeadingTrivia[0].Literal, "Field leading comment")
+	require.Contains(t, field.LeadingTrivia[0].Text, "Field leading comment")
 	require.NotEmpty(t, field.TrailingTrivia, "Expected trailing trivia on field")
-	require.Contains(t, field.TrailingTrivia[0].Literal, "Field trailing comment")
+	require.Contains(t, field.TrailingTrivia[0].Text, "Field trailing comment")
 
 	// 2. Separator
 	sep, ok := exampleEntity.Members[1].(*ast.ClassSeparator)
@@ -96,9 +96,9 @@ class Example {
 	method, ok := exampleEntity.Members[2].(*ast.MethodDeclaration)
 	require.True(t, ok, "Expected MethodDeclaration")
 	require.NotEmpty(t, method.LeadingTrivia, "Expected leading trivia on method")
-	require.Contains(t, method.LeadingTrivia[0].Literal, "Method leading comment")
+	require.Contains(t, method.LeadingTrivia[0].Text, "Method leading comment")
 	require.NotEmpty(t, method.TrailingTrivia, "Expected trailing trivia on method")
-	require.Contains(t, method.TrailingTrivia[0].Literal, "Method trailing comment")
+	require.Contains(t, method.TrailingTrivia[0].Text, "Method trailing comment")
 }
 
 func TestMultipleTrailingCommentsAttachment(t *testing.T) {
@@ -126,17 +126,17 @@ class User { /' open comment 1 '/ /' open comment 2 '/
 
 	// Trailing trivia on User entity should contain 4 tokens (2 from opening line, 2 from closing line)
 	require.Len(t, userEntity.TrailingTrivia, 4)
-	require.Contains(t, userEntity.TrailingTrivia[0].Literal, "open comment 1")
-	require.Contains(t, userEntity.TrailingTrivia[1].Literal, "open comment 2")
-	require.Contains(t, userEntity.TrailingTrivia[2].Literal, "close comment 1")
-	require.Contains(t, userEntity.TrailingTrivia[3].Literal, "close comment 2")
+	require.Contains(t, userEntity.TrailingTrivia[0].Text, "open comment 1")
+	require.Contains(t, userEntity.TrailingTrivia[1].Text, "open comment 2")
+	require.Contains(t, userEntity.TrailingTrivia[2].Text, "close comment 1")
+	require.Contains(t, userEntity.TrailingTrivia[3].Text, "close comment 2")
 
 	// Field should have 2 trailing comments on the same line
 	require.Len(t, userEntity.Members, 1)
 	field, ok := userEntity.Members[0].(*ast.FieldDeclaration)
 	require.True(t, ok)
 	require.Len(t, field.TrailingTrivia, 2)
-	require.Contains(t, field.TrailingTrivia[0].Literal, "field comment 1")
-	require.Contains(t, field.TrailingTrivia[1].Literal, "field comment 2")
+	require.Contains(t, field.TrailingTrivia[0].Text, "field comment 1")
+	require.Contains(t, field.TrailingTrivia[1].Text, "field comment 2")
 }
 

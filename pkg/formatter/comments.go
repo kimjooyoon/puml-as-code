@@ -2,10 +2,13 @@ package formatter
 
 import (
 	"yur4uwe/pac/pkg/parser/ast"
-	"yur4uwe/pac/pkg/tokenizer"
 )
 
-func (s *formatterState) emitTrivia(trivia tokenizer.Token) {
+func (s *formatterState) emitTrivia(trivia ast.Comment) {
+	if len(s.source) == 0 || trivia.Span.End.Offset == 0 {
+		s.buf.WriteString(trivia.Text)
+		return
+	}
 	s.emitRawSpan(trivia.Span)
 }
 

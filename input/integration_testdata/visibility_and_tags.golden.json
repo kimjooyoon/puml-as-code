@@ -129,7 +129,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "User",
           "Span": {
             "Start": {
@@ -146,7 +145,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -229,7 +227,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "PaymentService",
           "Span": {
             "Start": {
@@ -246,7 +243,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -310,7 +306,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "InternalHelper",
           "Span": {
             "Start": {
@@ -327,7 +322,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -370,7 +364,6 @@
     {
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Services",
           "Span": {
             "Start": {
@@ -387,7 +380,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -422,7 +414,6 @@
           },
           "Identifier": {
             "Name": {
-              "Type": "IDENTIFIER",
               "Literal": "Gateway",
               "Span": {
                 "Start": {
@@ -439,7 +430,6 @@
             }
           },
           "Alias": {
-            "Type": "ILLEGAL",
             "Literal": "",
             "Span": {
               "Start": {

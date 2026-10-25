@@ -135,7 +135,7 @@ func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 	} else {
 		s.writeIndent()
 	}
-	blockName := ast.TokensToKey(block.Name)
+	blockName := block.Name.Literal
 	if blockName != "" {
 		s.buf.WriteString(blockName)
 		s.buf.WriteByte(' ')
@@ -158,7 +158,7 @@ func printSkinparamSetting(s *formatterState, setting *ast.SkinparamSetting) {
 		s.buf.WriteString(setting.Keyword)
 		s.buf.WriteByte(' ')
 	}
-	s.buf.WriteString(ast.TokensToKey(setting.Name))
+	s.buf.WriteString(setting.Name.Literal)
 	s.buf.WriteByte(' ')
 	if setting.Stereotype != nil && len(setting.Stereotype.Tokens) > 0 {
 		s.buf.WriteString("<<")

@@ -50,7 +50,6 @@
       "Identifier": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -66,7 +65,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -83,7 +81,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {
@@ -100,7 +97,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -157,7 +153,6 @@
       "Identifier": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -173,7 +168,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -190,7 +184,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Server",
           "Span": {
             "Start": {
@@ -207,7 +200,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -252,7 +244,6 @@
       "LHS": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -268,7 +259,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -285,7 +275,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {
@@ -304,7 +293,6 @@
       "RHS": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -320,7 +308,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -337,7 +324,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Server",
           "Span": {
             "Start": {
@@ -405,7 +391,6 @@
       "Identifier": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "auth",
             "Span": {
               "Start": {
@@ -421,7 +406,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "oauth",
             "Span": {
               "Start": {
@@ -438,7 +422,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Provider",
           "Span": {
             "Start": {
@@ -455,7 +438,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -512,7 +494,6 @@
       "Identifier": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "auth",
             "Span": {
               "Start": {
@@ -528,7 +509,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "oauth",
             "Span": {
               "Start": {
@@ -545,7 +525,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {
@@ -562,7 +541,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -607,7 +585,6 @@
       "LHS": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "auth",
             "Span": {
               "Start": {
@@ -623,7 +600,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "oauth",
             "Span": {
               "Start": {
@@ -640,7 +616,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {
@@ -659,7 +634,6 @@
       "RHS": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "auth",
             "Span": {
               "Start": {
@@ -675,7 +649,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "oauth",
             "Span": {
               "Start": {
@@ -692,7 +665,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Provider",
           "Span": {
             "Start": {

@@ -104,13 +104,13 @@ func stripValue(val reflect.Value) reflect.Value {
 }
 
 func identRef(name string, pkg ...string) ast.TargetRef {
-	var pkgToks []tokenizer.Token
+	var pkgIdents []ast.Ident
 	for _, p := range pkg {
-		pkgToks = append(pkgToks, tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: p})
+		pkgIdents = append(pkgIdents, ast.Ident{Literal: p})
 	}
 	return ast.TargetRef{
-		PackagePath: pkgToks,
-		Name:        tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: name},
+		PackagePath: pkgIdents,
+		Name:        ast.Ident{Literal: name},
 	}
 }
 
@@ -122,7 +122,7 @@ func identRefPtr(name string, pkg ...string) *ast.TargetRef {
 func identRefMember(name string, member string, pkg ...string) ast.TargetRef {
 	ref := identRef(name, pkg...)
 	ref.Member = &ast.MemberRef{
-		Name: tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: member},
+		Name: ast.Ident{Literal: member},
 	}
 	return ref
 }
@@ -144,13 +144,13 @@ func identRefStringMember(name string, memberStr string, pkg ...string) ast.Targ
 	return ref
 }
 
-func tokIdent(lit string) tokenizer.Token {
-	return tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: lit}
+func tokIdent(lit string) ast.Ident {
+	return ast.Ident{Literal: lit}
 }
 
-func tokString(lit string) tokenizer.Token {
+func tokString(lit string) ast.Ident {
 	if !strings.HasPrefix(lit, "\"") || !strings.HasSuffix(lit, "\"") {
 		lit = "\"" + lit + "\""
 	}
-	return tokenizer.Token{Type: tokenizer.STRING, Literal: lit}
+	return ast.Ident{Literal: lit}
 }

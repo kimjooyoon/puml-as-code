@@ -21,7 +21,6 @@
     {
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "core",
           "Span": {
             "Start": {
@@ -38,7 +37,6 @@
         }
       },
       "Alias": {
-        "Type": "STRING",
         "Literal": "\"Core Domain\"",
         "Span": {
           "Start": {
@@ -70,7 +68,6 @@
           },
           "Identifier": {
             "Name": {
-              "Type": "IDENTIFIER",
               "Literal": "User",
               "Span": {
                 "Start": {
@@ -87,7 +84,6 @@
             }
           },
           "Alias": {
-            "Type": "ILLEGAL",
             "Literal": "",
             "Span": {
               "Start": {
@@ -167,7 +163,6 @@
     {
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "infra",
           "Span": {
             "Start": {
@@ -184,7 +179,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -216,7 +210,6 @@
           },
           "Identifier": {
             "Name": {
-              "Type": "IDENTIFIER",
               "Literal": "Database",
               "Span": {
                 "Start": {
@@ -233,7 +226,6 @@
             }
           },
           "Alias": {
-            "Type": "ILLEGAL",
             "Literal": "",
             "Span": {
               "Start": {
@@ -291,7 +283,6 @@
     {
       "Identifier": {
         "Name": {
-          "Type": "STRING",
           "Literal": "\"Storage\"",
           "Span": {
             "Start": {
@@ -308,7 +299,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -328,7 +318,6 @@
         {
           "Identifier": {
             "Name": {
-              "Type": "IDENTIFIER",
               "Literal": "Server",
               "Span": {
                 "Start": {
@@ -345,7 +334,6 @@
             }
           },
           "Alias": {
-            "Type": "ILLEGAL",
             "Literal": "",
             "Span": {
               "Start": {
@@ -377,7 +365,6 @@
               },
               "Identifier": {
                 "Name": {
-                  "Type": "IDENTIFIER",
                   "Literal": "Disk",
                   "Span": {
                     "Start": {
@@ -394,7 +381,6 @@
                 }
               },
               "Alias": {
-                "Type": "ILLEGAL",
                 "Literal": "",
                 "Span": {
                   "Start": {
@@ -466,7 +452,6 @@
     {
       "LHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "User",
           "Span": {
             "Start": {
@@ -484,7 +469,6 @@
       },
       "RHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Database",
           "Span": {
             "Start": {

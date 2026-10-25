@@ -8,7 +8,6 @@ import (
 	"yur4uwe/pac/pkg/generator/go/stdlib"
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/resolver"
-	"yur4uwe/pac/pkg/tokenizer"
 )
 
 func isInterface(ent *ast.Entity) bool {
@@ -43,7 +42,7 @@ func tryInterfacePromotion(symb *resolver.EntitySymbol) error {
 	if symb.AST == nil {
 		symb.AST = &ast.Entity{
 			Identifier: ast.TargetRef{
-				Name: tokenizer.Token{
+				Name: ast.Ident{
 					Literal: stdlib.SimpleName(symb.FQN),
 				},
 			},

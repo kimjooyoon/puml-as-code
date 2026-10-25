@@ -116,7 +116,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Component",
           "Span": {
             "Start": {
@@ -133,7 +132,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {

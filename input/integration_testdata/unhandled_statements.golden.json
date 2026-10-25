@@ -34,8 +34,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Leading trivia for caption",
+          "Text": "' Leading trivia for caption",
           "Span": {
             "Start": {
               "Line": 2,
@@ -52,8 +51,7 @@
       ],
       "TrailingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Trailing trivia for caption",
+          "Text": "' Trailing trivia for caption",
           "Span": {
             "Start": {
               "Line": 3,
@@ -85,8 +83,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Single-line sprite declaration",
+          "Text": "' Single-line sprite declaration",
           "Span": {
             "Start": {
               "Line": 5,
@@ -118,8 +115,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Root fallback single-line directives",
+          "Text": "' Root fallback single-line directives",
           "Span": {
             "Start": {
               "Line": 8,
@@ -181,8 +177,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Non-nestable blocked directives",
+          "Text": "' Non-nestable blocked directives",
           "Span": {
             "Start": {
               "Line": 13,
@@ -244,8 +239,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Nestable blocked directives",
+          "Text": "' Nestable blocked directives",
           "Span": {
             "Start": {
               "Line": 28,
@@ -294,7 +288,6 @@
     {
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "CoreService",
           "Span": {
             "Start": {
@@ -311,7 +304,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -344,8 +336,7 @@
           },
           "LeadingTrivia": [
             {
-              "Type": "COMMENT",
-              "Literal": "Unhandled statements inside container",
+              "Text": "' Unhandled statements inside container",
               "Span": {
                 "Start": {
                   "Line": 46,
@@ -406,7 +397,6 @@
           },
           "Identifier": {
             "Name": {
-              "Type": "IDENTIFIER",
               "Literal": "AuthService",
               "Span": {
                 "Start": {
@@ -423,7 +413,6 @@
             }
           },
           "Alias": {
-            "Type": "ILLEGAL",
             "Literal": "",
             "Span": {
               "Start": {
@@ -528,7 +517,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "UserStore",
           "Span": {
             "Start": {
@@ -545,7 +533,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -602,7 +589,6 @@
     {
       "LHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "AuthService",
           "Span": {
             "Start": {
@@ -620,7 +606,6 @@
       },
       "RHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "UserStore",
           "Span": {
             "Start": {

@@ -216,7 +216,7 @@ func (p *Parser) readEndBounds(atTok tokenizer.Token) (*ast.DiagramBound, error)
 	bnd := &ast.DiagramBound{
 		IsStart: false,
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 

@@ -33,7 +33,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Team",
           "Span": {
             "Start": {
@@ -50,7 +49,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -106,7 +104,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Player",
           "Span": {
             "Start": {
@@ -123,7 +120,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -167,7 +163,6 @@
     {
       "LHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Team",
           "Span": {
             "Start": {
@@ -185,7 +180,6 @@
       },
       "RHS": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Player",
           "Span": {
             "Start": {

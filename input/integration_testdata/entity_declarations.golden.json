@@ -33,7 +33,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "User",
           "Span": {
             "Start": {
@@ -50,7 +49,6 @@
         }
       },
       "Alias": {
-        "Type": "STRING",
         "Literal": "\"User Class Entity\"",
         "Span": {
           "Start": {
@@ -154,7 +152,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Service",
           "Span": {
             "Start": {
@@ -171,7 +168,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -243,7 +239,6 @@
       },
       "Identifier": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Status",
           "Span": {
             "Start": {
@@ -260,7 +255,6 @@
         }
       },
       "Alias": {
-        "Type": "ILLEGAL",
         "Literal": "",
         "Span": {
           "Start": {
@@ -353,7 +347,6 @@
     {
       "Target": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "User",
           "Span": {
             "Start": {
@@ -405,8 +398,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Standalone inline declarations",
+          "Text": "' Standalone inline declarations",
           "Span": {
             "Start": {
               "Line": 21,
@@ -425,7 +417,6 @@
     {
       "Target": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "User",
           "Span": {
             "Start": {
@@ -484,7 +475,6 @@
     {
       "Target": {
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Service",
           "Span": {
             "Start": {
@@ -535,7 +525,6 @@
       "Target": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -551,7 +540,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -568,7 +556,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {
@@ -620,8 +607,7 @@
       },
       "LeadingTrivia": [
         {
-          "Type": "COMMENT",
-          "Literal": "Inline declaration with package qualification",
+          "Text": "' Inline declaration with package qualification",
           "Span": {
             "Start": {
               "Line": 26,
@@ -641,7 +627,6 @@
       "Target": {
         "PackagePath": [
           {
-            "Type": "IDENTIFIER",
             "Literal": "net",
             "Span": {
               "Start": {
@@ -657,7 +642,6 @@
             }
           },
           {
-            "Type": "IDENTIFIER",
             "Literal": "http",
             "Span": {
               "Start": {
@@ -674,7 +658,6 @@
           }
         ],
         "Name": {
-          "Type": "IDENTIFIER",
           "Literal": "Client",
           "Span": {
             "Start": {

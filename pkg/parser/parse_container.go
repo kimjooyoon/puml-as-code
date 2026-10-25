@@ -14,7 +14,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 	container := &ast.Container{
 		Kind: p.mapKeywordToContainerKind(containerClass),
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 
@@ -57,7 +57,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 	}
 
 	p.stream.EmitCommentToks()
-	container.TrailingTrivia = p.stream.DumpCollectedTrivia()
+	container.TrailingTrivia = p.dumpTrivia()
 
 	for tok := p.stream.Emit(); tok.Type != tokenizer.RBRACE; tok = p.stream.Emit() {
 		if tok.Type == tokenizer.EOF {
@@ -79,13 +79,13 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 // parseContainerIdentAndAlias parses the container name and alias.
 //
 // Returns:
-// - Alias (Token)
+// - Alias (Ident)
 // - Identifier (TargetRef)
 // - error
-func (p *Parser) parseContainerIdentAndAlias() (tokenizer.Token, ast.TargetRef, error) {
+func (p *Parser) parseContainerIdentAndAlias() (ast.Ident, ast.TargetRef, error) {
 	firstTok := p.stream.Emit()
 	var (
-		lhsTok      tokenizer.Token
+		lhsIdent    ast.Ident
 		lhsTarget   ast.TargetRef
 		lhsIsTarget bool
 		err         error
@@ -93,55 +93,55 @@ func (p *Parser) parseContainerIdentAndAlias() (tokenizer.Token, ast.TargetRef, 
 
 	switch firstTok.Type {
 	case tokenizer.STRING:
-		lhsTok = firstTok
+		lhsIdent = ast.IdentFromToken(firstTok)
 	case tokenizer.IDENTIFIER:
 		lhsTarget, err = p.parseTargetRef(firstTok)
 		if err != nil {
-			return tokenizer.Token{}, ast.TargetRef{}, err
+			return ast.Ident{}, ast.TargetRef{}, err
 		}
 		lhsIsTarget = true
 	default:
-		return tokenizer.Token{}, ast.TargetRef{}, NewParserError(firstTok, "Expected identifier or string for container name")
+		return ast.Ident{}, ast.TargetRef{}, NewParserError(firstTok, "Expected identifier or string for container name")
 	}
 
 	if _, ok := p.stream.TryConsumeKW(keyword.Alias); !ok {
 		if lhsIsTarget {
-			return tokenizer.Token{}, lhsTarget, nil
+			return ast.Ident{}, lhsTarget, nil
 		}
-		return tokenizer.Token{}, ast.TargetRef{Name: lhsTok}, nil
+		return ast.Ident{}, ast.TargetRef{Name: lhsIdent}, nil
 	}
 
 	secondTok := p.stream.Emit()
 	var (
-		rhsTok      tokenizer.Token
+		rhsIdent    ast.Ident
 		rhsTarget   ast.TargetRef
 		rhsIsTarget bool
 	)
 
 	switch secondTok.Type {
 	case tokenizer.STRING:
-		rhsTok = secondTok
+		rhsIdent = ast.IdentFromToken(secondTok)
 	case tokenizer.IDENTIFIER:
 		rhsTarget, err = p.parseTargetRef(secondTok)
 		if err != nil {
-			return tokenizer.Token{}, ast.TargetRef{}, err
+			return ast.Ident{}, ast.TargetRef{}, err
 		}
 		rhsIsTarget = true
 	default:
-		return tokenizer.Token{}, ast.TargetRef{}, NewParserError(secondTok, "Expected identifier or string for container alias")
+		return ast.Ident{}, ast.TargetRef{}, NewParserError(secondTok, "Expected identifier or string for container alias")
 	}
 
 	if lhsIsTarget && !rhsIsTarget {
-		return rhsTok, lhsTarget, nil
+		return rhsIdent, lhsTarget, nil
 	}
 	if !lhsIsTarget && rhsIsTarget {
-		return lhsTok, rhsTarget, nil
+		return lhsIdent, rhsTarget, nil
 	}
 	if lhsIsTarget && rhsIsTarget {
 		// When both are identifiers, alias is on the left, identifier is on the right
 		return lhsTarget.Name, rhsTarget, nil
 	}
 	// When both are strings
-	return lhsTok, ast.TargetRef{Name: rhsTok}, nil
+	return lhsIdent, ast.TargetRef{Name: rhsIdent}, nil
 }
 

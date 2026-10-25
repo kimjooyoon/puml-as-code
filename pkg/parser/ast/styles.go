@@ -72,17 +72,17 @@ func TokensToKey(tokens []tokenizer.Token) string {
 //	skinparam shadowing<<no_shadow>> false
 type SkinparamSetting struct {
 	BaseNode
-	Keyword    string            `json:",omitempty"` // "skinparam" or "skinparamlocked"
-	Name       []tokenizer.Token `json:",omitempty"` // Target name tokens
-	Stereotype *Stereotype       `json:",omitempty"` // Extracted stereotype if present
-	Value      string            `json:",omitempty"` // Sliced verbatim from source (preserves quotes, backslashes)
+	Keyword    string      `json:",omitempty"` // "skinparam" or "skinparamlocked"
+	Name       Ident       // Target name identifier
+	Stereotype *Stereotype `json:",omitempty"` // Extracted stereotype if present
+	Value      string      `json:",omitempty"` // Sliced verbatim from source (preserves quotes, backslashes)
 }
 
 // StatementNode implements [Statement].
 func (s *SkinparamSetting) StatementNode() Statement { return s }
 
 // EffectiveKey returns the full name of a single-line setting.
-func (s SkinparamSetting) EffectiveKey() string { return TokensToKey(s.Name) }
+func (s SkinparamSetting) EffectiveKey() string { return s.Name.Literal }
 
 var _ Statement = (*SkinparamSetting)(nil)
 
@@ -96,10 +96,10 @@ var _ Statement = (*SkinparamSetting)(nil)
 //	}
 type SkinparamBlock struct {
 	BaseNode
-	Keyword    string            `json:",omitempty"` // "skinparam" (empty for nested blocks)
-	Name       []tokenizer.Token `json:",omitempty"` // Block target name tokens, empty for nameless "skinparam { ... }"
-	Stereotype *Stereotype       `json:",omitempty"` // Extracted stereotype if present
-	Statements []Statement       `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
+	Keyword    string      `json:",omitempty"` // "skinparam" (empty for nested blocks)
+	Name       Ident       // Block target name identifier, empty for nameless "skinparam { ... }"
+	Stereotype *Stereotype `json:",omitempty"` // Extracted stereotype if present
+	Statements []Statement `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
 }
 
 // StatementNode implements [Statement].
@@ -117,7 +117,7 @@ type ResolvedSkinparam struct {
 
 // Settings flattens the block into effective settings in source order.
 func (b SkinparamBlock) Settings() []ResolvedSkinparam {
-	return flattenSkinparam(TokensToKey(b.Name), b.Statements)
+	return flattenSkinparam(b.Name.Literal, b.Statements)
 }
 
 func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
@@ -135,7 +135,7 @@ func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
 				Path:  strings.Split(key, "."),
 			})
 		case *SkinparamBlock:
-			blockName := TokensToKey(s.Name)
+			blockName := s.Name.Literal
 			nextPrefix := blockName
 			if prefix != "" && blockName != "" {
 				nextPrefix = prefix + "." + blockName

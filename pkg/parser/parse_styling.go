@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
@@ -10,14 +9,14 @@ import (
 )
 
 func (p *Parser) parseSkinparamRoot(tok tokenizer.Token) (ast.Statement, error) {
-	leadingTrivia := p.stream.DumpCollectedTrivia()
+	leadingTrivia := p.dumpTrivia()
 	m := p.Mark(tok)
 	skinparam, err := p.parseSkinparamStatement(tok, true)
 	if err != nil {
 		return nil, err
 	}
 	p.stream.EmitCommentToks()
-	skinparam.SetMetadata(p.Span(m), leadingTrivia, p.stream.DumpCollectedTrivia())
+	skinparam.SetMetadata(p.Span(m), leadingTrivia, p.dumpTrivia())
 	return skinparam, err
 }
 
@@ -91,7 +90,7 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 		// Check for anonymous block: `skinparam { ... }`
 		if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); ok {
 			p.stream.EmitCommentToks()
-			trailingTrivia := p.stream.DumpCollectedTrivia()
+			trailingTrivia := p.dumpTrivia()
 			block := &ast.SkinparamBlock{
 				BaseNode: ast.BaseNode{
 					TrailingTrivia: trailingTrivia,
@@ -117,13 +116,13 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 
 	if _, ok := p.stream.TryConsumeType(tokenizer.LBRACE); ok {
 		p.stream.EmitCommentToks()
-		trailingTrivia := p.stream.DumpCollectedTrivia()
+		trailingTrivia := p.dumpTrivia()
 		block := &ast.SkinparamBlock{
 			BaseNode: ast.BaseNode{
 				TrailingTrivia: trailingTrivia,
 			},
 			Keyword:    keyword,
-			Name:       targetTokens,
+			Name:       ast.IdentFromTokens(targetTokens...),
 			Stereotype: stereo,
 		}
 		err := p.parseSkinparamBlockMembers(block)
@@ -135,7 +134,7 @@ func (p *Parser) parseSkinparamStatement(tok tokenizer.Token, isRoot bool) (ast.
 	p.stream.TryConsumeType(tokenizer.SEMICOLON)
 	return &ast.SkinparamSetting{
 		Keyword:    keyword,
-		Name:       targetTokens,
+		Name:       ast.IdentFromTokens(targetTokens...),
 		Value:      value,
 		Stereotype: stereo,
 	}, nil
@@ -151,7 +150,7 @@ func (p *Parser) parseSkinparamBlockMembers(block *ast.SkinparamBlock) error {
 		}
 
 		memberMark := p.Mark(tok)
-		leadingTrivia := p.stream.DumpCollectedTrivia()
+		leadingTrivia := p.dumpTrivia()
 
 		var member ast.Statement
 		var err error
@@ -171,7 +170,7 @@ func (p *Parser) parseSkinparamBlockMembers(block *ast.SkinparamBlock) error {
 			continue
 		}
 		p.stream.EmitCommentToks()
-		member.SetMetadata(p.Span(memberMark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		member.SetMetadata(p.Span(memberMark), leadingTrivia, p.dumpTrivia())
 		block.Statements = append(block.Statements, member)
 	}
 
@@ -193,7 +192,7 @@ func (p *Parser) parseStyleBlock(startTok tokenizer.Token) (ast.Statement, error
 
 	styleBlock := &ast.StyleBlock{
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 
@@ -207,7 +206,7 @@ func (p *Parser) parseStyleBlock(startTok tokenizer.Token) (ast.Statement, error
 		}
 
 		ruleMark := p.Mark(tok)
-		leadingTrivia := p.stream.DumpCollectedTrivia()
+		leadingTrivia := p.dumpTrivia()
 
 		var stmnt ast.Statement
 		var err error
@@ -222,7 +221,7 @@ func (p *Parser) parseStyleBlock(startTok tokenizer.Token) (ast.Statement, error
 			return nil, err
 		}
 		p.stream.EmitCommentToks()
-		stmnt.SetMetadata(p.Span(ruleMark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		stmnt.SetMetadata(p.Span(ruleMark), leadingTrivia, p.dumpTrivia())
 		styleBlock.Statements = append(styleBlock.Statements, stmnt)
 	}
 
@@ -254,7 +253,7 @@ func (p *Parser) getSelectors(startTok tokenizer.Token) ([]string, error) {
 func (p *Parser) parseStyleRule(startTok tokenizer.Token) (*ast.StyleRule, error) {
 	currentRule := &ast.StyleRule{
 		BaseNode: ast.BaseNode{
-			LeadingTrivia: p.stream.DumpCollectedTrivia(),
+			LeadingTrivia: p.dumpTrivia(),
 		},
 	}
 
@@ -299,7 +298,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (*ast.StyleRule, error
 
 		declMark := p.Mark(tok)
 		p.stream.TryConsumeType(tokenizer.COLON)
-		leadingTrivia := p.stream.DumpCollectedTrivia()
+		leadingTrivia := p.dumpTrivia()
 		toks := p.stream.ConsumeUntilType(tokenizer.SEMICOLON, tokenizer.NEWLINE)
 		if len(toks) == 0 {
 			return nil, NewParserError(p.stream.PeekRawTokenAt(0), "Expected value after style declaration")
@@ -312,7 +311,7 @@ func (p *Parser) parseStyleRule(startTok tokenizer.Token) (*ast.StyleRule, error
 			Property: tok.Literal,
 			Value:    val,
 		}
-		declaration.SetMetadata(p.Span(declMark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		declaration.SetMetadata(p.Span(declMark), leadingTrivia, p.dumpTrivia())
 		currentRule.Statements = append(currentRule.Statements, declaration)
 	}
 

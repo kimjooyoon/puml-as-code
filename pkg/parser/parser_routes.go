@@ -14,11 +14,11 @@ func (p *Parser) fallbackRoute(
 	detach func(),
 	syncToBlockEnd bool,
 ) ast.Statement {
-	var leadingTrivia []tokenizer.Token
+	var leadingTrivia []ast.Comment
 	if err == nil && stmt != nil {
 		leadingTrivia = stmt.GetLeadingTrivia()
 	} else {
-		leadingTrivia = p.stream.DumpCollectedTrivia()
+		leadingTrivia = p.dumpTrivia()
 	}
 	if err == nil {
 		err = NewParserError(tok, "Unexpected token")
@@ -52,7 +52,7 @@ func (p *Parser) fallbackRoute(
 		BaseNode: ast.BaseNode{
 			NodeSpan:       span,
 			LeadingTrivia:  leadingTrivia,
-			TrailingTrivia: p.stream.DumpCollectedTrivia(),
+			TrailingTrivia: p.dumpTrivia(),
 		},
 	}
 
@@ -70,7 +70,7 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 
 	mark := p.Mark(tok)
 
-	leadingTrivia := p.stream.DumpCollectedTrivia()
+	leadingTrivia := p.dumpTrivia()
 
 	stmt, err := p.parseDiagramOnlyStatement(tok)
 	if err != nil {
@@ -79,7 +79,7 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.dumpTrivia())
 		return stmt
 	}
 
@@ -90,7 +90,7 @@ func (p *Parser) routeDiagramStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.dumpTrivia())
 		return stmt
 	}
 
@@ -105,7 +105,7 @@ func (p *Parser) routeContainerStatement(tok tokenizer.Token) ast.Statement {
 
 	mark := p.Mark(tok)
 
-	leadingTrivia := p.stream.DumpCollectedTrivia()
+	leadingTrivia := p.dumpTrivia()
 
 	stmt, err := p.parseContainerStatement(tok)
 	if err != nil {
@@ -114,7 +114,7 @@ func (p *Parser) routeContainerStatement(tok tokenizer.Token) ast.Statement {
 	if stmt != nil {
 		detach()
 		p.stream.EmitCommentToks()
-		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.stream.DumpCollectedTrivia())
+		stmt.SetMetadata(p.Span(mark), leadingTrivia, p.dumpTrivia())
 		return stmt
 	}
 

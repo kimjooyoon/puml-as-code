@@ -1,7 +1,5 @@
 package ast
 
-import "yur4uwe/pac/pkg/tokenizer"
-
 //go:generate enumer -type=EntityKind -transform=lower -trimprefix=Entity -json
 type EntityKind int
 
@@ -45,14 +43,14 @@ func (k EntityKind) AllowsBody() bool {
 
 type Entity struct {
 	BaseNode
-	Identifier TargetRef       `json:",omitempty"`
-	Alias      tokenizer.Token `json:",omitempty"`
-	Kind       EntityKind      `json:",omitempty"`
-	Stereotype string          `json:",omitempty"`
-	Tags       []string        `json:",omitempty"`
-	Generic    string          `json:",omitempty"`
-	Color      string          `json:",omitempty"`
-	Members    []Member        `json:",omitempty"`
+	Identifier TargetRef
+	Alias      Ident
+	Kind       EntityKind `json:",omitempty"`
+	Stereotype string     `json:",omitempty"`
+	Tags       []string   `json:",omitempty"`
+	Generic    string     `json:",omitempty"`
+	Color      string     `json:",omitempty"`
+	Members    []Member   `json:",omitempty"`
 }
 
 var _ Statement = (*Entity)(nil)
@@ -78,13 +76,13 @@ const (
 )
 
 type Container struct {
-	Identifier TargetRef       `json:",omitempty"`
-	Alias      tokenizer.Token `json:",omitempty"`
-	Kind       ContainerKind   `json:",omitempty"`
-	Stereotype string          `json:",omitempty"`
-	Tags       []string        `json:",omitempty"`
-	Color      string          `json:",omitempty"`
-	Statements []Statement     `json:",omitempty"`
+	Identifier TargetRef     `json:",omitempty"`
+	Alias      Ident         `json:",omitempty"`
+	Kind       ContainerKind `json:",omitempty"`
+	Stereotype string        `json:",omitempty"`
+	Tags       []string      `json:",omitempty"`
+	Color      string        `json:",omitempty"`
+	Statements []Statement   `json:",omitempty"`
 	BaseNode
 }
 

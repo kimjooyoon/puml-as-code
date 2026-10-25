@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/tokenizer"
 )
 
@@ -25,6 +26,10 @@ func (e parserError) Unwrap() error {
 
 func NewParserError(tok tokenizer.Token, message string) error {
 	return parserError{Err: errors.New(message), Tok: tok}
+}
+
+func NewParserErrorFromIdent(id ast.Ident, message string) error {
+	return parserError{Err: errors.New(message), Tok: tokenizer.Token{Type: tokenizer.IDENTIFIER, Literal: id.Literal, Span: id.Span}}
 }
 
 func NewParserErrorf(tok tokenizer.Token, format string, args ...any) error {
