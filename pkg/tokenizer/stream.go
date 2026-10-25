@@ -310,7 +310,7 @@ func (ts *TokenStream) AssertSeq(seq []Token) bool {
 	return true
 }
 
-func (ts *TokenStream) AssertTypeSeq(seq []TokenType) bool {
+func (ts *TokenStream) AssertTypeSeq(seq ...TokenType) bool {
 	for i, t := range seq {
 		next := ts.PeekTokenAt(i)
 		if next.Type != t {
@@ -379,13 +379,15 @@ var (
 	ErrScopeDelimiterHit   = errors.New("hit enclosing scope delimiter")
 )
 
-// ReadBetween handles the common pattern of [start markers]...[end markers]
-func (ts *TokenStream) ReadBetween(start, end []Token) (string, error) {
+// ReadTokensBetween handles bracketed sequences (e.g. <<...>>, {...}, <...>),
+// returning the enclosed tokens and the full source span enclosing both start and end markers.
+func (ts *TokenStream) ReadTokensBetween(start, end []TokenType) ([]Token, SourceSpan, error) {
 	// 1. Check if start markers match
-	if !ts.AssertSeq(start) {
-		return "", ErrStartMarkerNotFound
+	if !ts.AssertTypeSeq(start...) {
+		return nil, SourceSpan{}, ErrStartMarkerNotFound
 	}
 
+	startTok := ts.PeekTokenAt(0)
 	// 2. Consume start markers
 	for range start {
 		ts.Emit()
@@ -395,24 +397,45 @@ func (ts *TokenStream) ReadBetween(start, end []Token) (string, error) {
 	var collected []Token
 	for {
 		if ts.AssertType(EOF) || ts.AssertType(NEWLINE) {
-			return "", ErrUnexpectedEOF
+			return nil, SourceSpan{}, ErrUnexpectedEOF
 		}
 
-		if ts.AssertSeq(end) {
+		if ts.AssertTypeSeq(end...) {
 			break
 		}
 
 		collected = append(collected, ts.Emit())
 	}
 
-	res := ts.SliceInputEnclosingTokens(collected...)
-
-	// Consume end markers
+	// 4. Consume end markers
+	var lastEndTok Token
 	for range end {
-		ts.Emit()
+		lastEndTok = ts.Emit()
 	}
 
-	return res, nil
+	span := SourceSpan{
+		Start: startTok.Span.Start,
+		End:   lastEndTok.Span.End,
+	}
+
+	return collected, span, nil
+}
+
+// ReadBetween handles the common pattern of [start markers]...[end markers]
+func (ts *TokenStream) ReadBetween(start, end []Token) (string, error) {
+	startTypes := make([]TokenType, len(start))
+	for i, t := range start {
+		startTypes[i] = t.Type
+	}
+	endTypes := make([]TokenType, len(end))
+	for i, t := range end {
+		endTypes[i] = t.Type
+	}
+	toks, _, err := ts.ReadTokensBetween(startTypes, endTypes)
+	if err != nil {
+		return "", err
+	}
+	return ts.SliceInputEnclosingTokens(toks...), nil
 }
 
 func (ts *TokenStream) collectUntilNewline(emitter func() Token) []Token {

@@ -8,21 +8,44 @@ import (
 )
 
 func (p *Parser) tryReadModifier() (string, error) {
-	start := []tokenizer.Token{{Type: tokenizer.LBRACE}}
-	end := []tokenizer.Token{{Type: tokenizer.RBRACE}}
-	return p.stream.ReadBetween(start, end)
+	start := []tokenizer.TokenType{tokenizer.LBRACE}
+	end := []tokenizer.TokenType{tokenizer.RBRACE}
+	toks, _, err := p.stream.ReadTokensBetween(start, end)
+	if err != nil {
+		return "", err
+	}
+	return p.stream.SliceInputEnclosingTokens(toks...), nil
+}
+
+func (p *Parser) tryParseStereotype() (*ast.Stereotype, error) {
+	start := []tokenizer.TokenType{tokenizer.LANGLE, tokenizer.LANGLE}
+	end := []tokenizer.TokenType{tokenizer.RANGLE, tokenizer.RANGLE}
+	toks, span, err := p.stream.ReadTokensBetween(start, end)
+	if err != nil {
+		return nil, err
+	}
+	return &ast.Stereotype{
+		Tokens:   toks,
+		FullSpan: span,
+	}, nil
 }
 
 func (p *Parser) tryReadStereotype() (string, error) {
-	start := []tokenizer.Token{{Type: tokenizer.LANGLE}, {Type: tokenizer.LANGLE}}
-	end := []tokenizer.Token{{Type: tokenizer.RANGLE}, {Type: tokenizer.RANGLE}}
-	return p.stream.ReadBetween(start, end)
+	stereo, err := p.tryParseStereotype()
+	if err != nil {
+		return "", err
+	}
+	return p.stream.SliceInputEnclosingTokens(stereo.Tokens...), nil
 }
 
 func (p *Parser) tryReadGeneric() (string, error) {
-	start := []tokenizer.Token{{Type: tokenizer.LANGLE}}
-	end := []tokenizer.Token{{Type: tokenizer.RANGLE}}
-	return p.stream.ReadBetween(start, end)
+	start := []tokenizer.TokenType{tokenizer.LANGLE}
+	end := []tokenizer.TokenType{tokenizer.RANGLE}
+	toks, _, err := p.stream.ReadTokensBetween(start, end)
+	if err != nil {
+		return "", err
+	}
+	return p.stream.SliceInputEnclosingTokens(toks...), nil
 }
 
 func (p *Parser) tryReadClassSeparator() (*ast.ClassSeparator, error) {
@@ -77,7 +100,7 @@ func (p *Parser) tryReadClassSeparator() (*ast.ClassSeparator, error) {
 		if tok.Type == tokenizer.NEWLINE || tok.Type == tokenizer.EOF {
 			break
 		}
-		if p.stream.AssertTypeSeq([]tokenizer.TokenType{sepTokType, sepTokType}) {
+		if p.stream.AssertTypeSeq(sepTokType, sepTokType) {
 			break
 		}
 		labelToks = append(labelToks, p.stream.Emit())

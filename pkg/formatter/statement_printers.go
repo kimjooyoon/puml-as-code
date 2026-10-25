@@ -135,12 +135,13 @@ func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 	} else {
 		s.writeIndent()
 	}
-	if block.Name != "" {
-		s.buf.WriteString(block.Name)
+	blockName := ast.TokensToKey(block.Name)
+	if blockName != "" {
+		s.buf.WriteString(blockName)
 		s.buf.WriteByte(' ')
 	}
-	if block.Stereotype != "" {
-		fmt.Fprintf(&s.buf, "<<%s>> ", block.Stereotype)
+	if block.Stereotype != nil && len(block.Stereotype.Tokens) > 0 {
+		fmt.Fprintf(&s.buf, "<<%s>> ", ast.TokensToKey(block.Stereotype.Tokens))
 	}
 	s.buf.WriteString("{")
 	s.emitBlockStartTrivia(block)
@@ -157,11 +158,11 @@ func printSkinparamSetting(s *formatterState, setting *ast.SkinparamSetting) {
 		s.buf.WriteString(setting.Keyword)
 		s.buf.WriteByte(' ')
 	}
-	s.buf.WriteString(setting.Name)
+	s.buf.WriteString(ast.TokensToKey(setting.Name))
 	s.buf.WriteByte(' ')
-	if setting.Stereotype != "" {
+	if setting.Stereotype != nil && len(setting.Stereotype.Tokens) > 0 {
 		s.buf.WriteString("<<")
-		s.buf.WriteString(setting.Stereotype)
+		s.buf.WriteString(ast.TokensToKey(setting.Stereotype.Tokens))
 		s.buf.WriteString(">> ")
 	}
 	s.buf.WriteString(setting.Value)

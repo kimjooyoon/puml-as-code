@@ -64,7 +64,7 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 		ref.Member = memberRef
 	}
 
-	if p.stream.AssertTypeSeq([]tokenizer.TokenType{tokenizer.COLON, tokenizer.COLON}) {
+	if p.stream.AssertTypeSeq(tokenizer.COLON, tokenizer.COLON) {
 		p.stream.Emit() // consume first :
 		p.stream.Emit() // consume second :
 

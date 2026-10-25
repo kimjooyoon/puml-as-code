@@ -32,7 +32,24 @@
         }
       },
       "Keyword": "skinparam",
-      "Name": "backgroundColor",
+      "Name": [
+        {
+          "Type": "IDENTIFIER",
+          "Literal": "backgroundColor",
+          "Span": {
+            "Start": {
+              "Line": 2,
+              "Col": 11,
+              "Offset": 36
+            },
+            "End": {
+              "Line": 2,
+              "Col": 26,
+              "Offset": 51
+            }
+          }
+        }
+      ],
       "Value": "#FFFFFF"
     },
     {
@@ -49,7 +66,24 @@
         }
       },
       "Keyword": "skinparam",
-      "Name": "classBackgroundColor",
+      "Name": [
+        {
+          "Type": "IDENTIFIER",
+          "Literal": "classBackgroundColor",
+          "Span": {
+            "Start": {
+              "Line": 3,
+              "Col": 11,
+              "Offset": 70
+            },
+            "End": {
+              "Line": 3,
+              "Col": 31,
+              "Offset": 90
+            }
+          }
+        }
+      ],
       "Value": "#FF0000"
     },
     {
@@ -66,7 +100,24 @@
         }
       },
       "Keyword": "skinparam",
-      "Name": "class",
+      "Name": [
+        {
+          "Type": "IDENTIFIER",
+          "Literal": "class",
+          "Span": {
+            "Start": {
+              "Line": 5,
+              "Col": 11,
+              "Offset": 110
+            },
+            "End": {
+              "Line": 5,
+              "Col": 16,
+              "Offset": 115
+            }
+          }
+        }
+      ],
       "Statements": [
         {
           "NodeSpan": {
@@ -81,7 +132,24 @@
               "Offset": 141
             }
           },
-          "Name": "BackgroundColor",
+          "Name": [
+            {
+              "Type": "IDENTIFIER",
+              "Literal": "BackgroundColor",
+              "Span": {
+                "Start": {
+                  "Line": 6,
+                  "Col": 3,
+                  "Offset": 120
+                },
+                "End": {
+                  "Line": 6,
+                  "Col": 18,
+                  "Offset": 135
+                }
+              }
+            }
+          ],
           "Value": "Green"
         },
         {
@@ -97,7 +165,24 @@
               "Offset": 169
             }
           },
-          "Name": "HeaderBackgroundColor",
+          "Name": [
+            {
+              "Type": "IDENTIFIER",
+              "Literal": "HeaderBackgroundColor",
+              "Span": {
+                "Start": {
+                  "Line": 7,
+                  "Col": 3,
+                  "Offset": 144
+                },
+                "End": {
+                  "Line": 7,
+                  "Col": 24,
+                  "Offset": 165
+                }
+              }
+            }
+          ],
           "Value": "Red"
         },
         {
@@ -113,7 +198,24 @@
               "Offset": 189
             }
           },
-          "Name": "BorderColor",
+          "Name": [
+            {
+              "Type": "IDENTIFIER",
+              "Literal": "BorderColor",
+              "Span": {
+                "Start": {
+                  "Line": 8,
+                  "Col": 3,
+                  "Offset": 172
+                },
+                "End": {
+                  "Line": 8,
+                  "Col": 14,
+                  "Offset": 183
+                }
+              }
+            }
+          ],
           "Value": "Black"
         }
       ]

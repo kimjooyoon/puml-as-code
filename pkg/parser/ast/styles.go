@@ -5,6 +5,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	"yur4uwe/pac/pkg/tokenizer"
 )
 
 // StyleDeclaration represents a single CSS property declaration within a style rule:
@@ -49,23 +51,38 @@ func (b *StyleBlock) StatementNode() Statement { return b }
 
 var _ Statement = (*StyleBlock)(nil)
 
+// TokensToKey concatenates the literals of a token slice into a string.
+func TokensToKey(tokens []tokenizer.Token) string {
+	if len(tokens) == 0 {
+		return ""
+	}
+	if len(tokens) == 1 {
+		return tokens[0].Literal
+	}
+	var sb strings.Builder
+	for _, tok := range tokens {
+		sb.WriteString(tok.Literal)
+	}
+	return sb.String()
+}
+
 // SkinparamSetting represents a single-line skinparam setting:
 //
 //	skinparam backgroundColor #EEEBDC
 //	skinparam shadowing<<no_shadow>> false
 type SkinparamSetting struct {
 	BaseNode
-	Keyword    string `json:",omitempty"` // "skinparam" or "skinparamlocked"
-	Name       string `json:",omitempty"` // Full name (e.g., "backgroundColor")
-	Stereotype string `json:",omitempty"` // Extracted stereotype if present (e.g., "no_shadow")
-	Value      string `json:",omitempty"` // Sliced verbatim from source (preserves quotes, backslashes)
+	Keyword    string            `json:",omitempty"` // "skinparam" or "skinparamlocked"
+	Name       []tokenizer.Token `json:",omitempty"` // Target name tokens
+	Stereotype *Stereotype       `json:",omitempty"` // Extracted stereotype if present
+	Value      string            `json:",omitempty"` // Sliced verbatim from source (preserves quotes, backslashes)
 }
 
 // StatementNode implements [Statement].
 func (s *SkinparamSetting) StatementNode() Statement { return s }
 
 // EffectiveKey returns the full name of a single-line setting.
-func (s SkinparamSetting) EffectiveKey() string { return s.Name }
+func (s SkinparamSetting) EffectiveKey() string { return TokensToKey(s.Name) }
 
 var _ Statement = (*SkinparamSetting)(nil)
 
@@ -79,10 +96,10 @@ var _ Statement = (*SkinparamSetting)(nil)
 //	}
 type SkinparamBlock struct {
 	BaseNode
-	Keyword    string      `json:",omitempty"` // "skinparam" (empty for nested blocks)
-	Name       string      `json:",omitempty"` // Block target name (e.g., "class"), empty for nameless "skinparam { ... }"
-	Stereotype string      `json:",omitempty"` // Extracted stereotype if present
-	Statements []Statement `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
+	Keyword    string            `json:",omitempty"` // "skinparam" (empty for nested blocks)
+	Name       []tokenizer.Token `json:",omitempty"` // Block target name tokens, empty for nameless "skinparam { ... }"
+	Stereotype *Stereotype       `json:",omitempty"` // Extracted stereotype if present
+	Statements []Statement       `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
 }
 
 // StatementNode implements [Statement].
@@ -100,7 +117,7 @@ type ResolvedSkinparam struct {
 
 // Settings flattens the block into effective settings in source order.
 func (b SkinparamBlock) Settings() []ResolvedSkinparam {
-	return flattenSkinparam(b.Name, b.Statements)
+	return flattenSkinparam(TokensToKey(b.Name), b.Statements)
 }
 
 func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
@@ -108,9 +125,9 @@ func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
 	for _, stmt := range stmts {
 		switch s := stmt.(type) {
 		case *SkinparamSetting:
-			key := s.Name
+			key := s.EffectiveKey()
 			if prefix != "" {
-				key = prefix + "." + s.Name
+				key = prefix + "." + key
 			}
 			out = append(out, ResolvedSkinparam{
 				Key:   key,
@@ -118,9 +135,10 @@ func flattenSkinparam(prefix string, stmts []Statement) []ResolvedSkinparam {
 				Path:  strings.Split(key, "."),
 			})
 		case *SkinparamBlock:
-			nextPrefix := s.Name
-			if prefix != "" && s.Name != "" {
-				nextPrefix = prefix + "." + s.Name
+			blockName := TokensToKey(s.Name)
+			nextPrefix := blockName
+			if prefix != "" && blockName != "" {
+				nextPrefix = prefix + "." + blockName
 			} else if prefix != "" {
 				nextPrefix = prefix
 			}
