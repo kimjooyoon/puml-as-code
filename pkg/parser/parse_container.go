@@ -32,7 +32,7 @@ func (p *Parser) parseContainer(tok tokenizer.Token) (*ast.Container, error) {
 			return nil, err
 		}
 		preTags := p.tryReadTags()
-		container.Stereotype, err = p.tryReadStereotype()
+		container.Stereotype, err = p.tryParseStereotype()
 		if err != nil && !errors.Is(err, tokenizer.ErrStartMarkerNotFound) {
 			return nil, err
 		}

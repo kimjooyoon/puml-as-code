@@ -93,7 +93,7 @@ func TestParseContainer(t *testing.T) {
 			kwType: keyword.Package,
 			want: ast.Container{
 				Identifier: identRef("mypkg"),
-				Stereotype: "Service",
+				Stereotype: tokStereo("Service"),
 				Kind:       ast.ContainerPackage,
 			},
 		},
@@ -103,7 +103,7 @@ func TestParseContainer(t *testing.T) {
 			kwType: keyword.Package,
 			want: ast.Container{
 				Identifier: identRef("mypkg"),
-				Stereotype: "Service",
+				Stereotype: tokStereo("Service"),
 				Color:      "#green",
 				Kind:       ast.ContainerPackage,
 			},
@@ -311,7 +311,7 @@ func TestParseContainer(t *testing.T) {
 				Kind:       ast.ContainerNamespace,
 				Identifier: identRef("myns"),
 				Alias:      tokString("My Namespace"),
-				Stereotype: "API",
+				Stereotype: tokStereo("API"),
 			},
 		},
 	}

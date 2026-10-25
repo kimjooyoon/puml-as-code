@@ -53,7 +53,7 @@ func TestParseEntity(t *testing.T) {
 			want: &ast.Entity{
 				Identifier: identRef("MyClass"),
 				Kind:       ast.EntityClass,
-				Stereotype: "Service",
+				Stereotype: tokStereo("Service"),
 			},
 		},
 		{
@@ -84,7 +84,7 @@ func TestParseEntity(t *testing.T) {
 				Alias:      tokString("MC"),
 				Kind:       ast.EntityClass,
 				Generic:    "T",
-				Stereotype: "Database",
+				Stereotype: tokStereo("Database"),
 				Color:      "#FF0000",
 			},
 		},
@@ -573,31 +573,31 @@ func TestParseEntityAndContainerTags(t *testing.T) {
 	tests := []struct {
 		name       string
 		input      string
-		wantStereo string
+		wantStereo *ast.Stereotype
 		wantTags   []string
 	}{
 		{
 			name:       "pre-stereotype tags",
 			input:      "class Foo $tag1 $tag2 <<stereo>>\n",
-			wantStereo: "stereo",
+			wantStereo: tokStereo("stereo"),
 			wantTags:   []string{"tag1", "tag2"},
 		},
 		{
 			name:       "post-stereotype tags",
 			input:      "class Foo <<stereo>> $tag3\n",
-			wantStereo: "stereo",
+			wantStereo: tokStereo("stereo"),
 			wantTags:   []string{"tag3"},
 		},
 		{
 			name:       "precedence: pre-stereotype tags override post-stereotype tags",
 			input:      "class Foo $pre <<stereo>> $post\n",
-			wantStereo: "stereo",
+			wantStereo: tokStereo("stereo"),
 			wantTags:   []string{"pre"},
 		},
 		{
 			name:       "standalone tag without stereotype",
 			input:      "class Foo $alone\n",
-			wantStereo: "",
+			wantStereo: nil,
 			wantTags:   []string{"alone"},
 		},
 	}
@@ -614,7 +614,7 @@ func TestParseEntityAndContainerTags(t *testing.T) {
 			require.NoError(t, err)
 			ent, ok := got.(*ast.Entity)
 			require.True(t, ok)
-			require.Equal(t, tc.wantStereo, ent.Stereotype)
+			assertASTEqual(t, tc.wantStereo, ent.Stereotype)
 			require.Equal(t, tc.wantTags, ent.Tags)
 		})
 	}

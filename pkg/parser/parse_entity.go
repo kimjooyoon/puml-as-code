@@ -79,7 +79,7 @@ func (p *Parser) parseEntity(tok tokenizer.Token) (ast.Statement, error) {
 	}
 
 	preTags := p.tryReadTags()
-	stereo, err := p.tryReadStereotype()
+	stereo, err := p.tryParseStereotype()
 	if err != nil && !errors.Is(err, tokenizer.ErrStartMarkerNotFound) {
 		return nil, err
 	}

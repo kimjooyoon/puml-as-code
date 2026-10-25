@@ -150,7 +150,8 @@ class Service {
 	svc := tbl.Lookup("Service")
 	require.NotNil(t, svc)
 	require.NotNil(t, svc.AST)
-	require.Equal(t, "API", svc.AST.Stereotype)
+	require.NotNil(t, svc.AST.Stereotype)
+	require.Equal(t, "API", svc.AST.Stereotype.Value.Literal)
 	require.Equal(t, "#red", svc.AST.Color)
 	require.Len(t, svc.AST.Members, 4, "expected members from both class bodies to be merged")
 }

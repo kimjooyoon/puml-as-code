@@ -118,14 +118,6 @@ func parseColor(toks []tokenizer.Token) (string, error) {
 	return sb.String(), nil
 }
 
-func (p *Parser) tryReadStereotype() (string, error) {
-	stereo, err := p.tryParseStereotype()
-	if err != nil {
-		return "", err
-	}
-	return stereo.Value.Literal, nil
-}
-
 func (p *Parser) tryReadGeneric() (string, error) {
 	start := []tokenizer.TokenType{tokenizer.LANGLE}
 	end := []tokenizer.TokenType{tokenizer.RANGLE}

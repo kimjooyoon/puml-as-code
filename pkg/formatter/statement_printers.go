@@ -140,8 +140,11 @@ func printSkinparamBlock(s *formatterState, block *ast.SkinparamBlock) {
 		s.buf.WriteString(blockName)
 		s.buf.WriteByte(' ')
 	}
-	if block.Stereotype != nil && len(block.Stereotype.Tokens) > 0 {
-		fmt.Fprintf(&s.buf, "<<%s>> ", ast.TokensToKey(block.Stereotype.Tokens))
+	if block.Stereotype != nil {
+		str := block.Stereotype.String()
+		if str != "" {
+			fmt.Fprintf(&s.buf, "<<%s>> ", str)
+		}
 	}
 	s.buf.WriteString("{")
 	s.emitBlockStartTrivia(block)
@@ -160,10 +163,13 @@ func printSkinparamSetting(s *formatterState, setting *ast.SkinparamSetting) {
 	}
 	s.buf.WriteString(setting.Name.Literal)
 	s.buf.WriteByte(' ')
-	if setting.Stereotype != nil && len(setting.Stereotype.Tokens) > 0 {
-		s.buf.WriteString("<<")
-		s.buf.WriteString(ast.TokensToKey(setting.Stereotype.Tokens))
-		s.buf.WriteString(">> ")
+	if setting.Stereotype != nil {
+		str := setting.Stereotype.String()
+		if str != "" {
+			s.buf.WriteString("<<")
+			s.buf.WriteString(str)
+			s.buf.WriteString(">> ")
+		}
 	}
 	s.buf.WriteString(setting.Value)
 }
@@ -221,10 +227,13 @@ func printEntity(s *formatterState, ent *ast.Entity) {
 		s.buf.WriteString(ent.Generic)
 		s.buf.WriteString(">")
 	}
-	if ent.Stereotype != "" {
-		s.buf.WriteString(" <<")
-		s.buf.WriteString(ent.Stereotype)
-		s.buf.WriteString(">>")
+	if ent.Stereotype != nil {
+		str := ent.Stereotype.String()
+		if str != "" {
+			s.buf.WriteString(" <<")
+			s.buf.WriteString(str)
+			s.buf.WriteString(">>")
+		}
 	}
 	for _, tag := range ent.Tags {
 		s.buf.WriteString(" $")
@@ -254,10 +263,13 @@ func printContainer(s *formatterState, cont *ast.Container) {
 		s.buf.WriteString(" ")
 		s.buf.WriteString(s.targetFQN(cont.Identifier))
 	}
-	if cont.Stereotype != "" {
-		s.buf.WriteString(" <<")
-		s.buf.WriteString(cont.Stereotype)
-		s.buf.WriteString(">>")
+	if cont.Stereotype != nil {
+		str := cont.Stereotype.String()
+		if str != "" {
+			s.buf.WriteString(" <<")
+			s.buf.WriteString(str)
+			s.buf.WriteString(">>")
+		}
 	}
 	// For 0 tags either way nothing is printed
 	for _, tag := range cont.Tags {

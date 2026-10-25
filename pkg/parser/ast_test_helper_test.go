@@ -154,3 +154,9 @@ func tokString(lit string) ast.Ident {
 	}
 	return ast.Ident{Literal: lit}
 }
+
+func tokStereo(lit string) *ast.Stereotype {
+	return &ast.Stereotype{
+		Value: ast.Ident{Literal: lit},
+	}
+}

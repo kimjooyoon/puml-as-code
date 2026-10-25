@@ -183,7 +183,47 @@
         }
       },
       "Kind": "interface",
-      "Stereotype": "API",
+      "Stereotype": {
+        "Value": {
+          "Literal": "API",
+          "Span": {
+            "Start": {
+              "Line": 10,
+              "Col": 24,
+              "Offset": 159
+            },
+            "End": {
+              "Line": 10,
+              "Col": 27,
+              "Offset": 162
+            }
+          }
+        },
+        "SpotSpan": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        },
+        "FullSpan": {
+          "Start": {
+            "Line": 10,
+            "Col": 22,
+            "Offset": 157
+          },
+          "End": {
+            "Line": 10,
+            "Col": 29,
+            "Offset": 164
+          }
+        }
+      },
       "Generic": "T",
       "Color": "#lightblue",
       "Members": [

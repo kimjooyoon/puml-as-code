@@ -45,12 +45,12 @@ type Entity struct {
 	BaseNode
 	Identifier TargetRef
 	Alias      Ident
-	Kind       EntityKind `json:",omitempty"`
-	Stereotype string     `json:",omitempty"`
-	Tags       []string   `json:",omitempty"`
-	Generic    string     `json:",omitempty"`
-	Color      string     `json:",omitempty"`
-	Members    []Member   `json:",omitempty"`
+	Kind       EntityKind  `json:",omitempty"`
+	Stereotype *Stereotype `json:",omitempty"`
+	Tags       []string    `json:",omitempty"`
+	Generic    string      `json:",omitempty"`
+	Color      string      `json:",omitempty"`
+	Members    []Member    `json:",omitempty"`
 }
 
 var _ Statement = (*Entity)(nil)
@@ -76,10 +76,10 @@ const (
 )
 
 type Container struct {
-	Identifier TargetRef     `json:",omitempty"`
-	Alias      Ident         `json:",omitempty"`
+	Identifier TargetRef
+	Alias      Ident
 	Kind       ContainerKind `json:",omitempty"`
-	Stereotype string        `json:",omitempty"`
+	Stereotype *Stereotype   `json:",omitempty"`
 	Tags       []string      `json:",omitempty"`
 	Color      string        `json:",omitempty"`
 	Statements []Statement   `json:",omitempty"`

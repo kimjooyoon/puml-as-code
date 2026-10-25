@@ -275,7 +275,7 @@ func mergeEntity(target *ast.Entity, incoming *ast.Entity) error {
 
 	// Properties backfilling
 	// Unfortunately, puml overwrites the properties of the earlier declarations
-	if incoming.Stereotype != "" {
+	if incoming.Stereotype != nil {
 		target.Stereotype = incoming.Stereotype
 	}
 	if incoming.Generic != "" {

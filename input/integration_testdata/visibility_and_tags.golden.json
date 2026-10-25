@@ -160,7 +160,47 @@
         }
       },
       "Kind": "class",
-      "Stereotype": "Entity",
+      "Stereotype": {
+        "Value": {
+          "Literal": "Entity",
+          "Span": {
+            "Start": {
+              "Line": 9,
+              "Col": 30,
+              "Offset": 157
+            },
+            "End": {
+              "Line": 9,
+              "Col": 36,
+              "Offset": 163
+            }
+          }
+        },
+        "SpotSpan": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        },
+        "FullSpan": {
+          "Start": {
+            "Line": 9,
+            "Col": 28,
+            "Offset": 155
+          },
+          "End": {
+            "Line": 9,
+            "Col": 38,
+            "Offset": 165
+          }
+        }
+      },
       "Tags": [
         "critical",
         "auth"
@@ -258,7 +298,47 @@
         }
       },
       "Kind": "class",
-      "Stereotype": "Service",
+      "Stereotype": {
+        "Value": {
+          "Literal": "Service",
+          "Span": {
+            "Start": {
+              "Line": 14,
+              "Col": 24,
+              "Offset": 233
+            },
+            "End": {
+              "Line": 14,
+              "Col": 31,
+              "Offset": 240
+            }
+          }
+        },
+        "SpotSpan": {
+          "Start": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          },
+          "End": {
+            "Line": 0,
+            "Col": 0,
+            "Offset": 0
+          }
+        },
+        "FullSpan": {
+          "Start": {
+            "Line": 14,
+            "Col": 22,
+            "Offset": 231
+          },
+          "End": {
+            "Line": 14,
+            "Col": 33,
+            "Offset": 242
+          }
+        }
+      },
       "Tags": [
         "billing"
       ],
