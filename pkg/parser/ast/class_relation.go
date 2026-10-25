@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"yur4uwe/pac/pkg/tokenizer"
 )
 
 //go:generate enumer -type=RelationType -transform=lower -trimprefix=Relation -json
@@ -31,6 +33,7 @@ type Relationship struct {
 	MultRHS Cardinality
 
 	// Arrow itself
+	ArrowSpan      tokenizer.SourceSpan
 	Body           rune // '-', '.'
 	BodyCount      int
 	LArrow, RArrow rune `json:",omitempty"`
@@ -49,6 +52,9 @@ func (r *Relationship) StatementNode() Statement {
 	return r
 }
 
+func (r *Relationship) IsIncomplete() bool {
+	return r.RHS.Name.IsZero()
+}
 
 type Cardinality struct {
 	Raw string

@@ -21,7 +21,7 @@ type BaseNode struct {
 
 func (bn *BaseNode) GetLeadingTrivia() []Comment  { return bn.LeadingTrivia }
 func (bn *BaseNode) GetTrailingTrivia() []Comment { return bn.TrailingTrivia }
-func (bn *BaseNode) Span() tokenizer.SourceSpan           { return bn.NodeSpan }
+func (bn *BaseNode) Span() tokenizer.SourceSpan   { return bn.NodeSpan }
 
 func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, leading, trailing []Comment) {
 	bn.NodeSpan = span
@@ -39,6 +39,14 @@ func (bn *BaseNode) SetMetadata(span tokenizer.SourceSpan, leading, trailing []C
 			bn.TrailingTrivia = trailing
 		}
 	}
+}
+
+type Block interface {
+	Node
+	HasBody() bool
+	IsClosed() bool
+	BlockStart() tokenizer.Pos
+	BlockEnd() tokenizer.Pos
 }
 
 type Statement interface {

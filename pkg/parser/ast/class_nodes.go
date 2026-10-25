@@ -1,5 +1,7 @@
 package ast
 
+import "yur4uwe/pac/pkg/tokenizer"
+
 //go:generate enumer -type=EntityKind -transform=lower -trimprefix=Entity -json
 type EntityKind int
 
@@ -45,15 +47,28 @@ type Entity struct {
 	BaseNode
 	Identifier TargetRef
 	Alias      Ident
-	Kind       EntityKind  `json:",omitempty"`
-	Stereotype *Stereotype `json:",omitempty"`
-	Tags       []string    `json:",omitempty"`
-	Generic    string      `json:",omitempty"`
-	Color      string      `json:",omitempty"`
-	Members    []Member    `json:",omitempty"`
+	Kind       EntityKind    `json:",omitempty"`
+	Stereotype *Stereotype   `json:",omitempty"`
+	Tags       []string      `json:",omitempty"`
+	Generic    string        `json:",omitempty"`
+	Color      string        `json:",omitempty"`
+	LBrace     tokenizer.Pos // Zero if bodyless declaration
+	Members    []Member      `json:",omitempty"`
+	RBrace     tokenizer.Pos // Zero if unclosed before EOF
 }
 
-var _ Statement = (*Entity)(nil)
+var (
+	_ Statement = (*Entity)(nil)
+	_ Block     = (*Entity)(nil)
+)
+
+func (e *Entity) BlockStart() tokenizer.Pos { return e.LBrace }
+func (e *Entity) BlockEnd() tokenizer.Pos   { return e.RBrace }
+
+func (e *Entity) HasBody() bool { return e.LBrace != tokenizer.Pos{} }
+func (e *Entity) IsClosed() bool {
+	return !e.HasBody() || e.RBrace != tokenizer.Pos{}
+}
 
 func (e *Entity) StatementNode() Statement {
 	return e
@@ -82,11 +97,24 @@ type Container struct {
 	Stereotype *Stereotype   `json:",omitempty"`
 	Tags       []string      `json:",omitempty"`
 	Color      string        `json:",omitempty"`
+	LBrace     tokenizer.Pos // Zero if bodyless declaration
 	Statements []Statement   `json:",omitempty"`
+	RBrace     tokenizer.Pos // Zero if unclosed before EOF
 	BaseNode
 }
 
-var _ Statement = (*Container)(nil)
+func (c *Container) BlockStart() tokenizer.Pos { return c.LBrace }
+func (c *Container) BlockEnd() tokenizer.Pos   { return c.RBrace }
+
+func (c *Container) HasBody() bool { return c.LBrace != tokenizer.Pos{} }
+func (c *Container) IsClosed() bool {
+	return !c.HasBody() || c.RBrace != tokenizer.Pos{}
+}
+
+var (
+	_ Statement = (*Container)(nil)
+	_ Block     = (*Container)(nil)
+)
 
 func (c *Container) StatementNode() Statement {
 	return c

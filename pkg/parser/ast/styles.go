@@ -31,25 +31,57 @@ var _ Statement = (*StyleDeclaration)(nil)
 //	}
 type StyleRule struct {
 	BaseNode
-	Selectors  []string    `json:",omitempty"`
-	Statements []Statement `json:",omitempty"` // StyleDeclaration, nested StyleRule, or UnhandledStatement
+	Selectors  []string      `json:",omitempty"`
+	LBrace     tokenizer.Pos // Zero if bodyless declaration
+	Statements []Statement   `json:",omitempty"` // StyleDeclaration, nested StyleRule, or UnhandledStatement
+	RBrace     tokenizer.Pos // Zero if unclosed before EOF
+}
+
+func (s *StyleRule) BlockEnd() tokenizer.Pos   { return s.RBrace }
+func (s *StyleRule) BlockStart() tokenizer.Pos { return s.LBrace }
+
+func (s *StyleRule) HasBody() bool {
+	return s.LBrace != tokenizer.Pos{}
+}
+
+func (s *StyleRule) IsClosed() bool {
+	return !s.HasBody() || s.RBrace != tokenizer.Pos{}
 }
 
 // StatementNode implements [Statement].
 func (s *StyleRule) StatementNode() Statement { return s }
 
-var _ Statement = (*StyleRule)(nil)
+var (
+	_ Statement = (*StyleRule)(nil)
+	_ Block     = (*StyleRule)(nil)
+)
 
 // StyleBlock represents the top-level <style> ... </style> block container.
 type StyleBlock struct {
 	BaseNode
-	Statements []Statement `json:",omitempty"` // StyleRule or UnhandledStatement
+	RAngle     tokenizer.Pos // Zero if bodyless declaration
+	Statements []Statement   `json:",omitempty"` // StyleRule or UnhandledStatement
+	LAngle     tokenizer.Pos // Zero if unclosed before EOF
+}
+
+func (b *StyleBlock) BlockEnd() tokenizer.Pos   { return b.RAngle }
+func (b *StyleBlock) BlockStart() tokenizer.Pos { return b.LAngle }
+
+func (b *StyleBlock) HasBody() bool {
+	return b.LAngle != tokenizer.Pos{}
+}
+
+func (b *StyleBlock) IsClosed() bool {
+	return !b.HasBody() || b.RAngle != tokenizer.Pos{}
 }
 
 // StatementNode implements [Statement].
 func (b *StyleBlock) StatementNode() Statement { return b }
 
-var _ Statement = (*StyleBlock)(nil)
+var (
+	_ Statement = (*StyleBlock)(nil)
+	_ Block     = (*StyleBlock)(nil)
+)
 
 // TokensToKey concatenates the literals of a token slice into a string.
 func TokensToKey(tokens []tokenizer.Token) string {
@@ -96,16 +128,32 @@ var _ Statement = (*SkinparamSetting)(nil)
 //	}
 type SkinparamBlock struct {
 	BaseNode
-	Keyword    string      `json:",omitempty"` // "skinparam" (empty for nested blocks)
-	Name       Ident       // Block target name identifier, empty for nameless "skinparam { ... }"
-	Stereotype *Stereotype `json:",omitempty"` // Extracted stereotype if present
-	Statements []Statement `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
+	Keyword    string        `json:",omitempty"` // "skinparam" (empty for nested blocks)
+	Name       Ident         // Block target name identifier, empty for nameless "skinparam { ... }"
+	Stereotype *Stereotype   `json:",omitempty"` // Extracted stereotype if present
+	LBrace     tokenizer.Pos // Zero if bodyless declaration
+	Statements []Statement   `json:",omitempty"` // SkinparamSetting, nested SkinparamBlock, or UnhandledStatement
+	RBrace     tokenizer.Pos // Zero if unclosed before EOF
+}
+
+func (b *SkinparamBlock) BlockEnd() tokenizer.Pos   { return b.RBrace }
+func (b *SkinparamBlock) BlockStart() tokenizer.Pos { return b.LBrace }
+
+func (b *SkinparamBlock) HasBody() bool {
+	return b.LBrace != tokenizer.Pos{}
+}
+
+func (b *SkinparamBlock) IsClosed() bool {
+	return !b.HasBody() || b.RBrace != tokenizer.Pos{}
 }
 
 // StatementNode implements [Statement].
 func (b *SkinparamBlock) StatementNode() Statement { return b }
 
-var _ Statement = (*SkinparamBlock)(nil)
+var (
+	_ Statement = (*SkinparamBlock)(nil)
+	_ Block     = (*SkinparamBlock)(nil)
+)
 
 // ResolvedSkinparam is one effective setting with its concatenated key,
 // used by code generators and semantic passes.

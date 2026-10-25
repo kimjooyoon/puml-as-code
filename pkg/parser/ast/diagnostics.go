@@ -1,9 +1,18 @@
 package ast
 
 import (
+	"errors"
 	"fmt"
 
 	"yur4uwe/pac/pkg/tokenizer"
+)
+
+var (
+	ErrUnclosedBlock         = errors.New("unclosed block")
+	ErrMissingIdentifier     = errors.New("expected identifier")
+	ErrIncompletePackagePath = errors.New("incomplete qualified package path")
+	ErrMissingTarget         = errors.New("expected relationship target")
+	ErrMalformedArrow        = errors.New("malformed relationship arrow")
 )
 
 type Diagnostic struct {
