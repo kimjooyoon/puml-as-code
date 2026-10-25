@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
 	"yur4uwe/pac/pkg/tokenizer"
@@ -24,10 +26,96 @@ func (p *Parser) tryParseStereotype() (*ast.Stereotype, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ast.Stereotype{
-		Tokens:   toks,
+
+	ident := ast.MergeTokensIntoIdent(toks...)
+
+	stereo := &ast.Stereotype{
+		Value:    ident,
 		FullSpan: span,
-	}, nil
+	}
+
+	// Check for Spot Stereotype
+	if len(toks) < 3 || toks[0].Type != tokenizer.LPAREN {
+		return stereo, nil
+	}
+
+	openingParenTok := toks[0]
+	var closingParenTok tokenizer.Token
+
+	// We discard the opening and closing parentheses
+	// to get the closest syntax to the raw identifier
+	spotToks := make([]tokenizer.Token, 0, len(toks))
+	nonSpotToks := make([]tokenizer.Token, 0, len(toks))
+	inSpot := true
+	for i := 1; i < len(toks); i++ {
+		if toks[i].Type == tokenizer.RPAREN {
+			closingParenTok = toks[i]
+			inSpot = false
+			continue
+		}
+		if inSpot {
+			spotToks = append(spotToks, toks[i])
+		} else {
+			nonSpotToks = append(nonSpotToks, toks[i])
+		}
+	}
+
+	// Must have encountered a closing ')' and at least one spot token
+	if inSpot || len(spotToks) == 0 {
+		return stereo, nil
+	}
+
+	newValue := ast.MergeTokensIntoIdent(nonSpotToks...)
+	spotSpan := tokenizer.SourceSpan{
+		Start: openingParenTok.Span.Start,
+		End:   closingParenTok.Span.End,
+	}
+
+	spotRuneTok := spotToks[0]
+	spotRunes := []rune(spotRuneTok.Literal)
+	if spotRuneTok.Type != tokenizer.IDENTIFIER || len(spotRunes) != 1 {
+		return stereo, nil
+	}
+
+	spotRune := spotRunes[0]
+
+	if len(spotToks) == 1 {
+		stereo.Value = newValue
+		stereo.SpotSpan = spotSpan
+		stereo.SpotRune = spotRune
+		return stereo, nil
+	}
+
+	if spotToks[1].Type != tokenizer.COMMA {
+		return stereo, nil
+	}
+
+	color, err := parseColor(spotToks[2:])
+	if err != nil {
+		return stereo, WrapParserError(spotToks[2], err)
+	}
+
+	spotStereo := &ast.Stereotype{
+		Value:     newValue,
+		SpotRune:  rune(spotRune),
+		SpotSpan:  spotSpan,
+		SpotColor: color,
+		FullSpan:  stereo.FullSpan,
+	}
+
+	return spotStereo, nil
+}
+
+func parseColor(toks []tokenizer.Token) (string, error) {
+	if len(toks) == 0 {
+		return "", errors.New("expected color, received no tokens")
+	}
+
+	var sb strings.Builder
+	for _, tok := range toks {
+		sb.WriteString(tok.Literal)
+	}
+	return sb.String(), nil
 }
 
 func (p *Parser) tryReadStereotype() (string, error) {
@@ -35,7 +123,7 @@ func (p *Parser) tryReadStereotype() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return p.stream.SliceInputEnclosingTokens(stereo.Tokens...), nil
+	return stereo.Value.Literal, nil
 }
 
 func (p *Parser) tryReadGeneric() (string, error) {

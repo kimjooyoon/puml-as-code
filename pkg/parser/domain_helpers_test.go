@@ -30,16 +30,43 @@ func TestTryReadModifier(t *testing.T) {
 	require.Equal(t, "", mod)
 }
 
-func TestTryReadStereotype(t *testing.T) {
-	p := newParserForTest("<<stereotype>> <<foo bar>>")
+func TestTryParseStereotype(t *testing.T) {
+	p := newParserForTest("<<stereotype>> << foo bar >> <<(S, #FF7700) MyStereotype>> <<(S) My Short Stereotype>>")
 
-	stereo, err := p.tryReadStereotype()
-	require.NoError(t, err)
-	require.Equal(t, "stereotype", stereo)
-
-	stereo, err = p.tryReadStereotype()
-	require.NoError(t, err)
-	require.Equal(t, "foo bar", stereo)
+	for _, tc := range []struct {
+		name              string
+		expectedValueStr  string
+		expectedSpotRune  rune
+		expectedSpotColor string
+	}{
+		{
+			name:             "simple",
+			expectedValueStr: "stereotype",
+		},
+		{
+			name:             "simple with space",
+			expectedValueStr: "foo bar",
+		},
+		{
+			name:              "with spot and spot color",
+			expectedValueStr:  "MyStereotype",
+			expectedSpotRune:  'S',
+			expectedSpotColor: "#FF7700",
+		},
+		{
+			name:             "with spot",
+			expectedValueStr: "My Short Stereotype",
+			expectedSpotRune: 'S',
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			stereo, err := p.tryParseStereotype()
+			require.NoError(t, err)
+			require.Equal(t, tc.expectedValueStr, stereo.Value.Literal)
+			require.Equal(t, tc.expectedSpotRune, stereo.SpotRune)
+			require.Equal(t, tc.expectedSpotColor, stereo.SpotColor)
+		})
+	}
 }
 
 func TestTryReadGeneric(t *testing.T) {
