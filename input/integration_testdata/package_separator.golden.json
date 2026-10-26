@@ -435,7 +435,8 @@
               "Offset": 219
             }
           }
-        }
+        },
+        "AmbiguousMember": true
       },
       "Alias": {
         "Literal": "",
@@ -538,7 +539,8 @@
               "Offset": 266
             }
           }
-        }
+        },
+        "AmbiguousMember": true
       },
       "Alias": {
         "Literal": "",
@@ -629,7 +631,8 @@
               "Offset": 304
             }
           }
-        }
+        },
+        "AmbiguousMember": true
       },
       "RHS": {
         "PackagePath": [
@@ -678,7 +681,8 @@
               "Offset": 330
             }
           }
-        }
+        },
+        "AmbiguousMember": true
       },
       "TypeRHS": "association",
       "MultLHS": null,

@@ -115,5 +115,7 @@ func (p *Parser) parseTargetRef(firstTok tokenizer.Token) (ast.TargetRef, error)
 		}
 	}
 
+	ref.AmbiguousMember = p.stream.PackageSeparator == "::" && len(ref.PackagePath) > 0 && ref.Member == nil
+
 	return ref, nil
 }

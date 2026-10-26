@@ -141,6 +141,8 @@ type TargetRef struct {
 	PackagePath []Ident `json:",omitempty"`
 	Name        Ident
 	Member      *MemberRef `json:",omitempty"`
+	// AmbiguousMember records that :: was also the package separator when parsed.
+	AmbiguousMember bool `json:",omitempty"`
 }
 
 func (t TargetRef) Span() tokenizer.SourceSpan {

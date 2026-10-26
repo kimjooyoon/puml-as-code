@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"yur4uwe/pac/pkg/parser/ast"
+	"yur4uwe/pac/pkg/parser/dialect"
 )
 
 type HeadKind int
@@ -101,6 +102,50 @@ func (tbl *SymbolTable) LookupByRef(ref ast.TargetRef, pkgPath []string) *Entity
 	return candidate
 }
 
+// resolveMemberRef only reinterprets an ambiguous path when no entity already
+// occupies it and its prefix names an entity with the requested member.
+func (tbl *SymbolTable) resolveMemberRef(ref *ast.TargetRef, pkgPath []string) {
+	if !ref.AmbiguousMember || ref.Member != nil || len(ref.PackagePath) == 0 || tbl.LookupByRef(*ref, pkgPath) != nil {
+		return
+	}
+	last := len(ref.PackagePath) - 1
+	ownerRef := ast.TargetRef{Name: ref.PackagePath[last], PackagePath: ref.PackagePath[:last]}
+	owner := tbl.LookupByRef(ownerRef, pkgPath)
+	if owner == nil || owner.AST == nil {
+		return
+	}
+	for _, member := range owner.AST.Members {
+		if memberMatches(member, ref.EntityName()) {
+			ownerRef.Member = &ast.MemberRef{Name: ref.Name}
+			*ref = ownerRef
+			return
+		}
+	}
+}
+
+func memberMatches(member ast.Member, name string) bool {
+	switch m := member.(type) {
+	case *ast.FieldDeclaration:
+		if m.Field.FieldName() == name {
+			return true
+		}
+		// Lax members retain their declaration text instead of a parsed name.
+		if field, ok := m.Field.(*dialect.LaxField); ok {
+			before, after, typed := strings.Cut(field.Text, ":")
+			return typed && !strings.HasPrefix(after, ":") && strings.TrimSpace(before) == name
+		}
+	case *ast.MethodDeclaration:
+		if m.Method.MethodName() == name {
+			return true
+		}
+		if method, ok := m.Method.(*dialect.LaxMethod); ok {
+			before, _, signature := strings.Cut(method.Text, "(")
+			return signature && strings.TrimSpace(before) == name
+		}
+	}
+	return false
+}
+
 func (tbl *SymbolTable) FindOrCreateByRef(ref ast.TargetRef, pkgPath []string) *EntitySymbol {
 	if ent := tbl.LookupByRef(ref, pkgPath); ent != nil {
 		return ent
@@ -155,6 +200,8 @@ type RelationshipSymbol struct {
 }
 
 func newRelationshipSymbol(tbl *SymbolTable, rel *ast.Relationship, pkgPath []string) (*RelationshipSymbol, error) {
+	tbl.resolveMemberRef(&rel.LHS, pkgPath)
+	tbl.resolveMemberRef(&rel.RHS, pkgPath)
 	headL := classifyHead(rel.LArrow)
 	headR := classifyHead(rel.RArrow)
 
@@ -350,6 +397,7 @@ func resolveStatements(tbl *SymbolTable, stmts []ast.Statement, pkgPath []string
 
 			// get rid of targeted notes
 			if s.Target != nil {
+				tbl.resolveMemberRef(s.Target, pkgPath)
 				target := tbl.LookupByRef(*s.Target, pkgPath)
 				if target == nil {
 					return fmt.Errorf("no entity found for targeted note %v", s)
